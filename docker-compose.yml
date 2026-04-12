@@ -120,7 +120,7 @@ services:
   # Master UI: http://localhost:8081
   # ---------------------------------------------------------------------------
   spark:
-    image: bitnami/spark:3.5.5
+    image: bitnami/spark:latest
     container_name: datasus_spark
     restart: unless-stopped
     environment:
@@ -148,7 +148,7 @@ services:
   # Spark Worker — Executor de tarefas batch
   # ---------------------------------------------------------------------------
   spark-worker:
-    image: bitnami/spark:3.5.5
+    image: bitnami/spark:latest
     container_name: datasus_spark_worker
     restart: unless-stopped
     depends_on:
