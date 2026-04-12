@@ -1,6 +1,6 @@
 {
   "name": "DataSUS Dev Environment",
-  "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11-bookworm",
 
   // Instalar dependências do projeto e subir a stack Docker
   "postCreateCommand": "pip install -e '.[dev]' && cp .env.example .env",
