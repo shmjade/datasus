@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "datasus"
+version = "0.1.0"
+description = "Análise da Distribuição de Estabelecimentos de Saúde na Região Sul e Impactos na Mortalidade"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "DataSUS Contributors" }]
+
+dependencies = [
+    "pyspark>=3.5.0",
+    "pandas>=2.2.0",
+    "pyarrow>=15.0.0",
+    "kafka-python>=2.0.2",
+    "psycopg2-binary>=2.9.9",
+    "sqlalchemy>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "geopandas>=0.14.0",
+    "shapely>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.4.0",
+    "mypy>=1.9.0",
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "types-psycopg2>=2.9.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pipelines*"]
+
+# --- Ruff ---
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pipelines"]
+
+# --- mypy ---
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+# --- pytest ---
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=pipelines --cov-report=term-missing"

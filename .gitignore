@@ -1,0 +1,64 @@
+# =============================================================================
+# DataSUS — .gitignore
+# =============================================================================
+
+# --- Dados brutos e processados (nunca versionar dados grandes) ---
+data/raw/
+data/processed/
+*.parquet
+*.csv
+*.dbf
+*.dbc
+
+# --- Ambiente Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+.env
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# --- Secrets e variáveis de ambiente ---
+.env
+.env.local
+.env.*.local
+
+# --- Jupyter Notebooks (outputs) ---
+notebooks/**/*.ipynb
+!notebooks/**/.gitkeep
+.ipynb_checkpoints/
+
+# --- IDEs ---
+.idea/
+.vscode/settings.json
+*.swp
+*.swo
+
+# --- macOS ---
+.DS_Store
+Thumbs.db
+
+# --- Docker volumes locais ---
+infra/volumes/
+
+# --- Logs ---
+*.log
+logs/
+
+# --- mypy ---
+.mypy_cache/
+
+# --- pytest ---
+.pytest_cache/
+htmlcov/
+.coverage
+
+# --- Spark ---
+derby.log
+metastore_db/
+spark-warehouse/

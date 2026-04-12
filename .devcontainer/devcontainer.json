@@ -1,0 +1,61 @@
+{
+  "name": "DataSUS Dev Environment",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+
+  // Instalar dependências do projeto e subir a stack Docker
+  "postCreateCommand": "pip install -e '.[dev]' && cp .env.example .env",
+  "postStartCommand": "docker compose up -d",
+
+  // Extensões VS Code recomendadas
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "ms-azuretools.vscode-docker",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.vscode-jupyter-slideshow",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "editor.formatOnSave": true,
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+          }
+        },
+        "python.analysis.typeCheckingMode": "basic",
+        "sqltools.connections": [
+          {
+            "name": "DataSUS Local",
+            "driver": "PostgreSQL",
+            "host": "localhost",
+            "port": 5432,
+            "database": "datasus_db",
+            "username": "datasus"
+          }
+        ]
+      }
+    }
+  },
+
+  // Expor as portas dos serviços Docker para o host
+  "forwardPorts": [5432, 9092, 8080, 8081],
+  "portsAttributes": {
+    "5432": { "label": "PostgreSQL" },
+    "9092": { "label": "Kafka Broker" },
+    "8080": { "label": "Kafka UI" },
+    "8081": { "label": "Spark Master UI" }
+  },
+
+  // Docker-in-Docker para suportar docker compose dentro do Codespace
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  }
+}
