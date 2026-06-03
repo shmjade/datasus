@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schema das Tabelas — Silver & Gold · DataSUS-RS</title>
+<style>
+:root {
+  --primary: #1e40af;
+  --primary-soft: #eff6ff;
+  --secondary: #0891b2;
+  --silver: #6b7280;
+  --silver-soft: #f3f4f6;
+  --gold: #b45309;
+  --gold-soft: #fef3c7;
+  --border: #cbd5e1;
+  --text-strong: #0f172a;
+  --text-soft: #475569;
+  --sidebar: #f8fafc;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  color: var(--text-strong);
+  background: white;
+  line-height: 1.55;
+  font-size: 15px;
+}
+
+/* === Sidebar TOC === */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 260px;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  padding: 1.5em 1.2em;
+  font-size: 0.9em;
+}
+.sidebar h2 {
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-soft);
+  margin: 0 0 0.4em;
+  font-weight: 700;
+}
+.sidebar h2.silver { color: var(--silver); }
+.sidebar h2.gold   { color: var(--gold); }
+.sidebar ul { list-style: none; padding-left: 0; margin: 0 0 1.5em; }
+.sidebar li { margin: 0.2em 0; }
+.sidebar a {
+  color: var(--text-soft);
+  text-decoration: none;
+  display: block;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+}
+.sidebar a:hover { background: var(--primary-soft); color: var(--primary); }
+.sidebar .brand {
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0.6em;
+  font-size: 1.05em;
+}
+.sidebar .meta {
+  font-size: 0.78em;
+  color: #94a3b8;
+  margin-top: 2em;
+  padding-top: 1em;
+  border-top: 1px solid var(--border);
+}
+
+/* === Main === */
+main {
+  margin-left: 260px;
+  padding: 2.5em 3em;
+  max-width: 1100px;
+}
+h1 {
+  font-size: 2em;
+  color: var(--primary);
+  margin: 0 0 0.2em;
+  letter-spacing: -0.01em;
+}
+h1 + .subtitle {
+  color: var(--text-soft);
+  font-size: 1.05em;
+  margin-bottom: 2em;
+}
+h2.section-title {
+  font-size: 1.5em;
+  margin: 2.5em 0 0.8em;
+  padding-bottom: 0.5em;
+  border-bottom: 2px solid;
+  letter-spacing: -0.01em;
+}
+h2.section-title.silver { color: var(--silver); border-bottom-color: var(--silver); }
+h2.section-title.gold   { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* === Table card === */
+.table-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 1.5em 0 2em;
+  overflow: hidden;
+  scroll-margin-top: 1em;
+}
+.table-card.silver-card { border-left: 6px solid var(--silver); }
+.table-card.gold-card   { border-left: 6px solid var(--gold); }
+
+.table-header {
+  padding: 1em 1.5em;
+  background: var(--silver-soft);
+}
+.gold-card .table-header { background: var(--gold-soft); }
+
+.table-header h3 {
+  margin: 0 0 0.3em;
+  font-size: 1.25em;
+  color: var(--text-strong);
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  flex-wrap: wrap;
+}
+.table-header h3 code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.88em;
+  background: white;
+  padding: 0.15em 0.5em;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.tag {
+  display: inline-block;
+  padding: 0.15em 0.6em;
+  border-radius: 4px;
+  font-size: 0.72em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tag.silver { background: var(--silver); color: white; }
+.tag.gold   { background: var(--gold); color: white; }
+.tag.deriv  { background: #fed7aa; color: #9a3412; }
+
+.table-header p {
+  margin: 0.4em 0 0;
+  font-size: 0.92em;
+  color: var(--text-soft);
+}
+.table-header .meta-row {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.3em 0.8em;
+  font-size: 0.82em;
+  margin-top: 0.7em;
+}
+.table-header .meta-row dt {
+  color: var(--text-soft);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.92em;
+}
+.table-header .meta-row dd {
+  margin: 0;
+  font-family: ui-monospace, monospace;
+  font-size: 0.92em;
+  color: var(--text-strong);
+}
+
+/* === Schema table === */
+.schema {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86em;
+}
+.schema th, .schema td {
+  padding: 0.55em 1em;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #e5e7eb;
+  line-height: 1.45;
+}
+.schema th {
+  background: white;
+  color: var(--primary);
+  font-size: 0.78em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.schema tr:hover td { background: #fafafa; }
+.schema code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.92em;
+  color: var(--text-strong);
+}
+.schema .col-name { width: 22%; font-weight: 600; }
+.schema .col-name code { color: var(--secondary); }
+.schema .col-type { width: 14%; }
+.schema .col-type code {
+  background: var(--silver-soft);
+  padding: 0.1em 0.45em;
+  border-radius: 3px;
+  font-size: 0.85em;
+  color: var(--gold);
+  font-weight: 600;
+}
+.schema .col-desc { color: var(--text-soft); }
+.schema .pk code  { color: #b45309; font-weight: 700; }
+.schema .deriv td:first-child::after {
+  content: "deriv";
+  display: inline-block;
+  margin-left: 0.5em;
+  font-size: 0.7em;
+  background: #fed7aa;
+  color: #9a3412;
+  padding: 0.05em 0.4em;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+.schema .pk td:first-child::after {
+  content: "PK";
+  display: inline-block;
+  margin-left: 0.5em;
+  font-size: 0.7em;
+  background: var(--primary);
+  color: white;
+  padding: 0.05em 0.4em;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+.schema .fk td:first-child::after {
+  content: "FK";
+  display: inline-block;
+  margin-left: 0.5em;
+  font-size: 0.7em;
+  background: var(--secondary);
+  color: white;
+  padding: 0.05em 0.4em;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.flow-banner {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+  padding: 1.5em 2em;
+  border-radius: 8px;
+  margin: 2em 0;
+  display: flex;
+  align-items: center;
+  gap: 1.5em;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+.flow-banner .flow-step {
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.85em;
+}
+.flow-banner .flow-step strong {
+  display: block;
+  font-size: 1.5em;
+  margin-bottom: 0.1em;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+.flow-banner .flow-arrow {
+  font-size: 1.6em;
+  opacity: 0.7;
+}
+
+.legend {
+  background: var(--primary-soft);
+  border-left: 4px solid var(--primary);
+  padding: 0.8em 1em;
+  border-radius: 0 4px 4px 0;
+  margin: 1em 0 2em;
+  font-size: 0.86em;
+}
+.legend strong { color: var(--primary); }
+.legend code {
+  background: white;
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+@media print {
+  .sidebar { display: none; }
+  main { margin-left: 0; padding: 1.5em; }
+  .table-card { break-inside: avoid; page-break-inside: avoid; }
+  h2.section-title { page-break-before: always; }
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">📋 Schema</div>
+  <div style="font-size: 0.85em; color: var(--text-soft); margin-bottom: 1.5em;">
+    Silver & Gold layers
+  </div>
+
+  <h2 class="silver">🥈 Silver (4)</h2>
+  <ul>
+    <li><a href="#sih_rd"><code>sih_rd</code></a></li>
+    <li><a href="#cnes_st"><code>cnes_st</code></a></li>
+    <li><a href="#cnes_lt"><code>cnes_lt</code></a></li>
+    <li><a href="#sim_do"><code>sim_do</code></a></li>
+  </ul>
+
+  <h2 class="gold">🥇 Gold (5)</h2>
+  <ul>
+    <li><a href="#mortalidade_municipio_competencia"><code>mortalidade_municipio_competencia</code></a></li>
+    <li><a href="#leitos_municipio_mes"><code>leitos_municipio_mes</code></a></li>
+    <li><a href="#hospital_panel_cid_mes"><code>hospital_panel_cid_mes</code></a></li>
+    <li><a href="#continuum_cid_mes"><code>continuum_cid_mes</code></a></li>
+    <li><a href="#ml_mortalidade_dataset"><code>ml_mortalidade_dataset</code></a></li>
+  </ul>
+
+  <div class="meta">
+    DataSUS-RS · UFRGS NF01006<br>
+    Gerado em 2026-06-03
+  </div>
+</aside>
+
+<main>
+
+<h1>📋 Schema das tabelas — Silver & Gold</h1>
+<p class="subtitle">
+  Estrutura física das camadas analíticas do pipeline DataSUS-RS.
+  Todas as tabelas são <strong>Parquet com compressão zstd</strong>,
+  particionadas em estilo Hive, consultáveis via DuckDB.
+</p>
+
+<div class="flow-banner">
+  <div class="flow-step">
+    <strong>Bronze</strong>
+    raw parquet
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">
+    <strong>Silver</strong>
+    limpo, tipado
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">
+    <strong>Gold</strong>
+    agregado
+  </div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">
+    <strong>Dashboards</strong>
+    Streamlit
+  </div>
+</div>
+
+<div class="legend">
+  <strong>Convenções:</strong>
+  <code>PK</code> = chave primária natural ·
+  <code>FK</code> = chave estrangeira p/ outra tabela ·
+  <code>deriv</code> = coluna derivada/calculada ·
+  <code>VARCHAR</code> sem tamanho (DuckDB) ·
+  Datas como <code>DATE</code> nativo ·
+  Booleanos como <code>BOOLEAN</code>.
+</div>
+
+<!-- ============================================================ -->
+<!--                          SILVER                                -->
+<!-- ============================================================ -->
+<h2 class="section-title silver">🥈 Silver — dados limpos e tipados</h2>
+
+<p style="font-size: 0.95em; color: var(--text-soft);">
+  Saída padronizada das transformações sobre o bronze: tipos numéricos
+  validados (<code>TRY_CAST</code>), datas convertidas, idade decodificada,
+  flags clínicos derivados (<code>cid3</code>, <code>csap_flag</code>).
+</p>
+
+<!-- ===================== sih_rd ===================== -->
+<div class="table-card silver-card" id="sih_rd">
+  <div class="table-header">
+    <h3>
+      <code>silver.sih_rd</code>
+      <span class="tag silver">Silver</span>
+    </h3>
+    <p>AIH Reduzida — uma linha por internação SUS. Fonte primária
+       para análises de internação, mortalidade hospitalar e custo.</p>
+    <dl class="meta-row">
+      <dt>Partição</dt>            <dd>ano=YYYY / mes=MM</dd>
+      <dt>Granularidade</dt>       <dd>1 linha = 1 AIH (internação)</dd>
+      <dt>Origem</dt>              <dd>bronze/sih_rd (pysus SIH.RD)</dd>
+      <dt>Volume atual</dt>        <dd>~280k AIHs (samples RS 2022/2024/2025)</dd>
+    </dl>
+  </div>
+
+  <table class="schema">
+    <thead>
+      <tr><th>Coluna</th><th>Tipo</th><th>Descrição</th></tr>
+    </thead>
+    <tbody>
+      <tr class="pk"><td class="col-name"><code>n_aih</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">Número da AIH — identificador único da internação</td></tr>
+      <tr class="fk"><td class="col-name"><code>cnes</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Código CNES do hospital executor (→ <code>cnes_st.cnes</code>)</td></tr>
+      <tr><td class="col-name"><code>ano</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Ano da competência (ANO_CMPT)</td></tr>
+      <tr><td class="col-name"><code>mes</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Mês da competência (MES_CMPT)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>competencia</code></td>
+        <td class="col-type"><code>DATE</code></td>
+        <td class="col-desc">make_date(ano, mes, 1) — facilita filtros temporais</td></tr>
+      <tr><td class="col-name"><code>cid_principal</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CID-10 do diagnóstico principal (até 4 chars)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>cid3</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">3 primeiros chars do CID-10 (categoria, p/ agregação)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>csap_flag</code></td>
+        <td class="col-type"><code>BOOLEAN</code></td>
+        <td class="col-desc">true se o CID é CSAP (Portaria SAS/MS 221/2008)</td></tr>
+      <tr><td class="col-name"><code>sexo</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">⚠️ SIH usa <code>1=M, 3=F</code> (diverge de SIM)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>idade_anos</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Idade em anos, decodificada de IDADE + COD_IDADE</td></tr>
+      <tr class="deriv"><td class="col-name"><code>faixa_etaria</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Bucket: &lt;1, 1-14, 15-29, 30-44, 45-59, 60-74, 75+</td></tr>
+      <tr><td class="col-name"><code>raca_cor</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Raça/cor (1=branca · 2=preta · 3=parda · 4=amarela · 5=indígena)</td></tr>
+      <tr class="fk"><td class="col-name"><code>munic_res</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Município de residência IBGE 6 dígitos (sem DV)</td></tr>
+      <tr><td class="col-name"><code>munic_mov</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Município de internação IBGE 6 dígitos</td></tr>
+      <tr><td class="col-name"><code>cep</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CEP do paciente (usado em POA p/ alocar bairro)</td></tr>
+      <tr><td class="col-name"><code>dt_inter</code></td>
+        <td class="col-type"><code>DATE</code></td>
+        <td class="col-desc">Data de internação (parsed de YYYYMMDD)</td></tr>
+      <tr><td class="col-name"><code>dt_saida</code></td>
+        <td class="col-type"><code>DATE</code></td>
+        <td class="col-desc">Data de saída (alta/óbito/transferência)</td></tr>
+      <tr><td class="col-name"><code>dias_perm</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Dias de permanência (DIAS_PERM original)</td></tr>
+      <tr><td class="col-name"><code>morte</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Flag binária 0/1 — <strong>target do modelo ML</strong></td></tr>
+      <tr><td class="col-name"><code>val_tot</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">Valor total pago pelo SUS (R$)</td></tr>
+      <tr><td class="col-name"><code>val_sh</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">Valor de serviços hospitalares (R$)</td></tr>
+      <tr><td class="col-name"><code>val_sp</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">Valor de serviços profissionais (R$)</td></tr>
+      <tr><td class="col-name"><code>val_uti</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">Valor específico de UTI (R$)</td></tr>
+      <tr><td class="col-name"><code>uti_dias</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Dias em UTI no mês (UTI_MES_TO)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>uso_uti</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">1 se uti_dias &gt; 0, senão 0</td></tr>
+      <tr><td class="col-name"><code>marca_uti</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Tipo de UTI (01=UTI adulto · 02=UTI pediátrica · 03=UTI neonatal…)</td></tr>
+      <tr><td class="col-name"><code>proc_rea</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Procedimento principal realizado (10 dígitos SIGTAP)</td></tr>
+      <tr><td class="col-name"><code>especialidade</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">ESPEC do leito (01=Cirurgia · 02=Obstetrícia · 03=Clínica…)</td></tr>
+      <tr><td class="col-name"><code>carater</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CAR_INT — caráter (1=eletivo · 2=urgência)</td></tr>
+      <tr><td class="col-name"><code>complexidade</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">COMPLEX (2=média · 3=alta)</td></tr>
+      <tr><td class="col-name"><code>cobranca</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Motivo da cobrança/saída (51=alta · 41=óbito sem necropsia…)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== cnes_st ===================== -->
+<div class="table-card silver-card" id="cnes_st">
+  <div class="table-header">
+    <h3>
+      <code>silver.cnes_st</code>
+      <span class="tag silver">Silver</span>
+    </h3>
+    <p>Cadastro de estabelecimentos de saúde — uma linha por (CNES, competência).
+       Tipologia, esfera administrativa, infraestrutura, comissões.</p>
+    <dl class="meta-row">
+      <dt>Partição</dt>      <dd>ano=YYYY / mes=MM</dd>
+      <dt>Granularidade</dt> <dd>1 linha = 1 (CNES, competência mensal)</dd>
+      <dt>Origem</dt>        <dd>bronze/cnes_st (pysus CNES.ST)</dd>
+    </dl>
+  </div>
+
+  <table class="schema">
+    <thead><tr><th>Coluna</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr class="pk"><td class="col-name"><code>cnes</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Código CNES do estabelecimento (7 dígitos)</td></tr>
+      <tr class="fk"><td class="col-name"><code>codufmun</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Município IBGE 6 dígitos onde está localizado</td></tr>
+      <tr><td class="col-name"><code>ano</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Ano da competência (extraído de COMPETEN)</td></tr>
+      <tr><td class="col-name"><code>mes</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Mês da competência</td></tr>
+      <tr class="deriv"><td class="col-name"><code>competencia</code></td>
+        <td class="col-type"><code>DATE</code></td>
+        <td class="col-desc">make_date(ano, mes, 1)</td></tr>
+      <tr><td class="col-name"><code>cpf_cnpj</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CPF/CNPJ do estabelecimento</td></tr>
+      <tr><td class="col-name"><code>cnpj_mantenedora</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CNPJ da mantenedora (rede/grupo)</td></tr>
+      <tr><td class="col-name"><code>gestao</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">TPGESTAO (D=dupla · E=estadual · M=municipal · S=sem gestão)</td></tr>
+      <tr><td class="col-name"><code>esfera</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">ESFERA_A (F=federal · E=estadual · M=municipal · P=privada)</td></tr>
+      <tr><td class="col-name"><code>tp_unid</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Tipo do estabelecimento (01=Posto · 02=UBS · 05=Hospital geral · 07=Hospital esp…)</td></tr>
+      <tr><td class="col-name"><code>nat_jur</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Natureza jurídica (1244=admin direta · 3069=privada s/ fins lucrativos…)</td></tr>
+      <tr><td class="col-name"><code>clientela</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CLIENTEL — tipo de clientela atendida</td></tr>
+      <tr><td class="col-name"><code>nivel_hierarquia</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">NIV_HIER — atenção básica, média, alta complexidade</td></tr>
+      <tr><td class="col-name"><code>turno</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">TURNO_AT (1=diurno · 2=24h · 3=plantão…)</td></tr>
+      <tr><td class="col-name"><code>vinc_sus</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">VINC_SUS — flag de vinculação ao SUS</td></tr>
+      <tr><td class="col-name"><code>atividade</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">ATIVIDAD — atividade principal</td></tr>
+      <tr><td class="col-name"><code>cep</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CEP do estabelecimento</td></tr>
+      <tr><td class="col-name"><code>tem_urgencia</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">URGEMERG — possui pronto-socorro/urgência</td></tr>
+      <tr><td class="col-name"><code>tem_ambulatorial</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">ATENDAMB — possui atendimento ambulatorial</td></tr>
+      <tr><td class="col-name"><code>tem_centro_cirurgico</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CENTRCIR — possui centro cirúrgico</td></tr>
+      <tr><td class="col-name"><code>tem_centro_obstetrico</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CENTROBS — possui centro obstétrico</td></tr>
+      <tr><td class="col-name"><code>tem_centro_neonatal</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CENTRNEO — possui centro neonatal</td></tr>
+      <tr><td class="col-name"><code>tem_atend_hospitalar</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">ATENDHOS — possui atendimento hospitalar</td></tr>
+      <tr><td class="col-name"><code>tem_leitos_hosp</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">LEITHOSP — possui leitos hospitalares</td></tr>
+      <tr><td class="col-name"><code>acreditado</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">AV_ACRED — possui acreditação</td></tr>
+      <tr><td class="col-name"><code>class_acreditacao</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CLASAVAL — classificação da acreditação</td></tr>
+      <tr><td class="col-name"><code>pnass_avaliado</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">AV_PNASS — avaliado pelo PNASS</td></tr>
+      <tr><td class="col-name"><code>tem_ccih</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">COMISS04 — Comissão de Controle de Infecção Hospitalar</td></tr>
+      <tr><td class="col-name"><code>tem_comissao_obitos</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">COMISS09 — Comissão de revisão de óbitos</td></tr>
+      <tr><td class="col-name"><code>tem_comissao_epidemio</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">COMISS10 — Comissão de epidemiologia</td></tr>
+      <tr><td class="col-name"><code>tem_comissao_notif</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">COMISS11 — Comissão de notificação compulsória</td></tr>
+      <tr><td class="col-name"><code>tem_alguma_comissao</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">COMISSAO — flag indicando se possui alguma comissão</td></tr>
+      <tr><td class="col-name"><code>qt_leitos_cirurgicos</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Total de leitos cirúrgicos (QTLEITP1)</td></tr>
+      <tr><td class="col-name"><code>qt_leitos_clinicos</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Total de leitos clínicos (QTLEITP2)</td></tr>
+      <tr><td class="col-name"><code>qt_leitos_complementares</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Total de leitos complementares — UTI/UCI (QTLEITP3)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>cnes_competen</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Chave composta <code>cnes|ano-mes</code> (snapshot por mês)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== cnes_lt ===================== -->
+<div class="table-card silver-card" id="cnes_lt">
+  <div class="table-header">
+    <h3>
+      <code>silver.cnes_lt</code>
+      <span class="tag silver">Silver</span>
+    </h3>
+    <p>Leitos por estabelecimento — granularidade leito × tipo × competência.
+       Inclui classificação funcional (UTI, clínico, cirúrgico, obstétrico…).</p>
+    <dl class="meta-row">
+      <dt>Partição</dt>      <dd>ano=YYYY / mes=MM</dd>
+      <dt>Granularidade</dt> <dd>1 linha = 1 (CNES, TP_LEITO, CODLEITO, competência)</dd>
+      <dt>Origem</dt>        <dd>bronze/cnes_lt (pysus CNES.LT)</dd>
+    </dl>
+  </div>
+
+  <table class="schema">
+    <thead><tr><th>Coluna</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr class="fk"><td class="col-name"><code>cnes</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Código CNES do estabelecimento (→ <code>cnes_st.cnes</code>)</td></tr>
+      <tr class="fk"><td class="col-name"><code>codufmun</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Município IBGE 6 dígitos</td></tr>
+      <tr><td class="col-name"><code>ano</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Ano da competência</td></tr>
+      <tr><td class="col-name"><code>mes</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Mês da competência</td></tr>
+      <tr class="deriv"><td class="col-name"><code>competencia</code></td>
+        <td class="col-type"><code>DATE</code></td>
+        <td class="col-desc">make_date(ano, mes, 1)</td></tr>
+      <tr><td class="col-name"><code>tp_leito</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Tipo do leito (1=cirurg · 2=clínico · 3=comp. · 4=obstet · 5=ped · 7=hosp-dia)</td></tr>
+      <tr><td class="col-name"><code>codleito</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Código específico do leito (51-78 = UTI)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>categoria</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Categoria funcional: uti · clinico · cirurgico · obstetrico · pediatrico · hospital_dia · outros</td></tr>
+      <tr><td class="col-name"><code>qt_exist</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Quantidade total existente do leito</td></tr>
+      <tr><td class="col-name"><code>qt_contr</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Quantidade contratada</td></tr>
+      <tr><td class="col-name"><code>qt_sus</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Quantidade disponibilizada ao SUS — <strong>chave p/ análise pública</strong></td></tr>
+      <tr><td class="col-name"><code>qt_nsus</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Quantidade não-SUS (privada/convênio)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== sim_do ===================== -->
+<div class="table-card silver-card" id="sim_do">
+  <div class="table-header">
+    <h3>
+      <code>silver.sim_do</code>
+      <span class="tag silver">Silver</span>
+    </h3>
+    <p>Declarações de óbito — universo total da mortalidade.
+       Datas convertidas de DDMMYYYY (peculiaridade do SIM), idade decodificada,
+       flags de causa externa/materna derivados.</p>
+    <dl class="meta-row">
+      <dt>Partição</dt>      <dd>ano=YYYY</dd>
+      <dt>Granularidade</dt> <dd>1 linha = 1 óbito (DO)</dd>
+      <dt>Origem</dt>        <dd>bronze/sim_do (pysus SIM.DO)</dd>
+    </dl>
+  </div>
+
+  <table class="schema">
+    <thead><tr><th>Coluna</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr class="pk"><td class="col-name"><code>contador</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">Contador sequencial — chave única da DO</td></tr>
+      <tr><td class="col-name"><code>numero_lote</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">NUMEROLOTE da remessa de envio</td></tr>
+      <tr><td class="col-name"><code>origem</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">ORIGEM do registro (1=SIM · 2=cartório · 3=mistos)</td></tr>
+      <tr><td class="col-name"><code>tipobito</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Tipo (1=fetal · 2=não fetal)</td></tr>
+      <tr><td class="col-name"><code>dt_obito</code></td>
+        <td class="col-type"><code>DATE</code></td>
+        <td class="col-desc">Data do óbito (convertida de DDMMYYYY)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>ano</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">EXTRACT(year FROM dt_obito)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>mes</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">EXTRACT(month FROM dt_obito)</td></tr>
+      <tr><td class="col-name"><code>dt_nasc</code></td>
+        <td class="col-type"><code>DATE</code></td>
+        <td class="col-desc">Data de nascimento (DDMMYYYY)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>idade_anos</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Idade decodificada de IDADE (4 dígitos com unidade)</td></tr>
+      <tr><td class="col-name"><code>sexo</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">⚠️ SIM usa <code>1=M, 2=F</code> (diferente do SIH)</td></tr>
+      <tr><td class="col-name"><code>raca_cor</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">RACACOR (1=branca · 2=preta · 3=amarela · 4=parda · 5=indígena)</td></tr>
+      <tr><td class="col-name"><code>estado_civil</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">ESTCIV</td></tr>
+      <tr><td class="col-name"><code>escolaridade</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">ESC2010 — escolaridade em níveis IBGE 2010</td></tr>
+      <tr><td class="col-name"><code>ocupacao</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Código CBO da ocupação</td></tr>
+      <tr><td class="col-name"><code>idade_raw</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">IDADE bruta (4 dígitos: unidade + valor) — para auditoria</td></tr>
+      <tr class="fk"><td class="col-name"><code>munic_res</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Município de residência IBGE 6 dígitos</td></tr>
+      <tr><td class="col-name"><code>munic_ocor</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Município de ocorrência IBGE 6 dígitos</td></tr>
+      <tr><td class="col-name"><code>local_ocorrencia</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">LOCOCOR (1=hospital · 2=outro estab · 3=domicílio · 4=via pública · 5=outros)</td></tr>
+      <tr class="fk"><td class="col-name"><code>cnes_estab</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CNES do estabelecimento onde ocorreu (CODESTAB)</td></tr>
+      <tr><td class="col-name"><code>estab_descr</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Descrição texto do estabelecimento (caso CNES NULL)</td></tr>
+      <tr><td class="col-name"><code>causa_basica</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CID-10 da causa básica do óbito (CAUSABAS)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>cid3</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">3 primeiros chars da causa básica</td></tr>
+      <tr class="deriv"><td class="col-name"><code>capitulo_cid</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">1ª letra do CID — capítulo (A/B/C/.../V/W/X/Y)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>causa_externa</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">1 se causa básica é V/W/X/Y (acidentes, violência, suicídio)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>causa_materna</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">1 se causa básica é capítulo O (gestação, parto, puerpério)</td></tr>
+      <tr><td class="col-name"><code>causa_basica_original</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CAUSABAS_O — causa pré-recodificação SCB</td></tr>
+      <tr class="deriv"><td class="col-name"><code>obito_fetal</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">1 se TIPOBITO=1</td></tr>
+      <tr class="deriv"><td class="col-name"><code>obito_hospitalar</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">1 se LOCOCOR=1 (ocorreu em hospital)</td></tr>
+      <tr><td class="col-name"><code>assistencia_medica</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">ASSISTMED — teve assistência médica antes do óbito</td></tr>
+      <tr><td class="col-name"><code>necropsia</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">NECROPSIA — foi realizada necropsia</td></tr>
+      <tr><td class="col-name"><code>investigado_epidemio</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">STDOEPIDEM — DO investigada pela vigilância</td></tr>
+      <tr><td class="col-name"><code>linhaa</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Linha A do atestado — causa terminal</td></tr>
+      <tr><td class="col-name"><code>linhab</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Linha B do atestado — causa intermediária</td></tr>
+      <tr><td class="col-name"><code>linhac</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Linha C — outra causa intermediária</td></tr>
+      <tr><td class="col-name"><code>linhad</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Linha D — causa básica</td></tr>
+      <tr><td class="col-name"><code>linhaii</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Linha II — outros estados patológicos contribuintes</td></tr>
+      <tr><td class="col-name"><code>atestado_texto</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">ATESTADO — texto livre concatenado</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!--                            GOLD                                -->
+<!-- ============================================================ -->
+<h2 class="section-title gold">🥇 Gold — métricas agregadas prontas pra consumo</h2>
+
+<p style="font-size: 0.95em; color: var(--text-soft);">
+  Tabelas pré-agregadas otimizadas para os dashboards Streamlit.
+  Cada uma corresponde a uma ou mais views (perguntas norteadoras) do app.
+</p>
+
+<!-- ===================== mortalidade_municipio_competencia ===================== -->
+<div class="table-card gold-card" id="mortalidade_municipio_competencia">
+  <div class="table-header">
+    <h3>
+      <code>gold.mortalidade_municipio_competencia</code>
+      <span class="tag gold">Gold</span>
+    </h3>
+    <p>Taxa de mortalidade hospitalar por município × mês.
+       Alimenta a página <strong>F2 — Mortalidade por Município</strong> (mapa coroplético + série temporal).</p>
+    <dl class="meta-row">
+      <dt>Partição</dt>      <dd>ano=YYYY</dd>
+      <dt>Granularidade</dt> <dd>1 linha = (munic_res, ano, mes)</dd>
+      <dt>Filtros</dt>       <dd>só RS (munic_res prefix '43') · HAVING internacoes ≥ 1</dd>
+      <dt>Origem</dt>        <dd>silver/sih_rd</dd>
+    </dl>
+  </div>
+
+  <table class="schema">
+    <thead><tr><th>Coluna</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr class="pk"><td class="col-name"><code>cod6</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Município IBGE 6 dígitos (de residência)</td></tr>
+      <tr class="pk"><td class="col-name"><code>ano</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Ano da competência</td></tr>
+      <tr class="pk"><td class="col-name"><code>mes</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Mês da competência</td></tr>
+      <tr class="deriv"><td class="col-name"><code>competencia</code></td>
+        <td class="col-type"><code>DATE</code></td>
+        <td class="col-desc">make_date(ano, mes, 1)</td></tr>
+      <tr><td class="col-name"><code>internacoes</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">COUNT(*) — total de AIHs no município/mês</td></tr>
+      <tr><td class="col-name"><code>obitos</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">SUM(morte) — óbitos hospitalares no SIH</td></tr>
+      <tr class="deriv"><td class="col-name"><code>taxa_mortalidade</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">obitos × 100 / internacoes (em %)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>permanencia_media</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">AVG(dias_perm)</td></tr>
+      <tr><td class="col-name"><code>internacoes_uti</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">SUM(uso_uti)</td></tr>
+      <tr><td class="col-name"><code>custo_total</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">SUM(val_tot)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== leitos_municipio_mes ===================== -->
+<div class="table-card gold-card" id="leitos_municipio_mes">
+  <div class="table-header">
+    <h3>
+      <code>gold.leitos_municipio_mes</code>
+      <span class="tag gold">Gold</span>
+    </h3>
+    <p>Capacidade hospitalar agregada por município × mês, pivotada por
+       categoria funcional do leito. Inclui <em>per capita</em> via join
+       com população IBGE Censo 2022. Alimenta a página
+       <strong>F3 — Leitos SUS por 1000 hab</strong>.</p>
+    <dl class="meta-row">
+      <dt>Partição</dt>      <dd>ano=YYYY</dd>
+      <dt>Granularidade</dt> <dd>1 linha = (codufmun, ano, mes)</dd>
+      <dt>Origem</dt>        <dd>silver/cnes_lt + data/ibge/rs_populacao_municipio.csv</dd>
+    </dl>
+  </div>
+
+  <table class="schema">
+    <thead><tr><th>Coluna</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr class="pk"><td class="col-name"><code>codufmun</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Município IBGE 6 dígitos (do estabelecimento)</td></tr>
+      <tr class="pk"><td class="col-name"><code>ano</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Ano da competência</td></tr>
+      <tr class="pk"><td class="col-name"><code>mes</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Mês da competência</td></tr>
+      <tr class="deriv"><td class="col-name"><code>competencia</code></td>
+        <td class="col-type"><code>DATE</code></td>
+        <td class="col-desc">make_date(ano, mes, 1)</td></tr>
+      <tr><td class="col-name"><code>n_hospitais</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">COUNT(DISTINCT cnes)</td></tr>
+      <tr><td class="col-name"><code>leitos_sus_total</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">SUM(qt_sus) — total de leitos disponibilizados ao SUS</td></tr>
+      <tr><td class="col-name"><code>leitos_total</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">SUM(qt_exist) — total existente (SUS + privado)</td></tr>
+      <tr><td class="col-name"><code>leitos_uti_sus</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">Leitos SUS de UTI (categoria='uti')</td></tr>
+      <tr><td class="col-name"><code>leitos_clinico_sus</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">Leitos SUS clínicos</td></tr>
+      <tr><td class="col-name"><code>leitos_cirurgico_sus</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">Leitos SUS cirúrgicos</td></tr>
+      <tr><td class="col-name"><code>leitos_obstetrico_sus</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">Leitos SUS obstétricos</td></tr>
+      <tr><td class="col-name"><code>leitos_pediatrico_sus</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">Leitos SUS pediátricos</td></tr>
+      <tr><td class="col-name"><code>leitos_outros_sus</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">Demais leitos SUS (categoria='outros')</td></tr>
+      <tr><td class="col-name"><code>populacao</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">População do município (IBGE Censo 2022) — denominador</td></tr>
+      <tr class="deriv"><td class="col-name"><code>leitos_sus_por_1000hab</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">leitos_sus_total × 1000 / populacao</td></tr>
+      <tr class="deriv"><td class="col-name"><code>leitos_uti_por_100khab</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">leitos_uti_sus × 100k / populacao</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== hospital_panel_cid_mes ===================== -->
+<div class="table-card gold-card" id="hospital_panel_cid_mes">
+  <div class="table-header">
+    <h3>
+      <code>gold.hospital_panel_cid_mes</code>
+      <span class="tag gold">Gold</span>
+    </h3>
+    <p>"Painel do Diretor" — métricas operacionais por hospital × CID-3 × mês.
+       Alimenta a página <strong>F4 — Rastreabilidade por Estabelecimento</strong>
+       (funnel plot, mortalidade, permanência, UTI%).</p>
+    <dl class="meta-row">
+      <dt>Partição</dt>      <dd>ano=YYYY</dd>
+      <dt>Granularidade</dt> <dd>1 linha = (cnes, cid3, ano, mes)</dd>
+      <dt>Origem</dt>        <dd>silver/sih_rd + silver/cnes_st (snapshot mais recente)</dd>
+    </dl>
+  </div>
+
+  <table class="schema">
+    <thead><tr><th>Coluna</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr class="pk"><td class="col-name"><code>cnes</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CNES do hospital</td></tr>
+      <tr class="pk"><td class="col-name"><code>cid3</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Categoria CID-10 (3 chars)</td></tr>
+      <tr class="pk"><td class="col-name"><code>ano</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Ano da competência</td></tr>
+      <tr class="pk"><td class="col-name"><code>mes</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Mês da competência</td></tr>
+      <tr class="deriv"><td class="col-name"><code>competencia</code></td>
+        <td class="col-type"><code>DATE</code></td>
+        <td class="col-desc">make_date(ano, mes, 1)</td></tr>
+      <tr><td class="col-name"><code>n_internacoes</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">Total de AIHs do hospital nesse CID/mês</td></tr>
+      <tr><td class="col-name"><code>n_mortes</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">SUM(morte)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>taxa_mortalidade</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">AVG(morte) — proporção 0-1</td></tr>
+      <tr class="deriv"><td class="col-name"><code>perm_media</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">AVG(dias_perm)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>perm_mediana</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">MEDIAN(dias_perm) — resistente a outliers</td></tr>
+      <tr><td class="col-name"><code>n_uti</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">SUM(uso_uti) — pacientes que usaram UTI</td></tr>
+      <tr class="deriv"><td class="col-name"><code>uti_pct</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">AVG(uso_uti) — proporção de internações com UTI</td></tr>
+      <tr><td class="col-name"><code>custo_total</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">SUM(val_tot)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>custo_medio</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">AVG(val_tot)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>idade_media</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">AVG(idade_anos)</td></tr>
+      <tr><td class="col-name"><code>n_csap</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">SUM(csap_flag) — total CSAP</td></tr>
+      <tr class="fk"><td class="col-name"><code>codufmun_hosp</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Município do hospital (do snapshot CNES mais recente)</td></tr>
+      <tr><td class="col-name"><code>tp_unid</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Tipo do estabelecimento (denormalizado de CNES.ST)</td></tr>
+      <tr><td class="col-name"><code>esfera</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Esfera administrativa</td></tr>
+      <tr><td class="col-name"><code>clientela</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Tipo de clientela</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== continuum_cid_mes ===================== -->
+<div class="table-card gold-card" id="continuum_cid_mes">
+  <div class="table-header">
+    <h3>
+      <code>gold.continuum_cid_mes</code>
+      <span class="tag gold">Gold</span>
+    </h3>
+    <p>"Cascata de cuidado" por CID × município × mês — une internação (SIH)
+       com óbito (SIM) na mesma chave, permitindo medir o
+       <em>continuum</em> internou → morreu no hospital → morreu total.</p>
+    <dl class="meta-row">
+      <dt>Partição</dt>      <dd>ano=YYYY</dd>
+      <dt>Granularidade</dt> <dd>1 linha = (cid3, munic_res, ano, mes)</dd>
+      <dt>Origem</dt>        <dd>silver/sih_rd FULL OUTER JOIN silver/sim_do</dd>
+    </dl>
+  </div>
+
+  <table class="schema">
+    <thead><tr><th>Coluna</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr class="pk"><td class="col-name"><code>cid3</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Categoria CID-10 (3 chars) — vinda de SIH ou SIM</td></tr>
+      <tr class="pk"><td class="col-name"><code>munic_res</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Município de residência IBGE 6 dígitos</td></tr>
+      <tr class="pk"><td class="col-name"><code>ano</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Ano da competência</td></tr>
+      <tr class="pk"><td class="col-name"><code>mes</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Mês da competência</td></tr>
+      <tr class="deriv"><td class="col-name"><code>competencia</code></td>
+        <td class="col-type"><code>DATE</code></td>
+        <td class="col-desc">make_date(ano, mes, 1)</td></tr>
+      <tr><td class="col-name"><code>n_internacoes</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">COUNT(*) AIHs com esse CID/município/mês</td></tr>
+      <tr><td class="col-name"><code>n_internacoes_csap</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">Subset CSAP — proxy de atenção primária deficiente</td></tr>
+      <tr><td class="col-name"><code>n_mortes_hospital_sih</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">SUM(morte) do SIH — óbitos durante internação</td></tr>
+      <tr><td class="col-name"><code>n_obitos_totais</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">COUNT(*) do SIM — todos os óbitos por esse CID (qualquer local)</td></tr>
+      <tr><td class="col-name"><code>n_obitos_hospitalares</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">SUM(obito_hospitalar) do SIM (LOCOCOR=1)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>perm_media</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">AVG(dias_perm) das internações</td></tr>
+      <tr class="deriv"><td class="col-name"><code>idade_media</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">AVG(idade_anos)</td></tr>
+      <tr><td class="col-name"><code>custo_total</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">SUM(val_tot) das internações</td></tr>
+      <tr class="deriv"><td class="col-name"><code>custo_medio</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">AVG(val_tot)</td></tr>
+      <tr><td class="col-name"><code>n_uti</code></td>
+        <td class="col-type"><code>BIGINT</code></td>
+        <td class="col-desc">SUM(uso_uti)</td></tr>
+      <tr class="deriv"><td class="col-name"><code>letalidade_hospitalar</code></td>
+        <td class="col-type"><code>DOUBLE</code></td>
+        <td class="col-desc">n_mortes_hospital_sih / n_internacoes (proporção 0-1)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== ml_mortalidade_dataset ===================== -->
+<div class="table-card gold-card" id="ml_mortalidade_dataset">
+  <div class="table-header">
+    <h3>
+      <code>gold.ml_mortalidade_dataset / v1</code>
+      <span class="tag gold">Gold</span>
+      <span class="tag deriv">ML-ready</span>
+    </h3>
+    <p>Dataset versionado para treinar o modelo de mortalidade hospitalar.
+       Features <strong>sem leakage</strong> (apenas variáveis conhecidas na admissão),
+       splits estratificados pelo target.</p>
+    <dl class="meta-row">
+      <dt>Versão</dt>        <dd>v1 · random_state=42</dd>
+      <dt>Split</dt>         <dd>train 70% · val 15% · test 15% (stratified by target)</dd>
+      <dt>Arquivos</dt>      <dd>_full.parquet · train · val · test · metadata.json</dd>
+      <dt>Volume</dt>        <dd>~264.728 AIHs filtradas (target_rate ≈ 5.82%)</dd>
+      <dt>Origem</dt>        <dd>silver/sih_rd</dd>
+    </dl>
+  </div>
+
+  <table class="schema">
+    <thead><tr><th>Coluna</th><th>Tipo</th><th>Descrição</th></tr></thead>
+    <tbody>
+      <tr><td class="col-name"><code>sexo</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Sexo SIH (1=M · 3=F)</td></tr>
+      <tr><td class="col-name"><code>idade_anos</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Idade em anos — filtrado 1 ≤ idade ≤ 120</td></tr>
+      <tr><td class="col-name"><code>faixa_etaria</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Bucket etário derivado</td></tr>
+      <tr><td class="col-name"><code>raca_cor</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Raça/cor</td></tr>
+      <tr class="fk"><td class="col-name"><code>munic_res</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Município IBGE 6 dígitos</td></tr>
+      <tr class="deriv"><td class="col-name"><code>meso_res</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Mesorregião — substr(munic_res, 1, 4)</td></tr>
+      <tr><td class="col-name"><code>cid_principal</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CID-10 completo da admissão</td></tr>
+      <tr><td class="col-name"><code>cid3</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">Categoria CID (3 chars)</td></tr>
+      <tr><td class="col-name"><code>csap_flag</code></td>
+        <td class="col-type"><code>BOOLEAN</code></td>
+        <td class="col-desc">É condição sensível à atenção primária</td></tr>
+      <tr><td class="col-name"><code>carater</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CAR_INT — eletivo vs urgência (definido na admissão)</td></tr>
+      <tr><td class="col-name"><code>especialidade</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">ESPEC do leito</td></tr>
+      <tr><td class="col-name"><code>complexidade</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">COMPLEX</td></tr>
+      <tr class="fk"><td class="col-name"><code>cnes</code></td>
+        <td class="col-type"><code>VARCHAR</code></td>
+        <td class="col-desc">CNES do hospital executor</td></tr>
+      <tr><td class="col-name"><code>ano</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Ano da competência</td></tr>
+      <tr><td class="col-name"><code>mes</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">Mês da competência</td></tr>
+      <tr class="deriv"><td class="col-name"><code>dow_admissao</code></td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc">EXTRACT(dow FROM dt_inter) — 0=domingo</td></tr>
+      <tr><td class="col-name"><code><strong>morte</strong></code> 🎯</td>
+        <td class="col-type"><code>INTEGER</code></td>
+        <td class="col-desc"><strong>TARGET</strong> — desfecho binário (0=alta, 1=óbito)</td></tr>
+    </tbody>
+  </table>
+
+  <div style="padding: 1em 1.5em; background: #fef3c7; font-size: 0.85em;">
+    <strong style="color: #92400e;">⚠️ Excluído (leakage):</strong>
+    <code>dias_perm</code>, <code>dt_saida</code>, <code>cobranca</code>,
+    <code>val_tot</code>, <code>val_sh</code>, <code>val_sp</code>, <code>val_uti</code>,
+    <code>uti_dias</code>, <code>uso_uti</code>, <code>marca_uti</code>, <code>proc_rea</code>
+    — só conhecidos após o desfecho.
+    <br><br>
+    <strong style="color: #92400e;">Filtros aplicados:</strong>
+    <code>morte IS NOT NULL</code> · <code>cid_principal IS NOT NULL</code> ·
+    <code>idade_anos BETWEEN 1 AND 120</code> ·
+    <code>cid_principal NOT LIKE 'V%|W%|X%|Y%'</code> (exclui causas externas)
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!--                      RELACIONAMENTOS                          -->
+<!-- ============================================================ -->
+<h2 class="section-title" style="color: var(--primary); border-bottom-color: var(--primary);">
+  🔗 Resumo dos relacionamentos
+</h2>
+
+<table class="schema" style="font-size: 0.9em;">
+  <thead>
+    <tr>
+      <th>De</th>
+      <th>Para</th>
+      <th>Chave</th>
+      <th>Cardinalidade</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>silver.sih_rd</code></td>
+      <td><code>silver.cnes_st</code></td>
+      <td><code>cnes</code></td>
+      <td>N : 1 (uma internação tem 1 hospital)</td>
+    </tr>
+    <tr>
+      <td><code>silver.cnes_lt</code></td>
+      <td><code>silver.cnes_st</code></td>
+      <td><code>cnes</code></td>
+      <td>N : 1 (um hospital tem N tipos de leito)</td>
+    </tr>
+    <tr>
+      <td><code>silver.sim_do</code></td>
+      <td><code>silver.cnes_st</code></td>
+      <td><code>cnes_estab</code></td>
+      <td>N : 1 (óbito hospitalar → hospital)</td>
+    </tr>
+    <tr>
+      <td><code>silver.sim_do</code> · <code>sih_rd</code></td>
+      <td><code>data/ibge/rs_municipios</code></td>
+      <td><code>munic_res</code> = <code>cod6</code></td>
+      <td>N : 1 (município de residência)</td>
+    </tr>
+    <tr>
+      <td><code>gold.continuum_cid_mes</code></td>
+      <td><code>silver.sih_rd</code> + <code>sim_do</code></td>
+      <td>(cid3, munic_res, ano, mes)</td>
+      <td>FULL OUTER JOIN</td>
+    </tr>
+    <tr>
+      <td><code>gold.hospital_panel_cid_mes</code></td>
+      <td><code>silver.sih_rd</code> + <code>cnes_st</code></td>
+      <td>cnes (snapshot mais recente)</td>
+      <td>N : 1 LEFT JOIN</td>
+    </tr>
+    <tr>
+      <td><code>gold.leitos_municipio_mes</code></td>
+      <td><code>silver.cnes_lt</code> + <code>ibge.populacao</code></td>
+      <td>(codufmun, ano, mes) · cod6</td>
+      <td>N : 1 LEFT JOIN</td>
+    </tr>
+  </tbody>
+</table>
+
+<p style="margin: 3em 0 1em; font-size: 0.8em; color: var(--text-soft); text-align: center;
+          border-top: 1px solid var(--border); padding-top: 1em;">
+  DataSUS-RS · UFRGS NF01006 · 2026 ·
+  <a href="dicionario_dados.html" style="color: var(--primary);">dicionario_dados.html</a> ·
+  <a href="joins_guia.md" style="color: var(--primary);">joins_guia.md</a>
+</p>
+
+</main>
+</body>
+</html>
