@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Base de Dados — DataSUS-RS · UFRGS NF01006</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css" id="theme">
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.min.js"></script>
+
+<style>
+:root {
+  --primary: #1e40af;
+  --primary-soft: #eff6ff;
+  --secondary: #0891b2;
+  --accent: #dc2626;
+  --soft: #f1f5f9;
+  --border: #cbd5e1;
+  --text-strong: #0f172a;
+  --text-soft: #475569;
+
+  --datasus: #dc2626;     /* vermelho (saúde, SUS) */
+  --ibge: #16a34a;        /* verde (institucional IBGE) */
+  --atlas: #7c3aed;       /* roxo (PNUD/Atlas) */
+  --observa: #ea580c;     /* laranja (POA) */
+}
+.reveal {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  font-size: 24px;
+  color: #1f2937;
+}
+.reveal h1, .reveal h2, .reveal h3 {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
+  text-transform: none;
+  text-shadow: none;
+}
+.reveal h1 { font-size: 2.2em; }
+.reveal h2 { font-size: 1.5em; color: var(--primary); }
+.reveal h3 { font-size: 1.15em; color: var(--secondary); }
+
+.reveal .slides section {
+  text-align: left;
+  padding: 0 30px;
+}
+.reveal section.cover { text-align: center; }
+.reveal section.divisor { text-align: center; }
+
+.reveal table {
+  margin: 0.4em auto;
+  font-size: 0.76em;
+  border-collapse: collapse;
+  width: 100%;
+}
+.reveal table th, .reveal table td {
+  padding: 0.5em 0.75em;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.4;
+}
+.reveal table th {
+  background: var(--soft);
+  color: var(--primary);
+  font-size: 0.92em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.reveal ul, .reveal ol { padding-left: 1.5em; }
+.reveal li { margin: 0.3em 0; line-height: 1.4; }
+.reveal strong { color: #000; }
+.reveal em { color: var(--secondary); }
+
+.reveal code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.82em;
+  background: var(--soft);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+}
+
+/* === Capa === */
+section.cover h1 { font-size: 2.4em; margin-bottom: 0.2em; }
+section.cover .institucional {
+  font-size: 0.75em;
+  color: #64748b;
+  margin-top: 2em;
+}
+section.cover .descricao {
+  background: var(--soft);
+  border-left: 6px solid var(--primary);
+  padding: 1em 1.5em;
+  margin: 1.5em auto;
+  text-align: left;
+  max-width: 760px;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.95em;
+  color: var(--text-strong);
+}
+
+/* === Tags de fonte === */
+.fonte-tag {
+  display: inline-block;
+  padding: 0.15em 0.6em;
+  border-radius: 4px;
+  font-size: 0.78em;
+  font-weight: 700;
+  margin-right: 0.3em;
+  color: white;
+  letter-spacing: 0.03em;
+}
+.fonte-tag.datasus  { background: var(--datasus); }
+.fonte-tag.ibge     { background: var(--ibge); }
+.fonte-tag.atlas    { background: var(--atlas); }
+.fonte-tag.observa  { background: var(--observa); }
+.fonte-tag.smamus   { background: var(--observa); }
+
+/* === KPIs === */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6em;
+  margin: 1em 0;
+}
+.kpi {
+  background: var(--soft);
+  border-left: 4px solid var(--secondary);
+  padding: 0.7em 0.9em;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.78em;
+}
+.kpi .label {
+  font-size: 0.85em;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.kpi .value {
+  font-size: 1.85em;
+  font-weight: 800;
+  color: var(--primary);
+  display: block;
+  line-height: 1.1;
+}
+.kpi .sub {
+  font-size: 0.85em;
+  color: #64748b;
+  display: block;
+}
+
+.kpi-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.kpi-grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+/* === Cards === */
+.fonte-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 0 6px 6px 0;
+  padding: 0.7em 1em;
+  margin: 0.5em 0;
+  font-size: 0.82em;
+}
+.fonte-card.datasus { border-left-color: var(--datasus); }
+.fonte-card.ibge    { border-left-color: var(--ibge); }
+.fonte-card.atlas   { border-left-color: var(--atlas); }
+.fonte-card.observa { border-left-color: var(--observa); }
+.fonte-card h4 {
+  margin: 0 0 0.3em;
+  color: var(--text-strong);
+  font-size: 1.05em;
+}
+.fonte-card p {
+  margin: 0.2em 0;
+  color: var(--text-soft);
+}
+.fonte-card .url {
+  font-size: 0.78em;
+  color: var(--secondary);
+  font-family: ui-monospace, monospace;
+  word-break: break-all;
+}
+
+.exemplo {
+  background: var(--soft);
+  border-left: 4px solid var(--secondary);
+  padding: 0.7em 1em;
+  margin: 0.5em 0;
+  border-radius: 0 4px 4px 0;
+  font-size: 0.75em;
+}
+.exemplo .src {
+  display: block;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.3em;
+  font-size: 1.05em;
+}
+.exemplo code {
+  font-size: 0.85em;
+  display: block;
+  padding: 0.4em 0.6em;
+  background: white;
+  border-radius: 4px;
+  line-height: 1.5;
+}
+
+/* === Divisores === */
+section.divisor {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+}
+section.divisor h1 { color: white; font-size: 2.6em; }
+section.divisor .sub {
+  font-size: 0.85em;
+  opacity: 0.9;
+  margin-top: 1em;
+}
+
+.mermaid {
+  background: white;
+  border-radius: 6px;
+  padding: 0.5em;
+  margin: 0.5em auto;
+  text-align: center;
+}
+
+.warning {
+  background: #fef3c7;
+  border-left: 4px solid #b45309;
+  padding: 0.5em 0.8em;
+  margin: 0.5em 0;
+  border-radius: 0 4px 4px 0;
+  font-size: 0.78em;
+}
+.warning strong { color: #92400e; }
+
+.info {
+  background: var(--primary-soft);
+  border-left: 4px solid var(--primary);
+  padding: 0.5em 0.8em;
+  margin: 0.5em 0;
+  border-radius: 0 4px 4px 0;
+  font-size: 0.78em;
+}
+
+.eixos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6em;
+  margin: 0.5em 0;
+}
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ====== CAPA ====== -->
+<section class="cover">
+  <h1>Base de Dados</h1>
+  <h3 style="color: var(--secondary); margin-bottom: 0.4em;">
+    Fontes integradas e recorte do estudo
+  </h3>
+
+  <div class="descricao">
+    <strong>6 fontes públicas</strong> de microdados sobre saúde e demografia,
+    integradas via pipeline reprodutível para análise do
+    <strong>Rio Grande do Sul</strong> — 497 municípios e
+    94 bairros de Porto Alegre.
+  </div>
+
+  <div class="institucional">
+    DataSUS-RS · UFRGS · NF01006 — Projeto de Banco de Dados
+  </div>
+</section>
+
+<!-- ====== DOMÍNIO ====== -->
+<section>
+  <h2>📍 Recorte do estudo</h2>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <span class="label">Estado</span>
+      <span class="value">RS</span>
+      <span class="sub">Rio Grande do Sul · UF 43</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Municípios</span>
+      <span class="value">497</span>
+      <span class="sub">Total IBGE Censo 2022</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Bairros POA</span>
+      <span class="value">94</span>
+      <span class="sub">Lei Complementar 12.112/2016</span>
+    </div>
+    <div class="kpi">
+      <span class="label">População RS</span>
+      <span class="value">10.88M</span>
+      <span class="sub">Censo 2022 (10.882.965)</span>
+    </div>
+  </div>
+
+  <div style="margin-top: 1em;">
+    <h3 style="margin-bottom: 0.3em;">Janela temporal</h3>
+    <ul style="font-size: 0.85em;">
+      <li><strong>Alvo:</strong> 2020-01 → 2026-05 (5+ anos)</li>
+      <li><strong>Atual (samples):</strong> 2022, 2024, 2025 — competências
+          esparsas pela limitação do catálogo pysus 2.1</li>
+      <li><strong>Roadmap:</strong> ingestão completa via bypass FTP DataSUS
+          (planejada — F0.1)</li>
+    </ul>
+  </div>
+
+  <p style="font-size: 0.78em; color: #64748b; margin-top: 0.8em;">
+    Por que RS? Escala compatível com análise single-machine (~10 GB),
+    população urbana diversa, indicadores de saúde acima da média BR e
+    perfil epidemiológico singular (alta mortalidade por suicídio rural).
+  </p>
+</section>
+
+<!-- ====== DIVISOR FONTES ====== -->
+<section class="divisor">
+  <h1>6 fontes integradas</h1>
+  <div class="sub">DataSUS + IBGE + Atlas Brasil + ObservaPOA + SMAMUS</div>
+</section>
+
+<!-- ====== DATASUS ====== -->
+<section>
+  <h2><span class="fonte-tag datasus">DataSUS</span> Microdados de saúde do MS</h2>
+  <p style="font-size: 0.85em; color: #475569; margin-top: -0.5em;">
+    6 sistemas integrados via biblioteca <code>pysus</code> da Fiocruz.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Sistema</th><th>O que registra</th><th>Granularidade</th><th>Tipos</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>SIH</strong></td>
+        <td>Internações pagas pelo SUS (AIH)</td>
+        <td>mensal × UF × hospital</td>
+        <td>4 (RD · SP · RJ · ER)</td>
+      </tr>
+      <tr>
+        <td><strong>CNES</strong></td>
+        <td>Cadastro de estabelecimentos de saúde</td>
+        <td>mensal × estabelecimento</td>
+        <td>13 (ST · LT · PF · HB · SR…)</td>
+      </tr>
+      <tr>
+        <td><strong>SIM</strong></td>
+        <td>Declaração de Óbito — universo total</td>
+        <td>anual × UF</td>
+        <td>1 (DO)</td>
+      </tr>
+      <tr>
+        <td><strong>SIA</strong></td>
+        <td>Produção ambulatorial</td>
+        <td>mensal × UF</td>
+        <td>4 (PA · BI · PS · SAD)</td>
+      </tr>
+      <tr>
+        <td><strong>SINASC</strong></td>
+        <td>Declaração de Nascido Vivo</td>
+        <td>anual × UF</td>
+        <td>1 (DN)</td>
+      </tr>
+      <tr>
+        <td><strong>SINAN</strong></td>
+        <td>Agravos de notificação compulsória</td>
+        <td>anual × Brasil</td>
+        <td>58 doenças (DENG · CHIK · ZIKA…)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="font-size: 0.78em; color: #64748b; margin-top: 0.6em;">
+    Total: <strong>81 tipos de tabela</strong> diferentes. Histórico: SIH desde 1992,
+    SIM desde 1979, CNES desde 2000.
+  </p>
+</section>
+
+<!-- ====== FONTES AUXILIARES ====== -->
+<section>
+  <h2>Fontes auxiliares — denominadores e contexto</h2>
+
+  <div class="fonte-card ibge">
+    <h4><span class="fonte-tag ibge">IBGE</span> Censo Demográfico 2022 · Malha municipal</h4>
+    <p><strong>O que:</strong> população por município · shapefile dos 497 polígonos do RS</p>
+    <p><strong>Para que:</strong> denominador das taxas per capita; mapas coropléticos</p>
+    <p class="url">servicodados.ibge.gov.br/api/v3/agregados/4709 (SIDRA REST API)</p>
+  </div>
+
+  <div class="fonte-card atlas">
+    <h4><span class="fonte-tag atlas">Atlas Brasil 2010</span> IDHM e renda · PNUD/IPEA/FJP</h4>
+    <p><strong>O que:</strong> IDHM, IDHM-renda/educação/longevidade, renda per capita, Gini, % pobreza</p>
+    <p><strong>Para que:</strong> contexto socioeconômico — Silêncio Epidemiológico</p>
+    <p class="url">atlasbrasil.org.br (CSV bruto via github.com/mauriciocramos/IDHM)</p>
+  </div>
+
+  <div class="fonte-card observa">
+    <h4><span class="fonte-tag observa">ObservaPOA</span> Censo 2022 por bairro · SMPAE/PMPA</h4>
+    <p><strong>O que:</strong> população dos 94 bairros oficiais de Porto Alegre (Censo 2022)</p>
+    <p><strong>Para que:</strong> denominador per capita das métricas intra-municipais</p>
+    <p class="url">prefeitura.poa.br/smpae/observapoa/mapas (CSV oficial)</p>
+  </div>
+
+  <div class="fonte-card observa">
+    <h4><span class="fonte-tag smamus">SMAMUS/PMPA</span> Shapefile dos bairros · ArcGIS REST</h4>
+    <p><strong>O que:</strong> polígonos dos 94 bairros oficiais (Lei Complementar 12.112/2016)</p>
+    <p><strong>Para que:</strong> mapas coropléticos do POA Bairros</p>
+    <p class="url">gis-smamus.portoalegre.rs.gov.br/server/rest/services/A02_SOLO_CRIADO/bairros</p>
+  </div>
+</section>
+
+<!-- ====== DIAGRAMA ER ====== -->
+<section>
+  <h2>Modelagem — relacionamentos entre fontes</h2>
+  <p style="font-size: 0.82em; color: #475569; margin-top: -0.5em;">
+    CNES é o eixo central (chave de estabelecimento); município IBGE é a chave geográfica universal.
+  </p>
+
+  <div class="mermaid">
+erDiagram
+    SIH_RD {
+        bigint N_AIH PK
+        string CNES FK
+        string MUNIC_RES FK
+        string DIAG_PRINC
+        int MORTE
+    }
+    CNES_ST {
+        string CNES PK
+        string CODUFMUN FK
+        string TP_UNID
+    }
+    SIM_DO {
+        string CODESTAB FK
+        string CODMUNRES FK
+        date DTOBITO
+        string CAUSABAS
+    }
+    IBGE_MUNICIPIO {
+        string cod6 PK
+        string nome
+        int populacao
+    }
+    SIH_RD ||--o{ SIH_SP : "N_AIH"
+    SIH_RD }o--|| CNES_ST : "CNES"
+    SIA_PA }o--|| CNES_ST : "PA_CODUNI"
+    SIM_DO }o--o| CNES_ST : "CODESTAB"
+    SINASC_DN }o--o| CNES_ST : "CODESTAB"
+    SINAN }o--|| CNES_ST : "ID_UNIDADE"
+    SIH_RD }o--|| IBGE_MUNICIPIO : "MUNIC_RES"
+    SIM_DO }o--|| IBGE_MUNICIPIO : "CODMUNRES"
+    CNES_ST }o--|| IBGE_MUNICIPIO : "CODUFMUN"
+    IBGE_MUNICIPIO ||--|| ATLAS_IDHM : "cod6"
+  </div>
+</section>
+
+<!-- ====== VOLUME ====== -->
+<section>
+  <h2>📦 Volume de dados</h2>
+
+  <h3>Por sistema (projeção 2020-2026 RS)</h3>
+  <table>
+    <thead>
+      <tr><th>Tabela</th><th style="text-align:right">Linhas/mês</th><th style="text-align:right">Total 5 anos</th><th style="text-align:right">Parquet</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>SIH.RD (AIH Reduzida)</td><td style="text-align:right">~70k</td><td style="text-align:right">~5M</td><td style="text-align:right">~500 MB</td></tr>
+      <tr><td>SIH.SP (Serviços Prof.)</td><td style="text-align:right">~1M</td><td style="text-align:right">~120M</td><td style="text-align:right">~7 GB</td></tr>
+      <tr><td>CNES.ST (Estabel.)</td><td style="text-align:right">~40k</td><td style="text-align:right">~5M</td><td style="text-align:right">~200 MB</td></tr>
+      <tr><td>CNES.PF (Profission.)</td><td style="text-align:right">~400k</td><td style="text-align:right">~48M</td><td style="text-align:right">~2.3 GB</td></tr>
+      <tr><td>SIM.DO (anual)</td><td style="text-align:right">—</td><td style="text-align:right">~500k</td><td style="text-align:right">~55 MB</td></tr>
+      <tr><td>SINASC.DN (anual)</td><td style="text-align:right">—</td><td style="text-align:right">~700k</td><td style="text-align:right">~40 MB</td></tr>
+      <tr><td>SINAN (58 doenças BR)</td><td style="text-align:right">—</td><td style="text-align:right">~150M</td><td style="text-align:right">~5 GB</td></tr>
+    </tbody>
+  </table>
+
+  <div class="kpi-grid-3" style="margin-top: 1em;">
+    <div class="kpi">
+      <span class="label">Total estimado</span>
+      <span class="value">~10 GB</span>
+      <span class="sub">Parquet RS 2020-2026</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Linhas projetadas</span>
+      <span class="value">~330M</span>
+      <span class="sub">Todas as tabelas</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Atual (samples)</span>
+      <span class="value">~422k</span>
+      <span class="sub">No silver hoje</span>
+    </div>
+  </div>
+</section>
+
+<!-- ====== DICIONÁRIO ====== -->
+<section>
+  <h2>📚 Dicionário de dados</h2>
+  <p style="font-size: 0.85em; color: #475569; margin-top: -0.5em;">
+    6 dicionários completos coluna-a-coluna, consolidados em
+    <code>docs/dicionario_dados.html</code> com TOC sidebar.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Sistema</th><th style="text-align:right">Colunas</th><th>Destaque</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>SIH.RD</strong></td>
+        <td style="text-align:right">~113</td>
+        <td>Diagnóstico, procedimento, valores, desfecho, demografia</td>
+      </tr>
+      <tr>
+        <td><strong>CNES.ST</strong></td>
+        <td style="text-align:right">~208</td>
+        <td>Tipologia, esfera, leitos, equipamentos, comissões (12 tipos)</td>
+      </tr>
+      <tr>
+        <td><strong>SIM.DO</strong></td>
+        <td style="text-align:right">~87</td>
+        <td>Causa básica, local de óbito, demografia, atestante, investigação</td>
+      </tr>
+      <tr>
+        <td><strong>SIA.PA</strong></td>
+        <td style="text-align:right">~61</td>
+        <td>Procedimento ambulatorial, valor, executor, CBO</td>
+      </tr>
+      <tr>
+        <td><strong>SINASC.DN</strong></td>
+        <td style="text-align:right">~85</td>
+        <td>Mãe, gestação, parto, Apgar, Robson, anomalias</td>
+      </tr>
+      <tr>
+        <td><strong>SINAN (núcleo)</strong></td>
+        <td style="text-align:right">~25 base</td>
+        <td>+ específicas por doença (até 150 por agravo)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info" style="margin-top: 0.7em;">
+    📝 Cada dicionário inclui: tipo, descrição, domínio, exemplos e
+    <strong>caveats de uso</strong> (pegadinhas como <code>SEXO=3</code> ser feminino no SIH).
+  </div>
+</section>
+
+<!-- ====== EXEMPLOS DE REGISTROS ====== -->
+<section>
+  <h2>Exemplos de registros reais</h2>
+
+  <div class="exemplo">
+    <span class="src">SIH.RD — AIH Reduzida (1 internação)</span>
+    <code>N_AIH=4324104486889 · CNES=2246767 · MUNIC_RES=431660 · SEXO=3 · DIAG_PRINC=O021 · DT_INTER=20240621 · DT_SAIDA=20240622 · DIAS_PERM=1 · MORTE=0 · VAL_TOT=187.62</code>
+  </div>
+
+  <div class="exemplo">
+    <span class="src">CNES.ST — Estabelecimento</span>
+    <code>CNES=2261235 · CODUFMUN=430003 · TP_UNID=02 (UBS) · ESFERA_A=M (municipal) · VINC_SUS=1 · COMPETEN=202602 · NAT_JUR=1244 (admin direta)</code>
+  </div>
+
+  <div class="exemplo">
+    <span class="src">SIM.DO — Declaração de óbito</span>
+    <code>DTOBITO=01012024 · IDADE=470 (70 anos) · SEXO=1 (masc) · RACACOR=1 (branca) · CODMUNRES=430690 · LOCOCOR=1 (hospital) · CODESTAB=2234432 · CAUSABAS=C349 (câncer pulmão)</code>
+  </div>
+
+  <div class="exemplo">
+    <span class="src">IBGE Censo 2022 — município + IDHM Atlas 2010</span>
+    <code>cod6=430003 · nome=Aceguá · populacao=4170 · idhm=0.687 · renda_per_capita=633.63 · gini=0.53</code>
+  </div>
+</section>
+
+<!-- ====== CONVENÇÕES E PEGADINHAS ====== -->
+<section>
+  <h2>⚠️ Convenções e pegadinhas</h2>
+  <p style="font-size: 0.85em; color: #475569; margin-top: -0.5em;">
+    Documentadas nos dicionários — divergências entre sistemas causam viés se ignoradas.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Item</th><th>Detalhe</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Formato de data</strong></td>
+        <td>SIH/SINAN: <code>YYYYMMDD</code> · SIM/SINASC: <code>DDMMYYYY</code> — strings, não datas</td>
+      </tr>
+      <tr>
+        <td><strong>Sexo divergente</strong></td>
+        <td>SIH: <code>1=M, 3=F</code> · SIM/SINASC/SINAN: <code>1=M, 2=F</code></td>
+      </tr>
+      <tr>
+        <td><strong>Idade codificada</strong></td>
+        <td>SIM/SINAN: 4 dígitos, 1º = unidade (4=anos, 3=meses, 2=dias)</td>
+      </tr>
+      <tr>
+        <td><strong>Município IBGE</strong></td>
+        <td>DataSUS: 6 dígitos (sem DV) · Shapefiles: 7 (com DV) — trunca/calcula</td>
+      </tr>
+      <tr>
+        <td><strong>CNS ofuscado</strong></td>
+        <td>Microdados públicos não permitem linkage determinístico de pessoa</td>
+      </tr>
+      <tr>
+        <td><strong>Lag temporal</strong></td>
+        <td>SIH ~2 meses · SIM ~1 ano · CNES mensal</td>
+      </tr>
+      <tr>
+        <td><strong>Subnotificação</strong></td>
+        <td>SIM ~5% no Sul, &gt;15% no Norte · causas externas subreportadas em SIH</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ====== ÉTICA ====== -->
+<section>
+  <h2>🔒 Aspectos éticos</h2>
+
+  <div class="eixos-grid">
+    <div class="fonte-card datasus">
+      <h4>Dados públicos e abertos</h4>
+      <p>Microdados sem identificadores diretos — uso autorizado por
+      Lei Federal e Portaria GM/MS 1.583/2012.</p>
+    </div>
+
+    <div class="fonte-card datasus">
+      <h4>CNS sempre ofuscado</h4>
+      <p>Cartão Nacional de Saúde não permite linkage exato em microdados
+      públicos — usamos chaves agregadas (CNES, município, IBGE 6 dígitos).</p>
+    </div>
+
+    <div class="fonte-card atlas">
+      <h4>Resoluções CNS 466/2012 e 510/2016</h4>
+      <p>Aplicam-se a publicações com dados secundários do SUS —
+      agregação obrigatória nos resultados.</p>
+    </div>
+
+    <div class="fonte-card atlas">
+      <h4>LGPD — categoria sensível</h4>
+      <p>Dados de saúde são "sensíveis" (art. 5º, II) — agregação obrigatória
+      em publicações; hash SHA-256 aplicado em F4 Rastreabilidade.</p>
+    </div>
+  </div>
+
+  <div class="info" style="margin-top: 0.8em;">
+    📌 Nenhum dado individualmente identificável é armazenado neste repositório.
+    Repositório aberto: <code>github.com/shmjade/datasus</code>
+  </div>
+</section>
+
+<!-- ====== RESUMO ====== -->
+<section>
+  <h2>🎯 Resumo executivo</h2>
+
+  <div class="kpi-grid-2">
+    <div class="kpi">
+      <span class="label">Fontes</span>
+      <span class="value">6</span>
+      <span class="sub">DataSUS · IBGE · Atlas Brasil · ObservaPOA · SMAMUS</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Sistemas DataSUS</span>
+      <span class="value">6</span>
+      <span class="sub">SIH · CNES · SIM · SIA · SINASC · SINAN</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Tipos de tabela</span>
+      <span class="value">81</span>
+      <span class="sub">4 SIH + 13 CNES + 4 SIA + 1 SIM + 1 SINASC + 58 SINAN</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Volume projetado</span>
+      <span class="value">~10 GB</span>
+      <span class="sub">Parquet RS 2020-2026 completo</span>
+    </div>
+  </div>
+
+  <table style="margin-top: 1em;">
+    <thead>
+      <tr><th style="width:25%">Dimensão</th><th>Valor</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Estado</strong></td><td>Rio Grande do Sul · UF 43</td></tr>
+      <tr><td><strong>Granularidades</strong></td><td>UF · meso/microrregião · município (497) · bairro POA (94) · estabelecimento · paciente</td></tr>
+      <tr><td><strong>Janela alvo</strong></td><td>2020-01 → 2026-05 (5+ anos)</td></tr>
+      <tr><td><strong>Documentação</strong></td><td>6 dicionários · guia de joins (3 tiers) · diagrama ER · ~280 colunas mapeadas</td></tr>
+      <tr><td><strong>Ética</strong></td><td>Dados públicos · CNS ofuscado · LGPD compliance · agregação obrigatória</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ====== FECHAMENTO ====== -->
+<section class="cover">
+  <h1 style="color: var(--primary);">Obrigada</h1>
+  <h3 style="color: var(--secondary);">Dúvidas sobre fontes, volume ou modelagem?</h3>
+
+  <div style="margin-top: 2em; font-size: 0.85em;">
+    <p>
+      <strong>Dicionário consolidado:</strong> docs/dicionario_dados.html<br>
+      <strong>Guia de joins:</strong> docs/joins_guia.md<br>
+      <strong>Dataset ML versionado:</strong> docs/dataset_ml_v1.md
+    </p>
+  </div>
+
+  <div class="institucional" style="margin-top: 3em;">
+    DataSUS-RS · UFRGS · NF01006 · 2026
+  </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: "default",
+  themeVariables: {
+    primaryColor: "#dbeafe",
+    primaryTextColor: "#0f172a",
+    primaryBorderColor: "#1e40af",
+    lineColor: "#475569",
+    fontFamily: "-apple-system, BlinkMacSystemFont, Inter, sans-serif",
+    fontSize: "13px",
+  },
+  flowchart: { useMaxWidth: true, htmlLabels: true },
+  er: { useMaxWidth: true },
+});
+
+Reveal.initialize({
+  hash: true,
+  controls: true,
+  progress: true,
+  center: false,
+  transition: "slide",
+  slideNumber: "c/t",
+  width: 1280,
+  height: 800,
+  margin: 0.05,
+  minScale: 0.4,
+  maxScale: 1.6,
+});
+
+Reveal.on("slidechanged", () => {
+  document.querySelectorAll(".mermaid").forEach(el => {
+    if (!el.getAttribute("data-processed")) {
+      mermaid.init(undefined, el);
+    }
+  });
+});
+</script>
+</body>
+</html>
