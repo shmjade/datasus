@@ -111,7 +111,11 @@ mix["municipio"] = pd.Categorical(
     mix["municipio"], categories=top20["municipio"].tolist(), ordered=True,
 )
 
-tab_abs, tab_pct = st.tabs(["Valores absolutos", "Composição percentual (100%)"])
+tab_abs, tab_pct, tab_cat = st.tabs([
+    "Valores absolutos",
+    "Composição percentual (100%)",
+    "Por categoria",
+])
 
 with tab_abs:
     fig = px.bar(
@@ -144,6 +148,39 @@ with tab_pct:
         "Mesmas barras, mas normalizadas em % do total de leitos do município. "
         "Mostra o perfil assistencial (ex.: alta % de UTI sugere hospital de referência)."
     )
+
+with tab_cat:
+    st.caption(
+        "Selecione uma categoria pra ver isoladamente os top 20 municípios. "
+        "Útil pra responder perguntas focadas — ex.: 'quem tem mais UTI?'"
+    )
+    cat_sel = st.selectbox(
+        "Categoria",
+        options=list(LABELS_CAT.values()),
+        index=0,   # UTI por padrão
+    )
+    # Volta o label pro nome da coluna original
+    col_sel = {v: k for k, v in LABELS_CAT.items()}[cat_sel]
+
+    cat_df = (
+        top20[["municipio", col_sel]]
+        .rename(columns={col_sel: "leitos"})
+        .sort_values("leitos", ascending=False)
+    )
+    fig = px.bar(
+        cat_df,
+        x="municipio", y="leitos",
+        labels={"municipio": "Município", "leitos": f"Leitos SUS — {cat_sel}"},
+        text="leitos",
+    )
+    fig.update_traces(
+        texttemplate="%{text:,.0f}",
+        textposition="outside",
+        marker_color="rgb(37,99,235)",   # azul forte consistente com a paleta
+    )
+    fig.update_xaxes(type="category", tickangle=-45)
+    fig.update_layout(height=520, showlegend=False)
+    st.plotly_chart(fig, use_container_width=True)
 
 # -- Tabela completa ---------------------------------------------------------
 st.subheader("Tabela completa")
