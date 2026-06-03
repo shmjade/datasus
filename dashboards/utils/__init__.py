@@ -20,9 +20,10 @@ def pergunta_box(pergunta: str) -> None:
             margin: 0.3em 0 1em;
             font-size: 1.05em;
             line-height: 1.45;
+            color: #0f172a;
         ">
             <strong style="color:#1e40af;">🔎 Pergunta norteadora:</strong>
-            <em>{pergunta}</em>
+            <em style="color:#0f172a;">{pergunta}</em>
         </div>
         """,
         unsafe_allow_html=True,
