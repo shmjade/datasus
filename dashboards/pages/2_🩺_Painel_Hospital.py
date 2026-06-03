@@ -102,6 +102,39 @@ if not rank.empty:
 
     # Funnel plot — volume × mortalidade com bandas de IC 95% (binomial)
     if len(rank) >= 5:
+        # Explicação ANTES do gráfico — funnel plot é técnico e exige contexto.
+        with st.expander("ℹ️ Como ler o funnel plot (Spiegelhalter, 2005)", expanded=True):
+            st.markdown("""
+            **O que é:** ferramenta clássica de comparação de hospitais usada
+            internacionalmente em auditoria de qualidade. Cada ponto = 1 hospital.
+
+            **Os 3 elementos visuais:**
+
+            - 🔘 **Pontos** — cada hospital. Eixo X = volume de internações (log).
+              Eixo Y = sua taxa de mortalidade.
+            - ➖ **Linha tracejada preta** — mortalidade **média** do conjunto de hospitais
+              no período. É o "esperado" se todos performassem igual.
+            - 🟫 **Banda cinza (IC 95%)** — intervalo de confiança 95% calculado pela
+              distribuição binomial. Hospitais **dentro da banda** estão dentro da
+              variação estatisticamente esperada pelo seu volume (hospitais pequenos
+              têm banda mais larga porque pouco volume → mais incerteza).
+
+            **Como interpretar:**
+
+            | Posição | Significa | Ação |
+            |---|---|---|
+            | Dentro da banda | Performance estatisticamente normal | Nada |
+            | **Acima** da banda | Mortalidade **maior** que esperada pro volume | 🔴 Investigar |
+            | **Abaixo** da banda | Mortalidade **menor** que esperada | 🟢 Estudar boas práticas |
+
+            **Cuidados:**
+
+            - Mortalidade bruta NÃO é ajustada por mix de casos (gravidade) — hospital
+              de referência terciária tende a aparecer alto.
+            - Filtre por CID específico (ex.: I21 = IAM) pra reduzir esse viés.
+            - 1 ponto fora da banda ≠ culpa: requer análise clínica caso a caso.
+            """)
+
         p_global = rank["mortes"].sum() / rank["internacoes"].sum()
         n_grid = np.linspace(10, rank["internacoes"].max(), 50)
         se = np.sqrt(p_global * (1 - p_global) / n_grid)
@@ -109,38 +142,100 @@ if not rank.empty:
         lower = (p_global - 1.96 * se).clip(0, 1)
 
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=n_grid, y=upper, line=dict(dash="dot", color="lightgray"),
-                                 name="IC 95% sup"))
-        fig.add_trace(go.Scatter(x=n_grid, y=lower, line=dict(dash="dot", color="lightgray"),
-                                 fill="tonexty", fillcolor="rgba(200,200,200,0.2)",
-                                 name="IC 95% inf"))
-        fig.add_trace(go.Scatter(x=[10, rank["internacoes"].max()],
-                                 y=[p_global, p_global],
-                                 mode="lines", line=dict(color="black", dash="dash"),
-                                 name=f"Média ({p_global:.2%})"))
-        cor = ["red" if c == cnes_sel else "steelblue" for c in rank["cnes"]]
-        size = [14 if c == cnes_sel else 7 for c in rank["cnes"]]
+        # Banda IC 95% (preenchida)
         fig.add_trace(go.Scatter(
-            x=rank["internacoes"], y=rank["mortalidade"],
-            mode="markers",
-            marker=dict(color=cor, size=size, line=dict(width=1, color="white")),
-            text=rank["cnes"].astype(str),
-            hovertemplate="CNES: %{text}<br>N: %{x:,}<br>Mort: %{y:.2%}<extra></extra>",
-            name="Hospital",
+            x=n_grid, y=upper,
+            line=dict(dash="dot", color="rgb(150,150,150)"),
+            name="Limite superior IC 95%",
+            hovertemplate="N=%{x:.0f}<br>Limite sup: %{y:.2%}<extra></extra>",
         ))
+        fig.add_trace(go.Scatter(
+            x=n_grid, y=lower,
+            line=dict(dash="dot", color="rgb(150,150,150)"),
+            fill="tonexty", fillcolor="rgba(200,200,200,0.25)",
+            name="Limite inferior IC 95%",
+            hovertemplate="N=%{x:.0f}<br>Limite inf: %{y:.2%}<extra></extra>",
+        ))
+        # Linha média
+        fig.add_trace(go.Scatter(
+            x=[10, rank["internacoes"].max()],
+            y=[p_global, p_global],
+            mode="lines",
+            line=dict(color="black", dash="dash", width=2),
+            name=f"Média do conjunto ({p_global:.2%})",
+            hovertemplate="Média: %{y:.2%}<extra></extra>",
+        ))
+
+        # Outliers: fora da banda
+        def _classify(row):
+            # interpola limite no volume desse hospital
+            n = row["internacoes"]
+            se_h = np.sqrt(p_global * (1 - p_global) / n)
+            sup = min(p_global + 1.96 * se_h, 1)
+            inf = max(p_global - 1.96 * se_h, 0)
+            if row["mortalidade"] > sup:
+                return "🔴 Acima do esperado"
+            if row["mortalidade"] < inf:
+                return "🟢 Abaixo do esperado"
+            return "🔘 Dentro do esperado"
+
+        rank = rank.copy()
+        rank["classe"] = rank.apply(_classify, axis=1)
+
+        COR_CLASSE = {
+            "🔴 Acima do esperado":    "rgb(220,38,38)",
+            "🟢 Abaixo do esperado":   "rgb(22,163,74)",
+            "🔘 Dentro do esperado":   "rgb(70,130,180)",
+        }
+        for classe, cor in COR_CLASSE.items():
+            sub = rank[rank["classe"] == classe]
+            if sub.empty:
+                continue
+            destaque = (sub["cnes"] == cnes_sel) if cnes_sel else None
+            sz = [14 if (cnes_sel and c == cnes_sel) else 9 for c in sub["cnes"]]
+            fig.add_trace(go.Scatter(
+                x=sub["internacoes"], y=sub["mortalidade"],
+                mode="markers",
+                marker=dict(
+                    color=cor, size=sz,
+                    line=dict(width=2 if cnes_sel else 1, color="white"),
+                ),
+                text=sub["cnes"].astype(str),
+                hovertemplate="CNES: %{text}<br>Internações: %{x:,}<br>Mortalidade: %{y:.2%}<extra></extra>",
+                name=f"{classe} ({len(sub)})",
+            ))
+
         fig.update_layout(
-            title="Funnel plot — volume × mortalidade hospitalar",
-            xaxis_title="Internações (log)",
-            yaxis_title="Mortalidade",
+            title=dict(
+                text="Funnel plot — Mortalidade × Volume<br>"
+                     "<sub>Pontos fora da banda cinza são estatisticamente diferentes da média do conjunto</sub>",
+                x=0.5,
+                xanchor="center",
+            ),
+            xaxis_title="Internações (escala log)",
+            yaxis_title="Taxa de mortalidade hospitalar",
             xaxis_type="log",
-            yaxis_tickformat=".0%",
-            height=500,
-            showlegend=False,
+            yaxis_tickformat=".1%",
+            height=560,
+            showlegend=True,
+            legend=dict(
+                orientation="v",
+                yanchor="top", y=1.0,
+                xanchor="left", x=1.02,
+                bgcolor="rgba(255,255,255,0.9)",
+                bordercolor="lightgray", borderwidth=1,
+            ),
+            hovermode="closest",
         )
         st.plotly_chart(fig, use_container_width=True)
+
+        # Caption com ação
+        n_acima = (rank["classe"].str.startswith("🔴")).sum()
+        n_abaixo = (rank["classe"].str.startswith("🟢")).sum()
         st.caption(
-            "Pontos fora das bandas (cinza) sugerem mortalidade significativamente "
-            "acima/abaixo da média do conjunto — candidatos a investigação."
+            f"**{n_acima} hospital(is) acima** do IC 95% (candidatos a investigação clínica) · "
+            f"**{n_abaixo} abaixo** (candidatos a estudo de boas práticas). "
+            "Selecione um CNES no filtro acima pra ver o ponto destacado em tamanho maior."
         )
 
 # -- Perfil do hospital selecionado ------------------------------------------
