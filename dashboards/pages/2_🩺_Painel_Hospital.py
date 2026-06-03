@@ -20,6 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from utils import pergunta_box  # noqa: E402
 from utils.queries import (  # noqa: E402
+    cids_disponiveis,
     get_conn,
     hospitais_disponiveis,
     hospitais_por_volume,
@@ -45,6 +46,11 @@ def _list_hospitais():
     return hospitais_disponiveis(_conn())
 
 
+@st.cache_data(ttl=300)
+def _list_cids():
+    return cids_disponiveis(_conn())
+
+
 @st.cache_data(ttl=60, show_spinner="Carregando ranking de hospitais...")
 def _ranking(d_min, d_max, cid):
     return hospitais_por_volume(_conn(), d_min, d_max, cid_prefix=cid, top_n=100)
@@ -62,7 +68,14 @@ with col_a:
 with col_b:
     d_max = st.date_input("Data fim", value=date(2026, 12, 31))
 with col_c:
-    cid_filter = st.text_input("Filtro CID (opcional)", "").strip().upper()
+    cids_disp = _list_cids()
+    cid_filter = st.selectbox(
+        "Filtro CID (3 chars)",
+        options=[""] + sorted(cids_disp),
+        index=0,
+        format_func=lambda c: "(todos)" if c == "" else c,
+        help="Lista carregada do gold — só CIDs com dado aparecem.",
+    )
 with col_d:
     hospitais = _list_hospitais()
     if not hospitais:

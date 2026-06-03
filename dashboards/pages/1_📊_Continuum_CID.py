@@ -61,11 +61,13 @@ with col_b:
     d_max = st.date_input("Data fim", value=date(2026, 12, 31))
 with col_c:
     cids_disp = _cids()
-    cid_filter = st.text_input(
-        "Filtro CID (prefixo, ex: I21, J18)",
-        value="",
-        help=f"Top CIDs disponíveis: {', '.join(cids_disp[:10]) if cids_disp else '—'}",
-    ).strip().upper()
+    cid_filter = st.selectbox(
+        "Filtro CID (3 chars)",
+        options=[""] + sorted(cids_disp),
+        index=0,
+        format_func=lambda c: "(todos)" if c == "" else c,
+        help="Lista carregada do gold/continuum_cid_mes — só CIDs com dado aparecem.",
+    )
 
 
 if d_min > d_max:
