@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DataSUS RS — NF01006 | UFRGS</title>
+
+<!-- Reveal.js via CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css" id="theme">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+
+<!-- Mermaid pra diagramas ER + fluxo -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.min.js"></script>
+
+<style>
+:root {
+  --primary: #1e40af;
+  --secondary: #0891b2;
+  --accent: #dc2626;
+  --soft: #f1f5f9;
+  --border: #cbd5e1;
+  --text-strong: #0f172a;
+}
+.reveal {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  font-size: 26px;
+  color: #1f2937;
+}
+.reveal h1, .reveal h2, .reveal h3 {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
+  text-transform: none;
+  text-shadow: none;
+}
+.reveal h1 { font-size: 2.4em; }
+.reveal h2 { font-size: 1.7em; color: var(--primary); }
+.reveal h3 { font-size: 1.3em; color: var(--secondary); }
+
+.reveal .slides section {
+  text-align: left;
+  padding: 0 40px;
+}
+.reveal section.cover { text-align: center; }
+
+.reveal table {
+  margin: 0.5em auto;
+  font-size: 0.78em;
+  border-collapse: collapse;
+}
+.reveal table th, .reveal table td {
+  padding: 0.4em 0.8em;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+.reveal table th { background: var(--soft); }
+
+.reveal code {
+  background: var(--soft);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
+.reveal pre {
+  font-size: 0.6em;
+  width: 100%;
+  box-shadow: none;
+}
+
+.reveal ul, .reveal ol {
+  display: block;
+  margin: 0.5em 0 0.5em 1em;
+}
+.reveal li {
+  margin: 0.4em 0;
+  line-height: 1.4;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--primary);
+  color: white;
+  padding: 0.15em 0.6em;
+  border-radius: 4px;
+  font-size: 0.75em;
+  margin: 0.1em 0.2em;
+  font-weight: 500;
+}
+.tag.accent { background: var(--accent); }
+.tag.secondary { background: var(--secondary); }
+.tag.muted { background: #94a3b8; }
+
+.kpi {
+  display: inline-block;
+  background: var(--soft);
+  border-left: 4px solid var(--secondary);
+  padding: 0.6em 1em;
+  margin: 0.3em;
+  border-radius: 0 4px 4px 0;
+  min-width: 180px;
+  vertical-align: top;
+}
+.kpi .label { font-size: 0.75em; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+.kpi .value { font-size: 1.6em; font-weight: 700; color: var(--primary); display: block; line-height: 1.1; }
+.kpi .sub { font-size: 0.7em; color: #64748b; }
+
+.subtitulo {
+  color: #64748b;
+  font-size: 0.6em;
+  margin-top: -0.5em;
+  margin-bottom: 1em;
+}
+
+.medallion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1em 0;
+  font-size: 0.85em;
+}
+.medallion .layer {
+  flex: 1;
+  background: var(--soft);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8em;
+  margin: 0 4px;
+  text-align: center;
+}
+.medallion .layer h4 {
+  margin: 0 0 0.4em;
+  color: var(--primary);
+}
+.medallion .layer.bronze { border-color: #b45309; background: #fef3c7; }
+.medallion .layer.silver { border-color: #6b7280; background: #f3f4f6; }
+.medallion .layer.gold { border-color: #ca8a04; background: #fef9c3; }
+.medallion .arrow { font-size: 1.5em; color: var(--primary); margin: 0 4px; }
+
+.fontes {
+  font-size: 0.55em;
+  color: #64748b;
+  margin-top: 2em;
+  border-top: 1px solid var(--border);
+  padding-top: 0.5em;
+}
+
+.mermaid {
+  background: white;
+  border-radius: 6px;
+  padding: 0.5em;
+  margin: 0.5em auto;
+  text-align: center;
+}
+
+.exemplo-card {
+  background: var(--soft);
+  border-left: 4px solid var(--secondary);
+  padding: 0.7em 1em;
+  margin: 0.6em 0;
+  border-radius: 0 4px 4px 0;
+  font-size: 0.78em;
+}
+.exemplo-card .src {
+  font-weight: 700;
+  color: var(--primary);
+  display: block;
+  margin-bottom: 0.3em;
+}
+.exemplo-card code {
+  font-size: 0.85em;
+  display: inline-block;
+}
+
+.dominio-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1em;
+  font-size: 0.82em;
+}
+.dominio-grid > div {
+  background: var(--soft);
+  padding: 0.8em 1em;
+  border-radius: 6px;
+}
+.dominio-grid h4 {
+  color: var(--primary);
+  margin: 0 0 0.4em;
+}
+
+.cover h1 { font-size: 2.6em; margin-bottom: 0.2em; }
+.cover .institucional { font-size: 0.8em; color: #64748b; margin-top: 2em; }
+.cover .pergunta {
+  background: var(--soft);
+  border-left: 6px solid var(--accent);
+  padding: 1em 1.5em;
+  margin: 2em auto;
+  text-align: left;
+  max-width: 700px;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+}
+
+.feature-card {
+  display: inline-block;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.6em 1em;
+  margin: 0.3em;
+  vertical-align: top;
+  width: 30%;
+  font-size: 0.78em;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+.feature-card h4 { color: var(--primary); margin: 0 0 0.3em; font-size: 1.1em; }
+.feature-card .icone { font-size: 1.4em; }
+
+.section-divider {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+  text-align: center;
+}
+.section-divider h1 {
+  color: white;
+  font-size: 3em;
+}
+.section-divider .num {
+  font-size: 5em;
+  font-weight: 900;
+  opacity: 0.3;
+  margin-bottom: -0.2em;
+}
+
+</style>
+</head>
+<body>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ========================================================== -->
+<!-- COVER -->
+<!-- ========================================================== -->
+<section class="cover">
+  <h1>DataSUS RS</h1>
+  <h3 style="color: var(--secondary); margin-bottom: 0.5em;">
+    Análise Integrada da Distribuição de Estabelecimentos<br>
+    e seu Impacto na Mortalidade Hospitalar
+  </h3>
+
+  <div class="pergunta">
+    Como a oferta de serviços de saúde no Rio Grande do Sul se traduz em
+    internações, custos e mortalidade — e <strong>onde estão as desigualdades</strong>?
+  </div>
+
+  <div class="institucional">
+    <strong>Jade Hatanaka</strong><br>
+    UFRGS · NF01006 — Projeto de Banco de Dados<br>
+    2026
+  </div>
+</section>
+
+<!-- ========================================================== -->
+<!-- DIVISOR 1 -->
+<!-- ========================================================== -->
+<section class="section-divider">
+  <div class="num">1</div>
+  <h1>Objetivo Geral</h1>
+</section>
+
+<section>
+  <h2>Objetivo geral</h2>
+
+  <p>
+    Construir uma <strong>plataforma de análise integrada</strong> de microdados
+    do DataSUS para o Rio Grande do Sul, capaz de:
+  </p>
+
+  <ol>
+    <li>
+      <strong>Diagnosticar</strong> iniquidades na distribuição de estabelecimentos
+      de saúde por município, região e bairro;
+    </li>
+    <li>
+      <strong>Quantificar</strong> o impacto dessa distribuição na mortalidade
+      hospitalar e em indicadores de saúde pública;
+    </li>
+    <li>
+      <strong>Disponibilizar</strong> dashboards interativos e um motor de decisão
+      em tempo real para apoio à gestão do SUS-RS.
+    </li>
+  </ol>
+
+  <h3 style="margin-top: 1em;">Objetivos específicos</h3>
+  <ul>
+    <li>Pipeline reprodutível de ingestão (pysus → bronze → silver → gold)</li>
+    <li>Camada analítica em DuckDB sobre Parquet</li>
+    <li>Dashboards Streamlit por nível geográfico (UF, município, bairro)</li>
+    <li>Motor Kafka de classificação de triagem (Manchester adaptado)</li>
+    <li>Modelo de ML para previsão de mortalidade hospitalar (em desenvolvimento)</li>
+  </ul>
+</section>
+
+<!-- ========================================================== -->
+<!-- DIVISOR 2 -->
+<!-- ========================================================== -->
+<section class="section-divider">
+  <div class="num">2</div>
+  <h1>Base de Dados</h1>
+</section>
+
+<!-- ===== Descrição do domínio ===== -->
+<section>
+  <h2>Descrição do domínio</h2>
+  <p class="subtitulo">Sistema Único de Saúde (SUS) — microdados públicos</p>
+
+  <div class="dominio-grid">
+    <div>
+      <h4>O que é o DataSUS</h4>
+      <p>Departamento de Informática do SUS (Ministério da Saúde), responsável pela
+      coleta, armazenamento e disseminação dos microdados gerados pelos sistemas
+      de informação em saúde do país.</p>
+    </div>
+
+    <div>
+      <h4>Quando surgiu</h4>
+      <p><strong>SIH</strong>: 1992 · <strong>SIM</strong>: 1979 ·
+      <strong>SINASC</strong>: 1990 · <strong>CNES</strong>: 2000 ·
+      <strong>SIA</strong>: 1994 · <strong>SINAN</strong>: 1993 (formato atual).
+      Maior base pública de saúde da América Latina.</p>
+    </div>
+
+    <div>
+      <h4>Quem produz cada registro</h4>
+      <p>Operadores administrativos nos próprios estabelecimentos, alimentando os
+      sistemas operacionais. <strong>Não é coleta amostral</strong>: cada AIH,
+      cada óbito e cada nascimento é um registro real obrigatório.</p>
+    </div>
+
+    <div>
+      <h4>Quem consome</h4>
+      <p>Gestores (MS, SES, SMS), auditoria, pesquisa acadêmica (Fiocruz, IPEA),
+      operadoras, mídia, controle social. Acesso livre via FTP do DataSUS e
+      ferramentas como <code>pysus</code>.</p>
+    </div>
+  </div>
+
+  <p style="margin-top: 1em; font-size: 0.8em;">
+    <strong>Princípio operativo:</strong> sistemas <em>transacionais</em> alimentam
+    bases <em>analíticas</em>. SIH é base de <strong>faturamento de AIH</strong>;
+    SIM é base de <strong>vigilância de óbitos</strong>; CNES é
+    <strong>cadastro vivo de estabelecimentos</strong>. Cada base reflete
+    sua finalidade primária — o que define seus pontos cegos.
+  </p>
+</section>
+
+<section>
+  <h2>Fontes integradas</h2>
+  <p class="subtitulo">Microdados públicos + denominadores demográficos + contexto socioeconômico</p>
+
+  <table>
+    <thead>
+      <tr><th>Fonte</th><th>Sistema</th><th>Granularidade</th><th>Uso</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="tag">SIH/SUS</span></td>
+        <td>Internações hospitalares (AIH)</td>
+        <td>mensal × UF × hospital</td>
+        <td>Volume, mortalidade, custos</td>
+      </tr>
+      <tr>
+        <td><span class="tag">CNES</span></td>
+        <td>Cadastro de estabelecimentos</td>
+        <td>mensal × estabelecimento</td>
+        <td>Tipologia, leitos, equipes, habilitações</td>
+      </tr>
+      <tr>
+        <td><span class="tag">SIM</span></td>
+        <td>Declaração de óbito</td>
+        <td>anual × UF</td>
+        <td>Mortalidade total (todos os locais)</td>
+      </tr>
+      <tr>
+        <td><span class="tag muted">SIA</span></td>
+        <td>Produção ambulatorial</td>
+        <td>mensal × UF</td>
+        <td>Atendimentos não-hospitalares</td>
+      </tr>
+      <tr>
+        <td><span class="tag muted">SINAN</span></td>
+        <td>Agravos de notificação</td>
+        <td>anual × Brasil</td>
+        <td>58 doenças notificáveis</td>
+      </tr>
+      <tr>
+        <td><span class="tag secondary">IBGE Censo 2022</span></td>
+        <td>População por município</td>
+        <td>município</td>
+        <td>Denominador per capita</td>
+      </tr>
+      <tr>
+        <td><span class="tag secondary">ObservaPOA</span></td>
+        <td>População por bairro POA</td>
+        <td>bairro</td>
+        <td>Granularidade intra-municipal</td>
+      </tr>
+      <tr>
+        <td><span class="tag secondary">Atlas Brasil 2010</span></td>
+        <td>IDHM, renda, Gini</td>
+        <td>município</td>
+        <td>Contexto socioeconômico</td>
+      </tr>
+      <tr>
+        <td><span class="tag secondary">SMAMUS/PMPA</span></td>
+        <td>Shapefile bairros POA</td>
+        <td>geo (94 bairros)</td>
+        <td>Visualização cartográfica</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="fontes">
+    Pipeline canônico via biblioteca <code>pysus</code> (Fiocruz); IBGE via API SIDRA; demais
+    via portais oficiais.
+  </div>
+</section>
+
+<section>
+  <h2>Volume de dados</h2>
+
+  <div style="text-align: center;">
+    <div class="kpi">
+      <span class="label">Datasets</span>
+      <span class="value">6</span>
+      <span class="sub">SIH, CNES, SIM, SIA, SINASC, SINAN</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Tipos / tabelas</span>
+      <span class="value">81</span>
+      <span class="sub">incluindo 58 doenças SINAN</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Municípios RS</span>
+      <span class="value">497</span>
+      <span class="sub">cobertura completa estadual</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Bairros POA</span>
+      <span class="value">94</span>
+      <span class="sub">Lei Complementar 12.112/2016</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Linhas SIH/SP / mês</span>
+      <span class="value">~1M</span>
+      <span class="sub">RS, serviços profissionais</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Volume projetado</span>
+      <span class="value">~10 GB</span>
+      <span class="sub">parquet, RS 2020-2026</span>
+    </div>
+  </div>
+
+  <p style="margin-top: 1.5em; font-size: 0.85em;">
+    <strong>Documentação:</strong> dicionários de dados completos para os 6 datasets, com
+    descrição coluna a coluna, domínios de valores e <em>caveats</em> de uso
+    (vide <code>docs/dicionario_dados.html</code>).
+  </p>
+</section>
+
+<!-- ===== Modelagem: ER ===== -->
+<section>
+  <h2>Modelagem — Relacionamentos entre fontes</h2>
+  <p class="subtitulo">CNES é o eixo central; município IBGE é a chave geográfica universal</p>
+
+  <div class="mermaid">
+erDiagram
+    SIH_RD {
+        bigint N_AIH PK
+        string CNES FK
+        string MUNIC_RES FK
+        string DIAG_PRINC
+        int MORTE
+        decimal VAL_TOT
+    }
+    CNES_ST {
+        string CNES PK
+        string CODUFMUN FK
+        string TP_UNID
+        string ESFERA_A
+    }
+    SIM_DO {
+        string CODESTAB FK
+        string CODMUNRES FK
+        date DTOBITO
+        string CAUSABAS
+        int LOCOCOR
+    }
+    IBGE_MUNICIPIO {
+        string cod6 PK
+        string nome
+        decimal idhm
+    }
+    SIH_RD ||--o{ SIH_SP : "N_AIH"
+    SIH_RD ||--o{ SIH_RJ : "N_AIH"
+    CNES_ST ||--o{ CNES_LT : "CNES_COMPETEN"
+    CNES_ST ||--o{ CNES_PF : "CNES_COMPETEN"
+    CNES_ST ||--o{ CNES_HB : "CNES_COMPETEN"
+    SIH_RD }o--|| CNES_ST : "CNES"
+    SIA_PA }o--|| CNES_ST : "PA_CODUNI"
+    SIM_DO }o--o| CNES_ST : "CODESTAB"
+    SINASC_DN }o--o| CNES_ST : "CODESTAB"
+    SINAN }o--|| CNES_ST : "ID_UNIDADE"
+    SIH_RD }o--|| IBGE_MUNICIPIO : "MUNIC_RES"
+    SIM_DO }o--|| IBGE_MUNICIPIO : "CODMUNRES"
+    SINASC_DN }o--|| IBGE_MUNICIPIO : "CODMUNRES"
+    CNES_ST }o--|| IBGE_MUNICIPIO : "CODUFMUN"
+    IBGE_MUNICIPIO ||--|| IBGE_POPULACAO : "cod6"
+    IBGE_MUNICIPIO ||--|| ATLAS_IDHM : "cod6"
+  </div>
+
+  <p style="font-size: 0.7em; color: #64748b;">
+    Joins determinísticos via CNES (estabelecimento) e código IBGE 6 dígitos (município).
+    Linkage de pessoa requer técnicas probabilísticas (CNS é ofuscado em microdados públicos).
+  </p>
+</section>
+
+<!-- ===== Modelagem: Fluxo de dados ===== -->
+<section>
+  <h2>Modelagem — Fluxo de dados (Pipeline)</h2>
+  <p class="subtitulo">Padrão Medallion + streaming Kafka pra decisão em tempo real</p>
+
+  <div class="mermaid">
+flowchart LR
+    subgraph EXT["Fontes externas"]
+        P[pysus / FTP DataSUS]
+        I[IBGE SIDRA API]
+        A[Atlas Brasil 2010]
+        O[ObservaPOA Censo 2022]
+    end
+
+    subgraph LAKE["Data Lake (Parquet)"]
+        B[(Bronze<br/>bruto + particionado)]
+        S[(Silver<br/>limpo + derivados)]
+        G[(Gold<br/>agregado)]
+    end
+
+    subgraph APP["Aplicação"]
+        ST[Streamlit<br/>13 dashboards]
+        K[Kafka<br/>triagem-eventos]
+        PG[(PostgreSQL<br/>alertas_risco)]
+    end
+
+    P -->|batch mensal| B
+    I -->|API| S
+    A -->|CSV| G
+    O -->|CSV| G
+    B -->|DuckDB COPY| S
+    S -->|DuckDB GROUP BY| G
+    G -->|read_parquet| ST
+    K -->|consumer| PG
+    PG -->|psycopg2| ST
+
+    style B fill:#fef3c7,stroke:#b45309
+    style S fill:#f3f4f6,stroke:#6b7280
+    style G fill:#fef9c3,stroke:#ca8a04
+  </div>
+</section>
+
+<!-- ===== Exemplos de registros ===== -->
+<section>
+  <h2>Exemplos — registros reais</h2>
+  <p class="subtitulo">Uma amostra de cada fonte (anonimizada / truncada)</p>
+
+  <div class="exemplo-card">
+    <span class="src">SIH.RD — AIH Reduzida (internação)</span>
+    <code>N_AIH=4324104486889 · CNES=2246767 · MUNIC_RES=431660 · NASC=19970530
+    · SEXO=3 · DIAG_PRINC=O021 · DT_INTER=20240621 · DT_SAIDA=20240622
+    · DIAS_PERM=1 · MORTE=0 · VAL_TOT=187.62</code>
+  </div>
+
+  <div class="exemplo-card">
+    <span class="src">CNES.ST — Estabelecimento</span>
+    <code>CNES=2261235 · CODUFMUN=430003 · TP_UNID=02 (UBS) · ESFERA_A=M (municipal)
+    · VINC_SUS=1 · COMPETEN=202602 · NAT_JUR=1244 (administração direta) ·
+    URGEMERG=0 · ATENDAMB=1</code>
+  </div>
+
+  <div class="exemplo-card">
+    <span class="src">SIM.DO — Declaração de Óbito</span>
+    <code>DTOBITO=01012024 · IDADE=470 (70 anos) · SEXO=1 (masculino)
+    · RACACOR=1 (branca) · CODMUNRES=430690 · LOCOCOR=1 (hospital)
+    · CODESTAB=2234432 · CAUSABAS=C349 (câncer pulmão) · NECROPSIA=2</code>
+  </div>
+
+  <div class="exemplo-card">
+    <span class="src">IBGE — Município + população</span>
+    <code>cod6=430003 · nome=Aceguá · populacao=4170 · idhm=0.687 · renda_per_capita=633.63</code>
+  </div>
+</section>
+
+<!-- ===== Dicionário de dados (estrutura) ===== -->
+<section>
+  <h2>Dicionário de dados — estrutura</h2>
+  <p class="subtitulo">~150 colunas em SIH.RD, ~208 em CNES.ST, ~87 em SIM.DO</p>
+
+  <table style="font-size: 0.75em;">
+    <thead>
+      <tr><th>Seção</th><th>Conteúdo</th><th>Exemplo</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Identificação</strong></td>
+        <td>Chaves primárias e estrangeiras</td>
+        <td><code>N_AIH</code>, <code>CNES</code>, <code>CGC_HOSP</code></td>
+      </tr>
+      <tr>
+        <td><strong>Competência</strong></td>
+        <td>Ano/mês de referência</td>
+        <td><code>ANO_CMPT</code>, <code>MES_CMPT</code></td>
+      </tr>
+      <tr>
+        <td><strong>Demografia</strong></td>
+        <td>Idade, sexo, raça, escolaridade, ocupação, naturalidade</td>
+        <td><code>SEXO</code>, <code>RACA_COR</code>, <code>COD_IDADE</code></td>
+      </tr>
+      <tr>
+        <td><strong>Diagnóstico</strong></td>
+        <td>CIDs principal + secundários (até 9)</td>
+        <td><code>DIAG_PRINC</code>, <code>DIAGSEC1..9</code></td>
+      </tr>
+      <tr>
+        <td><strong>Procedimento</strong></td>
+        <td>Códigos SIGTAP (solicitado, realizado)</td>
+        <td><code>PROC_SOLIC</code>, <code>PROC_REA</code></td>
+      </tr>
+      <tr>
+        <td><strong>Valores R$</strong></td>
+        <td>9 componentes financeiros</td>
+        <td><code>VAL_SH</code>, <code>VAL_SP</code>, <code>VAL_UTI</code>, <code>VAL_TOT</code></td>
+      </tr>
+      <tr>
+        <td><strong>Desfecho</strong></td>
+        <td>Morte, alta, transferência</td>
+        <td><code>MORTE</code>, <code>COBRANCA</code>, <code>CID_MORTE</code></td>
+      </tr>
+      <tr>
+        <td><strong>Gestão</strong></td>
+        <td>Esfera, complexidade, natureza jurídica</td>
+        <td><code>GESTAO</code>, <code>COMPLEX</code>, <code>NAT_JUR</code></td>
+      </tr>
+      <tr>
+        <td><strong>Caveats por coluna</strong></td>
+        <td>Domínios, convenções, vazios esperados, traps de uso</td>
+        <td>Ex: <code>SEXO=3</code> é feminino (não 2!)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top: 1em; font-size: 0.78em;">
+    📚 6 dicionários completos (SIH · CNES · SIA · SIM · SINASC · SINAN) em
+    <code>docs/dicionario_dados.html</code> — geração automatizada a partir
+    de markdown em <code>docs/</code>.
+  </p>
+</section>
+
+<!-- ===== Considerações relevantes ===== -->
+<section>
+  <h2>Outras informações relevantes</h2>
+
+  <h3>Convenções universais e pegadinhas</h3>
+  <table style="font-size: 0.74em;">
+    <thead>
+      <tr><th>Item</th><th>Detalhe</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Formato de datas</strong></td>
+        <td>SIH/SINAN: <code>YYYYMMDD</code> · SIM/SINASC: <code>DDMMYYYY</code> — sempre como string</td>
+      </tr>
+      <tr>
+        <td><strong>Sexo divergente</strong></td>
+        <td>SIH usa <code>1=M, 3=F</code>; SIM/SINASC/SINAN usam <code>1=M, 2=F</code></td>
+      </tr>
+      <tr>
+        <td><strong>Idade codificada</strong></td>
+        <td>SIM/SINAN: 4 dígitos, 1º = unidade (4=anos, 3=meses, 2=dias)</td>
+      </tr>
+      <tr>
+        <td><strong>Município IBGE 6 vs 7 dígitos</strong></td>
+        <td>DataSUS: 6 (sem DV). Shapefiles/geobr: 7 (com DV). Trunca/calcula</td>
+      </tr>
+      <tr>
+        <td><strong>CNS ofuscado</strong></td>
+        <td>Microdados públicos não permitem linkage determinístico de pessoa</td>
+      </tr>
+      <tr>
+        <td><strong>Lag temporal</strong></td>
+        <td>SIH ~2 meses · SIM ~1 ano · CNES mensal</td>
+      </tr>
+      <tr>
+        <td><strong>Subnotificação</strong></td>
+        <td>SIM: ~5% no Sul, &gt;15% no Norte · SIH: causas externas subreportadas</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top: 0.8em;">Aspectos éticos</h3>
+  <ul style="font-size: 0.8em;">
+    <li>Dados públicos, sem identificadores diretos — uso autorizado por Lei Federal</li>
+    <li>Resoluções <strong>CNS 466/2012 e 510/2016</strong> aplicam-se a publicações</li>
+    <li>LGPD: saúde é categoria sensível — agregação obrigatória em publicações</li>
+    <li>Hash SHA-256 aplicado em F4 para anonimização determinística</li>
+  </ul>
+</section>
+
+<!-- ========================================================== -->
+<!-- DIVISOR 3 -->
+<!-- ========================================================== -->
+<section class="section-divider">
+  <div class="num">3</div>
+  <h1>Metodologia</h1>
+</section>
+
+<section>
+  <h2>Arquitetura — Padrão Medallion</h2>
+  <p class="subtitulo">Camadas progressivas de refinamento, formato Parquet em todos os níveis</p>
+
+  <div class="medallion">
+    <div class="layer bronze">
+      <h4>🟫 Bronze</h4>
+      <strong>Dados brutos</strong><br>
+      <small>parquet do pysus<br>particionado uf/ano/mês</small>
+    </div>
+    <div class="arrow">→</div>
+    <div class="layer silver">
+      <h4>🥈 Silver</h4>
+      <strong>Limpo + tipado</strong><br>
+      <small>cid3 derivado, CSAP flag,<br>idade decodificada, datas parseadas</small>
+    </div>
+    <div class="arrow">→</div>
+    <div class="layer gold">
+      <h4>🥇 Gold</h4>
+      <strong>Agregado</strong><br>
+      <small>1 tabela por dashboard,<br>pré-computada, &lt;1 GB</small>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 1em;">Por que Parquet + DuckDB?</h3>
+  <ul style="font-size: 0.9em;">
+    <li><strong>Volume real do RS</strong> (~10 GB) cabe confortavelmente em
+        DuckDB single-node — <em>predicate pushdown</em> sobre parquet particionado</li>
+    <li><strong>Spark seria overkill</strong>: descartado após benchmark conceitual
+        (DuckDB 5-10× mais rápido em single-machine para essa escala)</li>
+    <li><strong>Streamlit</strong> consulta diretamente <em>gold</em> via DuckDB
+        — resposta sub-segundo com <code>@st.cache_data</code></li>
+  </ul>
+</section>
+
+<section>
+  <h2>Stack tecnológica</h2>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1em; font-size: 0.85em;">
+
+    <div>
+      <h3>Ingestão e processamento</h3>
+      <ul>
+        <li><span class="tag">pysus</span> ingestão DataSUS</li>
+        <li><span class="tag">DuckDB</span> SQL analítico</li>
+        <li><span class="tag">PyArrow</span> Parquet I/O</li>
+        <li><span class="tag muted">supercronic</span> agendador</li>
+      </ul>
+
+      <h3>Apresentação</h3>
+      <ul>
+        <li><span class="tag secondary">Streamlit</span> dashboards</li>
+        <li><span class="tag secondary">Plotly</span> gráficos interativos</li>
+        <li><span class="tag secondary">Folium</span> mapas coropléticos</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Streaming + persistência</h3>
+      <ul>
+        <li><span class="tag accent">Apache Kafka</span> mensageria</li>
+        <li><span class="tag accent">PostgreSQL</span> alertas estruturados</li>
+        <li><span class="tag muted">kafka-python</span> producer/consumer</li>
+      </ul>
+
+      <h3>Infraestrutura</h3>
+      <ul>
+        <li><span class="tag muted">Docker Compose</span> 8 serviços</li>
+        <li><span class="tag muted">Python 3.11</span> runtime único</li>
+        <li><span class="tag muted">Git + Conventional Commits</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Decisões metodológicas críticas</h2>
+
+  <table>
+    <thead>
+      <tr><th>Decisão</th><th>Por quê</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Granularidade de mortalidade por residência</strong> (não ocorrência)</td>
+        <td>Atribui responsabilidade à APS local; padrão epidemiológico</td>
+      </tr>
+      <tr>
+        <td><strong>Município IBGE 6 dígitos</strong> como chave geográfica universal</td>
+        <td>Compatível com SIH, SIM, IBGE, shapefiles — único elo determinístico</td>
+      </tr>
+      <tr>
+        <td><strong>CEP → bairro</strong> via lookup estático (POA)</td>
+        <td>99% cobertura sem dependência de API externa</td>
+      </tr>
+      <tr>
+        <td><strong>Hash SHA-256</strong> para anonimização de AIH</td>
+        <td>Determinístico (mesma AIH → mesmo hash) e irreversível</td>
+      </tr>
+      <tr>
+        <td><strong>Causas externas excluídas</strong> da análise de mortalidade evitável</td>
+        <td>Letalidade depende mais da gravidade do trauma do que do cuidado</td>
+      </tr>
+      <tr>
+        <td><strong>Critério Manchester Vermelho adaptado</strong>: SpO2&lt;90 OR Glasgow&lt;9 OR PAS&lt;80</td>
+        <td>Critérios objetivos universalmente aceitos em triagem</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========================================================== -->
+<!-- DIVISOR 4 -->
+<!-- ========================================================== -->
+<section class="section-divider">
+  <div class="num">4</div>
+  <h1>Questões<br>a serem analisadas</h1>
+</section>
+
+<section>
+  <h2>Questões norteadoras (1/2)</h2>
+
+  <div class="feature-card">
+    <span class="icone">🗺️</span>
+    <h4>Q1. Distribuição estadual</h4>
+    Onde estão os estabelecimentos por tipo? Há municípios sem UBS, hospital geral ou UPA?
+  </div>
+
+  <div class="feature-card">
+    <span class="icone">📉</span>
+    <h4>Q2. Mortalidade hospitalar</h4>
+    A taxa de mortalidade hospitalar varia significativamente entre municípios?
+  </div>
+
+  <div class="feature-card">
+    <span class="icone">🏨</span>
+    <h4>Q3. Capacidade per capita</h4>
+    Quantos municípios estão abaixo do parâmetro OMS de 3 leitos/1k hab?
+  </div>
+
+  <div class="feature-card">
+    <span class="icone">🔍</span>
+    <h4>Q4. Perfil por estabelecimento</h4>
+    Quais hospitais têm alta proporção de pacientes de outros municípios (hubs)?
+  </div>
+
+  <div class="feature-card">
+    <span class="icone">🔇</span>
+    <h4>Q5. Silêncio epidemiológico</h4>
+    Onde se combinam <strong>alta mortalidade</strong> e <strong>baixa oferta</strong> — e qual a correlação com IDHM?
+  </div>
+
+  <div class="feature-card">
+    <span class="icone">🚨</span>
+    <h4>Q6. Decisão em tempo real</h4>
+    Sistemas de alerta podem direcionar pacientes a unidades com leitos disponíveis em vizinhança?
+  </div>
+</section>
+
+<section>
+  <h2>Questões norteadoras (2/2)</h2>
+  <p class="subtitulo">Frentes em desenvolvimento</p>
+
+  <div class="feature-card">
+    <span class="icone">🚑</span>
+    <h4>Q7. Mortalidade evitável</h4>
+    Quantos óbitos no RS são <strong>evitáveis</strong> pela classificação PROADESS — e onde se concentram?
+  </div>
+
+  <div class="feature-card">
+    <span class="icone">🌾</span>
+    <h4>Q8. Iniquidade social</h4>
+    Como raça, escolaridade e ocupação se relacionam com mortalidade por causas específicas (suicídio rural, homicídios urbanos)?
+  </div>
+
+  <div class="feature-card">
+    <span class="icone">🎯</span>
+    <h4>Q9. Previsão de risco</h4>
+    Modelo ML pode estimar probabilidade de óbito hospitalar a partir de dados de admissão, com calibração e equidade entre subgrupos?
+  </div>
+
+  <div class="feature-card">
+    <span class="icone">🏙️</span>
+    <h4>Q10. Desigualdade intra-urbana</h4>
+    Em Porto Alegre, qual a variação da mortalidade entre os 94 bairros — e seu vínculo com renda?
+  </div>
+
+  <div class="feature-card">
+    <span class="icone">⚖️</span>
+    <h4>Q11. SIM vs SIH</h4>
+    A razão <em>óbitos SIM / mortes SIH</em> revela hospitais com forte presença não-SUS (mistos)?
+  </div>
+
+  <div class="feature-card">
+    <span class="icone">📊</span>
+    <h4>Q12. Continuum de cuidado</h4>
+    Para cada CID, qual a cascata: <em>consultas → internações → óbitos</em> por município?
+  </div>
+</section>
+
+<!-- ========================================================== -->
+<!-- DIVISOR 5 -->
+<!-- ========================================================== -->
+<section class="section-divider">
+  <div class="num">5</div>
+  <h1>Resultados<br>Preliminares</h1>
+</section>
+
+<section>
+  <h2>13 dashboards interativos</h2>
+
+  <table style="font-size: 0.78em;">
+    <thead>
+      <tr><th>#</th><th>Página</th><th>O que mostra</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>🏠</td><td>Home</td><td>Storytelling + cobertura de dados</td></tr>
+      <tr><td>📊</td><td>Continuum CID</td><td>Cascata por doença, top causas, série temporal</td></tr>
+      <tr><td>🩺</td><td>Painel Hospital</td><td>Casuística + funnel plot mortalidade × volume</td></tr>
+      <tr><td>🛏️</td><td>Leitos por Município</td><td>Capacidade por categoria funcional</td></tr>
+      <tr><td>🗺️</td><td>Mapa Mortalidade RS</td><td>11 métricas (absolutas + per capita) sobre 497 municípios</td></tr>
+      <tr><td>🏙️</td><td>POA Bairros</td><td>94 bairros, 7 métricas (CEP-bairro 99% cobertura)</td></tr>
+      <tr><td>🏢</td><td>F1 Distribuição Estab.</td><td>Vazios assistenciais por tipo de unidade</td></tr>
+      <tr><td>📉</td><td>F2 Mortalidade Município</td><td>Série temporal + mapa por município residência</td></tr>
+      <tr><td>🏨</td><td>F3 Leitos / 1.000 hab</td><td>Indicador OMS, comparativo top/bottom 30</td></tr>
+      <tr><td>🔍</td><td>F4 Rastreabilidade</td><td>Histórico anonimizado por CNES (hash SHA-256)</td></tr>
+      <tr><td>🔇</td><td>F5 Silêncio Epidemiológico</td><td>Folium + cruzamento IDHM Atlas Brasil</td></tr>
+      <tr><td>🚨</td><td>F6 Motor Decisão</td><td>Stream Kafka, Manchester Vermelho, recomendação</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Pipeline construído e validado</h2>
+
+  <div style="text-align: center;">
+    <div class="kpi">
+      <span class="label">Tabelas Silver</span>
+      <span class="value">4</span>
+      <span class="sub">sih_rd · cnes_st · cnes_lt · sim_do</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Tabelas Gold</span>
+      <span class="value">5</span>
+      <span class="sub">agregações pré-computadas</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Linhas no Silver</span>
+      <span class="value">~422k</span>
+      <span class="sub">com samples atuais</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Tempo médio query</span>
+      <span class="value">&lt;100ms</span>
+      <span class="sub">com cache, em laptop M1</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Stream F6</span>
+      <span class="value">20/20</span>
+      <span class="sub">eventos vermelhos processados</span>
+    </div>
+    <div class="kpi">
+      <span class="label">Recomendações por alerta</span>
+      <span class="value">3</span>
+      <span class="sub">no município + vizinhos</span>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 1.5em;">F6 validado em produção local</h3>
+  <pre><code class="language-bash">$ docker compose run --rm streamlit \
+    python -m pipelines.stream.triagem_producer --n 20 --all-red
+🔴 evento 1/20 mun=430310 SpO2=98 Glasgow=15 PAS=79
+🔴 evento 2/20 mun=430700 SpO2=98 Glasgow=15 PAS=76
+... (20 eventos publicados em Kafka)
+
+$ psql -c "SELECT COUNT(*) FROM alertas_risco"
+ count
+-------
+    20</code></pre>
+</section>
+
+<section>
+  <h2>Documentação produzida</h2>
+
+  <ul style="font-size: 0.85em;">
+    <li>📚 <strong>6 dicionários de dados</strong> completos (SIH, CNES, SIA, SIM, SINASC, SINAN) consolidados em <code>docs/dicionario_dados.html</code></li>
+    <li>🔗 <strong>Guia de joins</strong> entre fontes — 3 tiers (estabelecimento, geografia, pessoa) com receitas SQL</li>
+    <li>🧭 <strong>Mapeamento de stakeholders</strong> por dashboard (SES-RS, SMS, diretores, auditoria)</li>
+    <li>📋 <strong>Planos de desenvolvimento</strong> documentados para: mortalidade evitável (PROADESS), modelo ML, análise de fluxo</li>
+    <li>⚙️ <strong>README operacional</strong> com comandos para reproduzir todo o pipeline</li>
+  </ul>
+
+  <h3 style="margin-top: 1em;">Reprodutibilidade</h3>
+  <pre><code class="language-bash">git clone $REPO && cd datasus
+docker compose up -d
+python scripts/seed_bronze_from_samples.py
+docker compose run --rm streamlit python -m pipelines.batch.silver.orchestrator
+docker compose run --rm streamlit python -m pipelines.batch.gold.orchestrator
+# Dashboard em http://localhost:8501</code></pre>
+</section>
+
+<!-- ========================================================== -->
+<!-- DIVISOR 6 -->
+<!-- ========================================================== -->
+<section class="section-divider">
+  <div class="num">6</div>
+  <h1>Resultados Finais<br>Esperados</h1>
+</section>
+
+<section>
+  <h2>Próximas entregas</h2>
+
+  <h3>Fase de consolidação de dados</h3>
+  <ul style="font-size: 0.85em;">
+    <li><strong>Backfill histórico SIH 2020-2025</strong> via bypass FTP do pysus
+        (catálogo atual tem ~12% cobertura de RD)</li>
+    <li><strong>Ingestão CNES histórica</strong> (snapshot mensal por estabelecimento)</li>
+    <li><strong>Ingestão SIM 2018-2024</strong></li>
+    <li><strong>Dataset ML versionado</strong> em <code>gold/ml_mortalidade_dataset/v1/</code></li>
+  </ul>
+
+  <h3>Fase analítica</h3>
+  <ul style="font-size: 0.85em;">
+    <li><strong>Dashboard de Mortalidade Evitável</strong> (classificação PROADESS, 5 grupos)</li>
+    <li><strong>Análise de fluxo de pacientes</strong> (matriz O-D, Sankey, hubs regionais)</li>
+    <li><strong>Modelo ML de mortalidade hospitalar</strong> — logística L1 + LightGBM calibrado, SHAP, verificação de equidade racial</li>
+    <li><strong>Comparativo SIH × SIM</strong> por hospital — razão como proxy de mix público-privado</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Hipóteses a confirmar</h2>
+
+  <table style="font-size: 0.78em;">
+    <thead>
+      <tr><th>Hipótese</th><th>Como será testada</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Há concentração de leitos SUS em municípios urbanos centrais (RMPA, Caxias, Pelotas, Santa Maria)</td>
+        <td>Coeficiente de Gini de leitos × município, ponderado por população</td>
+      </tr>
+      <tr>
+        <td>Municípios com IDHM baixo apresentam taxa de mortalidade hospitalar significativamente maior</td>
+        <td>Regressão linear (mortalidade ~ IDHM + leitos), correlação Pearson</td>
+      </tr>
+      <tr>
+        <td>Cerca de 30-35% dos óbitos no RS são <strong>evitáveis</strong> (literatura BR: Malta 2020)</td>
+        <td>Classificação PROADESS aplicada ao SIM/RS</td>
+      </tr>
+      <tr>
+        <td>Modelo ML alcança AUROC > 0.75 superando o score Charlson puro (~0.65)</td>
+        <td>Split temporal, calibração isotônica, comparação direta</td>
+      </tr>
+      <tr>
+        <td>"Silêncio epidemiológico" correlaciona com renda per capita &lt; mediana</td>
+        <td>Teste t entre municípios em silêncio vs demais (atlas Brasil)</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========================================================== -->
+<!-- DIVISOR 7 -->
+<!-- ========================================================== -->
+<section class="section-divider">
+  <div class="num">7</div>
+  <h1>Considerações</h1>
+</section>
+
+<section>
+  <h2>Limitações honestas</h2>
+
+  <h3>Dos dados</h3>
+  <ul style="font-size: 0.85em;">
+    <li>O catálogo do pysus 2.1 tem <strong>cobertura parcial de SIH/RD</strong> (~12% no janelado 2016-2026): mitigação via bypass FTP</li>
+    <li>SIM tem <strong>lag de ~1 ano</strong> — análises temporais nem sempre são <em>real-time</em></li>
+    <li>Ausência de <strong>CNS íntegro</strong> nos parquets do pysus impede linkage determinístico entre sistemas</li>
+    <li>Causas externas (V-Y) e óbitos domiciliares têm <strong>subnotificação variável</strong> por município</li>
+  </ul>
+
+  <h3>Do modelo ML (em desenvolvimento)</h3>
+  <ul style="font-size: 0.85em;">
+    <li>Dataset SIH cobre <strong>apenas SUS</strong> — viés de mix público-privado</li>
+    <li>Risco de <strong>auto-realização</strong> se modelo for usado clinicamente sem cautela</li>
+    <li>Auditoria de <strong>equidade racial</strong> obrigatória (raça é variável social, não biológica)</li>
+  </ul>
+
+  <h3>Do escopo</h3>
+  <ul style="font-size: 0.85em;">
+    <li>Recorte geográfico Rio Grande do Sul — generalização para outras UFs requer reexecução</li>
+    <li>Janela temporal limitada pela disponibilidade nos catálogos públicos</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Audiências e impacto potencial</h2>
+
+  <table style="font-size: 0.78em;">
+    <thead>
+      <tr><th>Stakeholder</th><th>Dashboard relevante</th><th>Decisão habilitada</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>SES-RS</strong> (gestão estadual)</td>
+        <td>Mapa RS, Silêncio Epidemiológico</td>
+        <td>Programação Pactuada Integrada (PPI), priorização</td>
+      </tr>
+      <tr>
+        <td><strong>SMS municipais</strong></td>
+        <td>F3 Leitos/1k, Continuum CID</td>
+        <td>Argumentar contratualizações, fortalecer APS</td>
+      </tr>
+      <tr>
+        <td><strong>Diretores hospitalares</strong></td>
+        <td>Painel Hospital, F4 Rastreabilidade</td>
+        <td>Plano de melhoria interno, benchmark</td>
+      </tr>
+      <tr>
+        <td><strong>Auditoria SUS (DENASUS)</strong></td>
+        <td>Funnel plot, F4</td>
+        <td>Identificar outliers para investigação</td>
+      </tr>
+      <tr>
+        <td><strong>SMS Porto Alegre</strong></td>
+        <td>POA Bairros</td>
+        <td>Planejamento intra-municipal de APS</td>
+      </tr>
+      <tr>
+        <td><strong>Pesquisa acadêmica</strong></td>
+        <td>Todos + dicionários abertos</td>
+        <td>Replicação metodológica em outras UFs</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Contribuições deste trabalho</h2>
+
+  <ol>
+    <li>
+      <strong>Pipeline reprodutível open-source</strong> para análise de microdados DataSUS,
+      com arquitetura medallion documentada e infraestrutura
+      em Docker Compose
+    </li>
+    <li>
+      <strong>13 dashboards interativos</strong> cobrindo do panorama estadual ao detalhe
+      intra-bairro, em narrativa coerente
+    </li>
+    <li>
+      <strong>Integração inédita</strong> SIH + CNES + SIM + IBGE + Atlas Brasil + ObservaPOA
+      em um único ambiente analítico
+    </li>
+    <li>
+      <strong>Motor de decisão prototípico</strong> baseado em Kafka + PostgreSQL, demonstrando
+      viabilidade de classificação Manchester com recomendação de unidades em tempo real
+    </li>
+    <li>
+      <strong>Documentação metodológica</strong> que pode ser reutilizada por gestores municipais,
+      pesquisadores e órgãos de controle
+    </li>
+  </ol>
+</section>
+
+<!-- ========================================================== -->
+<!-- ENCERRAMENTO -->
+<!-- ========================================================== -->
+<section class="cover">
+  <h1>Obrigada</h1>
+  <h3 style="color: var(--secondary);">Dúvidas e contribuições?</h3>
+
+  <div style="margin-top: 2em; font-size: 0.85em;">
+    <p>
+      <strong>Repositório:</strong> github.com/.../datasus<br>
+      <strong>Dashboards:</strong> http://localhost:8501<br>
+      <strong>Dicionário:</strong> docs/dicionario_dados.html
+    </p>
+  </div>
+
+  <div class="institucional" style="margin-top: 3em;">
+    Jade Hatanaka · UFRGS · NF01006 · 2026
+  </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+<script>
+// Mermaid: inicializa antes do Reveal pra que diagramas renderizem
+mermaid.initialize({
+  startOnLoad: true,
+  theme: "default",
+  themeVariables: {
+    primaryColor: "#dbeafe",
+    primaryTextColor: "#0f172a",
+    primaryBorderColor: "#1e40af",
+    lineColor: "#475569",
+    fontFamily: "-apple-system, BlinkMacSystemFont, Inter, sans-serif",
+    fontSize: "14px",
+  },
+  flowchart: { useMaxWidth: true, htmlLabels: true },
+  er: { useMaxWidth: true },
+});
+
+Reveal.initialize({
+  hash: true,
+  controls: true,
+  progress: true,
+  center: false,
+  transition: "slide",
+  slideNumber: "c/t",
+  width: 1280,
+  height: 800,
+  margin: 0.05,
+  minScale: 0.4,
+  maxScale: 1.6,
+  plugins: [ RevealHighlight, RevealNotes ],
+});
+
+// Re-renderiza mermaid quando muda de slide (workaround Reveal + Mermaid)
+Reveal.on("slidechanged", () => {
+  document.querySelectorAll(".mermaid").forEach(el => {
+    if (!el.getAttribute("data-processed")) {
+      mermaid.init(undefined, el);
+    }
+  });
+});
+</script>
+</body>
+</html>

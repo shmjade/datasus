@@ -5,10 +5,20 @@
 # --- Dados brutos e processados (nunca versionar dados grandes) ---
 data/raw/
 data/processed/
+data/lake/
+data/downloads/
+data/samples/
 *.parquet
-*.csv
 *.dbf
 *.dbc
+
+# CSVs em geral (gerados): bloqueia exceto data/ibge/
+*.csv
+!data/ibge/*.csv
+
+# Mas exclui os "raw" baixados (grandes, regeneráveis via scripts/download_*.py):
+data/ibge/idhm_brasil_raw.csv
+data/ibge/poa_pop_bairro_raw.csv
 
 # --- Ambiente Python ---
 __pycache__/
@@ -49,6 +59,11 @@ infra/volumes/
 # --- Logs ---
 *.log
 logs/
+
+# --- Docs auto-gerados (regenerar com scripts/gen_*.py; podem conter CNPJs reais) ---
+docs/data_dict.html
+docs/data_dict.json
+docs/datasets_dic.html
 
 # --- mypy ---
 .mypy_cache/

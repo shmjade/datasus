@@ -1,0 +1,5945 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dicionário de Dados — DataSUS</title>
+<style>
+:root {
+    --bg: #fdfdfd;
+    --text: #222;
+    --muted: #666;
+    --accent: #2563eb;
+    --code-bg: #f5f5f5;
+    --border: #e5e5e5;
+    --table-stripe: #fafafa;
+    --hl: #fff8c5;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 1rem; scroll-behavior: smooth; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.55;
+    font-size: 15px;
+}
+.layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 2.5rem;
+}
+nav.toc {
+    position: sticky;
+    top: 1rem;
+    align-self: start;
+    font-size: 13.5px;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    padding-right: 1rem;
+    border-right: 1px solid var(--border);
+}
+nav.toc h2 {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    margin: 0 0 0.6em;
+    border: none;
+    padding: 0;
+}
+nav.toc ol { list-style: none; padding-left: 0; margin: 0; }
+nav.toc li { margin: 0.45rem 0; }
+nav.toc a { color: var(--text); text-decoration: none; }
+nav.toc a:hover { color: var(--accent); }
+main { min-width: 0; }
+h1, h2, h3, h4, h5 {
+    line-height: 1.25;
+    margin-top: 1.8em;
+    margin-bottom: 0.6em;
+    font-weight: 600;
+}
+h1 {
+    font-size: 1.9em;
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 0.3em;
+    margin-top: 2em;
+}
+section > h1:first-child { margin-top: 0; }
+h2 {
+    font-size: 1.35em;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.2em;
+    margin-top: 2em;
+}
+h3 { font-size: 1.12em; }
+h4 { font-size: 1em; color: var(--muted); }
+code {
+    font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+    font-size: 0.88em;
+    background: var(--code-bg);
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+}
+pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 0.9em 1.1em;
+    overflow-x: auto;
+    line-height: 1.45;
+    font-size: 13px;
+}
+pre code { background: transparent; padding: 0; font-size: inherit; }
+table {
+    border-collapse: collapse;
+    margin: 1em 0;
+    font-size: 0.93em;
+    width: 100%;
+    table-layout: auto;
+}
+th, td {
+    text-align: left;
+    padding: 0.5em 0.8em;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+}
+th {
+    background: var(--code-bg);
+    font-weight: 600;
+}
+tr:nth-child(even) td { background: var(--table-stripe); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2.5em 0; }
+header.doc-header {
+    padding-bottom: 1.5em;
+    margin-bottom: 1.5em;
+    border-bottom: 1px solid var(--border);
+}
+header.doc-header h1 {
+    margin-top: 0;
+    border: none;
+    padding: 0;
+    font-size: 2em;
+}
+header.doc-header .meta {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 0.5em;
+}
+section { margin-bottom: 3em; padding-top: 0.5em; }
+blockquote {
+    border-left: 4px solid var(--accent);
+    margin: 1em 0;
+    padding: 0.5em 1em;
+    background: var(--code-bg);
+    color: var(--muted);
+}
+ul, ol { padding-left: 1.5em; }
+li { margin: 0.2em 0; }
+strong { color: #000; }
+.tier-1 { background: #ecfdf5; }
+.tier-2 { background: #eff6ff; }
+.tier-3 { background: #fef3c7; }
+@media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc {
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 0 0 1em;
+        max-height: none;
+        margin-bottom: 1.5em;
+    }
+}
+@media print {
+    nav.toc { display: none; }
+    .layout { grid-template-columns: 1fr; }
+    body { max-width: 100%; padding: 1cm; font-size: 11pt; }
+    pre { page-break-inside: avoid; }
+    h1, h2 { page-break-after: avoid; }
+}
+</style>
+</head>
+<body>
+<header class="doc-header">
+<h1>Dicionário de Dados — DataSUS</h1>
+<div class="meta">Gerado em 2026-06-02 · projeto NF01006 (UFRGS) · 6 datasets · ~150 colunas em SIH.RD, ~208 em CNES.ST</div>
+</header>
+<div class="layout">
+<nav class="toc">
+<h2>Índice</h2>
+<ol><li><a href="#intro">Introdução</a></li>
+<li><a href="#resumo-joins">Resumo dos joins</a></li>
+<li><a href="#sih">SIH — Internações Hospitalares</a></li>
+<li><a href="#cnes">CNES — Cadastro de Estabelecimentos</a></li>
+<li><a href="#sia">SIA — Produção Ambulatorial</a></li>
+<li><a href="#sim">SIM — Mortalidade</a></li>
+<li><a href="#sinasc">SINASC — Nascidos Vivos</a></li>
+<li><a href="#sinan">SINAN — Doenças de Notificação</a></li>
+<li><a href="#joins">Guia completo de joins</a></li></ol>
+</nav>
+<main>
+<section id="intro">
+<h1>Introdução</h1>
+<p>Documentação dos 6 datasets ingeridos via pysus. Cada arquivo cobre todos os tipos/grupos do dataset, com colunas, domínios, joins típicos e caveats.</p>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Arquivo</th>
+<th>Conteúdo</th>
+<th># tipos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SIH</strong></td>
+<td><a href="sih_dicionario.md"><code>sih_dicionario.md</code></a></td>
+<td>Internações hospitalares (AIH) — base operacional do SUS hospitalar</td>
+<td>4 (RD, SP, RJ, ER)</td>
+</tr>
+<tr>
+<td><strong>CNES</strong></td>
+<td><a href="cnes_dicionario.md"><code>cnes_dicionario.md</code></a></td>
+<td>Cadastro de estabelecimentos: tipologia, leitos, profissionais, equipes, equipamentos, habilitações, serviços</td>
+<td>13</td>
+</tr>
+<tr>
+<td><strong>SIA</strong></td>
+<td><a href="sia_dicionario.md"><code>sia_dicionario.md</code></a></td>
+<td>Produção ambulatorial (consultas, exames, procedimentos sem internação)</td>
+<td>4 (PA, BI, PS, SAD)</td>
+</tr>
+<tr>
+<td><strong>SIM</strong></td>
+<td><a href="sim_dicionario.md"><code>sim_dicionario.md</code></a></td>
+<td>Mortalidade (Declaração de Óbito) — causas, demografia, local</td>
+<td>1 (DO)</td>
+</tr>
+<tr>
+<td><strong>SINASC</strong></td>
+<td><a href="sinasc_dicionario.md"><code>sinasc_dicionario.md</code></a></td>
+<td>Nascidos vivos (DN) — mãe, gestação, parto, RN</td>
+<td>1 (DN)</td>
+</tr>
+<tr>
+<td><strong>SINAN</strong></td>
+<td><a href="sinan_dicionario.md"><code>sinan_dicionario.md</code></a></td>
+<td>Doenças de notificação compulsória — 58 agravos, do dengue à violência</td>
+<td>58</td>
+</tr>
+</tbody>
+</table>
+<h2>Cruzando os datasets</h2>
+<ul>
+<li><a href="joins_guia.md"><code>joins_guia.md</code></a> — <strong>como fazer joins entre tudo</strong>: 3 tiers (estabelecimento, geografia, pessoa), receitas em pandas, pegadinhas e priorização pro NF01006</li>
+</ul>
+<h2>Convenções comuns a todos os datasets</h2>
+<ul>
+<li><strong>Datas</strong>: <code>YYYYMMDD</code> (string) no SIH, SINAN; <code>DDMMYYYY</code> no SIM, SINASC. Sempre como string pra preservar zeros à esquerda.</li>
+<li><strong>UF</strong>: sigla IBGE 2 dígitos (<code>43</code>=RS, <code>42</code>=SC, <code>41</code>=PR).</li>
+<li><strong>Município</strong>: código IBGE 6 dígitos (UF + 4).</li>
+<li><strong>CNES</strong>: 7 dígitos, chave universal de estabelecimento.</li>
+<li><strong>CID-10</strong>: 4 chars (letra + 3 dígitos).</li>
+<li><strong>CBO-2002</strong>: 6 dígitos.</li>
+<li><strong>CNS</strong> (Cartão Nacional de Saúde): 15 dígitos; aparece <strong>ofuscado</strong> nos parquets do pysus por questão de privacidade.</li>
+<li><strong>SEXO</strong>: divergência famosa — SIH usa <code>1</code>=M, <code>3</code>=F; SIM/SINASC/SINAN usam <code>1</code>=M, <code>2</code>=F.</li>
+</ul>
+<h2>Pra projeto NF01006 (SIH + CNES + IBGE)</h2>
+<p>Os dois dicionários centrais são:</p>
+<ol>
+<li><strong><a href="sih_dicionario.md">SIH</a></strong> — fonte das internações. <code>RD</code> é o coração; <code>SP</code> adiciona detalhe de procedimentos.</li>
+<li><strong><a href="cnes_dicionario.md">CNES</a></strong> — fonte da capacidade hospitalar. <code>ST</code> (estabelecimento) + <code>LT</code> (leitos) são suficientes pra maioria das análises de oferta.</li>
+</ol>
+<p>Os outros 4 são <strong>complementares</strong>:
+- <strong>SIM</strong> se entrar análise de mortalidade pós-alta.
+- <strong>SINASC</strong> se entrar materno-infantil.
+- <strong>SIA</strong> se entrar análise de cuidado ambulatorial prévio à internação.
+- <strong>SINAN</strong> se entrar doenças específicas (ex.: dengue → internação).</p>
+<h2>Como ler no Jupyter</h2>
+<pre><code class="language-python">from IPython.display import Markdown
+display(Markdown(open(&quot;/app/docs/sih_dicionario.md&quot;).read()))
+</code></pre>
+<p>ou navegar pelo VSCode/IDE — eles renderizam markdown nativamente.</p>
+</section>
+
+<section id="resumo-joins">
+<h1>Resumo dos joins</h1>
+<h2>Modelo mental — 3 tiers de join</h2>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Granularidade</th>
+<th>Chave</th>
+<th>Confiabilidade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. Estabelecimento</strong></td>
+<td>unidade × competência</td>
+<td><code>CNES + COMPETEN</code></td>
+<td>exato</td>
+</tr>
+<tr>
+<td><strong>2. Geografia</strong></td>
+<td>município × período</td>
+<td><code>codmun IBGE (6 dígitos) + ano/mês</code></td>
+<td>exato (em agregação)</td>
+</tr>
+<tr>
+<td><strong>3. Pessoa</strong></td>
+<td>indivíduo</td>
+<td>composto: <code>(data nasc, sexo, município, ...)</code></td>
+<td><strong>probabilístico</strong></td>
+</tr>
+</tbody>
+</table>
+<h2>Mapa de chaves principais</h2>
+<h3>Por estabelecimento (CNES) — Tier 1</h3>
+<table>
+<thead>
+<tr>
+<th>Tabela origem</th>
+<th>Chave de junção</th>
+<th>→ tabela alvo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SIH.RD / RJ / ER</td>
+<td><code>CNES</code></td>
+<td>CNES.ST</td>
+</tr>
+<tr>
+<td>SIH.SP</td>
+<td><code>SP_CNES</code></td>
+<td>CNES.ST</td>
+</tr>
+<tr>
+<td>SIA.PA</td>
+<td><code>PA_CODUNI</code></td>
+<td>CNES.ST</td>
+</tr>
+<tr>
+<td>SIA.BI</td>
+<td><code>CODUNI</code></td>
+<td>CNES.ST</td>
+</tr>
+<tr>
+<td>SIA.PS / SAD</td>
+<td><code>CNES_EXEC</code></td>
+<td>CNES.ST</td>
+</tr>
+<tr>
+<td>SIM.DO</td>
+<td><code>CODESTAB</code> (se <code>LOCOCOR=1</code>)</td>
+<td>CNES.ST</td>
+</tr>
+<tr>
+<td>SINASC.DN</td>
+<td><code>CODESTAB</code> (se <code>LOCNASC=1</code>)</td>
+<td>CNES.ST</td>
+</tr>
+<tr>
+<td>SINAN.*</td>
+<td><code>ID_UNIDADE</code></td>
+<td>CNES.ST</td>
+</tr>
+<tr>
+<td>CNES.LT / PF / EQ / HB / SR / etc.</td>
+<td><code>(CNES, COMPETEN)</code></td>
+<td>CNES.ST</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Dentro do SIH:</strong> RD ↔ SP por <code>N_AIH = SP_NAIH</code> (1:N).</p>
+<h3>Por geografia (município IBGE 6 dígitos) — Tier 2</h3>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Residência (paciente)</th>
+<th>Ocorrência (onde foi feito)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SIH.RD</td>
+<td><code>MUNIC_RES</code></td>
+<td><code>MUNIC_MOV</code></td>
+</tr>
+<tr>
+<td>SIH.SP</td>
+<td><code>SP_M_PAC</code></td>
+<td><code>SP_M_HOSP</code></td>
+</tr>
+<tr>
+<td>SIA.PA</td>
+<td><code>PA_MUNPCN</code></td>
+<td><code>PA_UFMUN</code></td>
+</tr>
+<tr>
+<td>SIA.BI / PS / SAD</td>
+<td><code>MUNPAC</code></td>
+<td><code>UFMUN</code></td>
+</tr>
+<tr>
+<td>SIM.DO</td>
+<td><code>CODMUNRES</code></td>
+<td><code>CODMUNOCOR</code></td>
+</tr>
+<tr>
+<td>SINASC.DN</td>
+<td><code>CODMUNRES</code></td>
+<td><code>CODMUNNASC</code></td>
+</tr>
+<tr>
+<td>SINAN.*</td>
+<td><code>ID_MN_RESI</code></td>
+<td><code>ID_MUNICIP</code></td>
+</tr>
+<tr>
+<td>CNES.ST</td>
+<td>—</td>
+<td><code>CODUFMUN</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Regra prática:</strong>
+- Para <strong>taxa de incidência</strong> (por habitante) → use <strong>residência</strong>.
+- Para <strong>utilização de serviço</strong> → use <strong>ocorrência</strong>.</p>
+<h2>Tipos de join recomendados por cenário</h2>
+<table>
+<thead>
+<tr>
+<th>Cenário</th>
+<th>Tipo de join</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enriquecer fato com cadastro (SIH + CNES.ST)</td>
+<td><strong>LEFT JOIN</strong></td>
+<td>Manter todas as internações; nem todo CNES estará cadastrado em todo mês</td>
+</tr>
+<tr>
+<td>Capacidade × demanda (CNES.LT × SIH.RD agregados)</td>
+<td><strong>INNER JOIN</strong> após agregação</td>
+<td>Comparar só onde há ambos os lados</td>
+</tr>
+<tr>
+<td>Indicadores per capita (IBGE × *)</td>
+<td><strong>LEFT JOIN</strong> sobre IBGE</td>
+<td>População é o denominador master</td>
+</tr>
+<tr>
+<td>SIH.RD + SIH.RJ (todas tentativas)</td>
+<td><strong>UNION ALL</strong> + flag de origem</td>
+<td>Não há overlap; concatenar</td>
+</tr>
+<tr>
+<td>SINAN multi-doença</td>
+<td><strong>UNION ALL</strong> (só colunas comuns)</td>
+<td>58 doenças com schemas diferentes</td>
+</tr>
+<tr>
+<td>Linkage SIH ↔ SIM (mortalidade pós-alta)</td>
+<td><strong>INNER probabilístico</strong></td>
+<td>Sem chave; aceita perda de recall</td>
+</tr>
+</tbody>
+</table>
+<h2>Pegadinhas que custam horas</h2>
+<ol>
+<li><strong><code>SEXO</code> diverge</strong>: SIM/SINASC/SINAN usam <code>2</code>=fem, SIH usa <code>3</code>=fem. <strong>Normalize antes de qualquer join cruzado.</strong></li>
+<li><strong>Datas</strong>: SIM/SINASC usam <code>DDMMYYYY</code>; SIH/SINAN usam <code>YYYYMMDD</code>.</li>
+<li><strong>CNES é snapshot mensal</strong> — características mudam. Use sempre <code>(CNES, COMPETEN)</code>, não só <code>CNES</code>.</li>
+<li><strong>CNES.PF</strong> tem N linhas por profissional (1 por vínculo). Dedupe por <code>(CNES, CPFUNICO)</code> antes de contar.</li>
+<li><strong>SIA.PA é gigante</strong> (~4M linhas/mês no RS). Agregue <strong>antes</strong> de qualquer join.</li>
+<li><strong>SINAN é Brasil-wide</strong> — filtre por <code>SG_UF_NOT == 43</code> (RS) <strong>antes</strong> de tudo.</li>
+<li><strong><code>MUNIC_*</code> é 6 dígitos IBGE</strong>. CSVs externos às vezes usam 7 (com dígito verificador). Trunque ou conserte.</li>
+<li><strong><code>IDADE</code> no SIM/SINAN é codificada</strong> (4 dígitos, 1º = unidade temporal). <code>4028</code> = 28 anos.</li>
+</ol>
+<h2>Receita típica para NF01006 (estabelecimentos × mortalidade no RS)</h2>
+<pre><code>IBGE.populacao (master, denominador)
+  ⟕ CNES.ST + CNES.LT       → leitos por município
+  ⟕ SIH.RD                   → internações (numerador)
+  ⟕ SIM.DO                   → óbitos (numerador)
+  → join via (codmun, ano)
+  → indicadores per capita
+</code></pre>
+<p>Indicadores derivados:
+- <code>leitos_per_1000 = leitos_sus / populacao * 1000</code>
+- <code>taxa_internacao = internacoes / populacao * 1000</code>
+- <code>taxa_mortalidade = obitos / populacao * 1000</code>
+- <code>letalidade_hosp = obitos_hosp / internacoes</code></p>
+<p>Receitas completas em pandas na seção <strong>Guia completo de joins</strong> abaixo.</p>
+</section>
+
+<section id="sih">
+<h1>SIH — Internações Hospitalares</h1>
+<p>O SIH registra internações pagas pelo SUS via <strong>AIH (Autorização de Internação Hospitalar)</strong>. Cada competência (mês × UF) é publicada em quatro arquivos:</p>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Conteúdo</th>
+<th>Granularidade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RD</strong></td>
+<td>AIH Reduzida — registro principal da internação</td>
+<td>1 linha / AIH</td>
+</tr>
+<tr>
+<td><strong>SP</strong></td>
+<td>Serviços Profissionais — procedimentos executados dentro da AIH</td>
+<td>N linhas / AIH (≈10× RD)</td>
+</tr>
+<tr>
+<td><strong>RJ</strong></td>
+<td>AIHs Rejeitadas pelo gestor</td>
+<td>1 linha / AIH rejeitada</td>
+</tr>
+<tr>
+<td><strong>ER</strong></td>
+<td>Estabelecimentos Rejeitados / erros de envio</td>
+<td>1 linha / erro</td>
+</tr>
+</tbody>
+</table>
+<p>Convenções gerais:
+- <strong>Datas</strong>: <code>YYYYMMDD</code> como <strong>string</strong> (preserva zeros à esquerda).
+- <strong>Valores monetários</strong>: R$ com 2 decimais.
+- <strong>Município</strong>: código IBGE de 6 dígitos (UF + 4).
+- <strong>UF</strong>: 2 dígitos IBGE — RS=43, SC=42, PR=41.</p>
+<hr>
+<h2>RD — AIH Reduzida (113 colunas)</h2>
+<p>A tabela mais rica. <strong>Use ela como ponto de partida pra qualquer análise de internação.</strong></p>
+<h3>Identificação</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio / Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>N_AIH</code></td>
+<td>Número da AIH (chave de fato)</td>
+<td>13 dígitos: UF(2)+ano(2)+sequencial(9)</td>
+</tr>
+<tr>
+<td><code>CNES</code></td>
+<td>Estabelecimento (FK p/ CNES.ST)</td>
+<td>7 dígitos</td>
+</tr>
+<tr>
+<td><code>CGC_HOSP</code></td>
+<td>CNPJ do hospital</td>
+<td>14 dígitos</td>
+</tr>
+<tr>
+<td><code>CNPJ_MANT</code></td>
+<td>CNPJ da mantenedora (se diferente)</td>
+<td>14 dígitos</td>
+</tr>
+<tr>
+<td><code>IDENT</code></td>
+<td>Tipo de AIH</td>
+<td><code>1</code>=principal, <code>5</code>=longa permanência</td>
+</tr>
+<tr>
+<td><code>SEQ_AIH5</code></td>
+<td>Sequencial da AIH-5</td>
+<td><code>000</code> se não aplica</td>
+</tr>
+</tbody>
+</table>
+<h3>Competência</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio / Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ANO_CMPT</code></td>
+<td>Ano de competência (cobrança)</td>
+<td><code>2024</code></td>
+</tr>
+<tr>
+<td><code>MES_CMPT</code></td>
+<td>Mês de competência</td>
+<td><code>01</code>..<code>12</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Paciente</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio / Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NASC</code></td>
+<td>Data de nascimento</td>
+<td><code>YYYYMMDD</code></td>
+</tr>
+<tr>
+<td><code>IDADE</code></td>
+<td>Idade na unidade de <code>COD_IDADE</code></td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>COD_IDADE</code></td>
+<td>Unidade da idade</td>
+<td><code>2</code>=dias, <code>3</code>=meses, <code>4</code>=anos, <code>5</code>=anos≥100</td>
+</tr>
+<tr>
+<td><code>SEXO</code></td>
+<td>Sexo</td>
+<td><code>1</code>=masc, <code>3</code>=fem (lacuna intencional no <code>2</code>)</td>
+</tr>
+<tr>
+<td><code>RACA_COR</code></td>
+<td>Raça/cor autodeclarada</td>
+<td><code>01</code>=branca, <code>02</code>=preta, <code>03</code>=parda, <code>04</code>=amarela, <code>05</code>=indígena, <code>99</code>=sem inf</td>
+</tr>
+<tr>
+<td><code>ETNIA</code></td>
+<td>Etnia indígena</td>
+<td>só preenchido se <code>RACA_COR=05</code></td>
+</tr>
+<tr>
+<td><code>NACIONAL</code></td>
+<td>Nacionalidade</td>
+<td><code>010</code>=Brasil, demais = códigos DataSUS</td>
+</tr>
+<tr>
+<td><code>CEP</code></td>
+<td>CEP da residência</td>
+<td>8 dígitos</td>
+</tr>
+<tr>
+<td><code>MUNIC_RES</code></td>
+<td>Município de residência</td>
+<td>IBGE 6 dígitos</td>
+</tr>
+<tr>
+<td><code>INSTRU</code></td>
+<td>Escolaridade</td>
+<td><code>1</code>=analfabeto … <code>5</code>=superior</td>
+</tr>
+<tr>
+<td><code>HOMONIMO</code></td>
+<td>Flag de homônimo</td>
+<td><code>0/1</code></td>
+</tr>
+<tr>
+<td><code>CBOR</code></td>
+<td>CBO da ocupação do paciente</td>
+<td>6 dígitos</td>
+</tr>
+<tr>
+<td><code>CNAER</code></td>
+<td>CNAE da atividade econômica</td>
+<td></td>
+</tr>
+<tr>
+<td><code>VINCPREV</code></td>
+<td>Vínculo previdenciário</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Internação</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio / Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DT_INTER</code></td>
+<td>Data de entrada</td>
+<td><code>YYYYMMDD</code></td>
+</tr>
+<tr>
+<td><code>DT_SAIDA</code></td>
+<td>Data de saída</td>
+<td><code>YYYYMMDD</code></td>
+</tr>
+<tr>
+<td><code>DIAS_PERM</code></td>
+<td>Dias de permanência</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>ESPEC</code></td>
+<td>Especialidade do leito</td>
+<td><code>01</code>=clínica, <code>02</code>=cirurgia, <code>03</code>=obstetrícia, <code>04</code>=pediatria, <code>05</code>=outras, <code>06</code>=hospital-dia, <code>07</code>=psiquiatria, <code>08</code>=hansen, <code>09</code>=psiq dia, <code>10</code>=reabilitação</td>
+</tr>
+<tr>
+<td><code>CAR_INT</code></td>
+<td>Caráter da internação</td>
+<td><code>01</code>=eletiva, <code>02</code>=urgência, <code>03</code>=acidente trânsito, <code>04</code>=acidente trabalho, <code>05</code>=acidente outros, <code>06</code>=causas externas</td>
+</tr>
+<tr>
+<td><code>MUNIC_MOV</code></td>
+<td>Município do hospital</td>
+<td>IBGE 6 dígitos</td>
+</tr>
+<tr>
+<td><code>UF_ZI</code></td>
+<td>UF do hospital (zona de internação)</td>
+<td><code>430000</code> = RS</td>
+</tr>
+</tbody>
+</table>
+<h3>Diagnóstico (CID-10)</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio / Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DIAG_PRINC</code></td>
+<td>CID principal</td>
+<td>4 chars (<code>O021</code>)</td>
+</tr>
+<tr>
+<td><code>DIAG_SECUN</code></td>
+<td>CID secundário (principal)</td>
+<td>4 chars</td>
+</tr>
+<tr>
+<td><code>DIAGSEC1</code>..<code>DIAGSEC9</code></td>
+<td>CIDs secundários adicionais</td>
+<td>4 chars cada</td>
+</tr>
+<tr>
+<td><code>TPDISEC1</code>..<code>TPDISEC9</code></td>
+<td>Tipo do CID secundário</td>
+<td>código</td>
+</tr>
+<tr>
+<td><code>CID_NOTIF</code></td>
+<td>CID de notificação compulsória</td>
+<td>preenchido só se aplicável</td>
+</tr>
+<tr>
+<td><code>CID_ASSO</code></td>
+<td>CID associado (causa subjacente em óbito)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CID_MORTE</code></td>
+<td>CID da morte</td>
+<td>só se <code>MORTE=1</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Procedimento</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio / Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PROC_SOLIC</code></td>
+<td>Procedimento solicitado</td>
+<td>SIGTAP 10 dígitos</td>
+</tr>
+<tr>
+<td><code>PROC_REA</code></td>
+<td>Procedimento realizado (chave operacional)</td>
+<td>SIGTAP 10 dígitos</td>
+</tr>
+<tr>
+<td><code>TOT_PT_SP</code></td>
+<td>Pontos totais dos serviços profissionais</td>
+<td>inteiro</td>
+</tr>
+</tbody>
+</table>
+<h3>UTI / UCI</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UTI_MES_IN</code></td>
+<td>Diárias UTI no início do mês</td>
+</tr>
+<tr>
+<td><code>UTI_MES_AN</code></td>
+<td>Diárias UTI no mês anterior</td>
+</tr>
+<tr>
+<td><code>UTI_MES_AL</code></td>
+<td>Diárias UTI na alta</td>
+</tr>
+<tr>
+<td><code>UTI_MES_TO</code></td>
+<td>Total de diárias UTI</td>
+</tr>
+<tr>
+<td><code>MARCA_UTI</code></td>
+<td>Tipo de UTI: <code>00</code>=sem, <code>51</code>/<code>52</code>/<code>53</code>=adulto I/II/III, <code>61</code>/<code>62</code>/<code>63</code>=pediátrica, <code>71</code>/<code>72</code>/<code>73</code>=neonatal, <code>74</code>=queimados, <code>75</code>=coronariana</td>
+</tr>
+<tr>
+<td><code>UTI_INT_IN/AN/AL/TO</code></td>
+<td>Diárias UTI intermediária (em desuso)</td>
+</tr>
+<tr>
+<td><code>VAL_UCI</code></td>
+<td>Valor da Unidade de Cuidados Intermediários</td>
+</tr>
+<tr>
+<td><code>MARCA_UCI</code></td>
+<td>Tipo da UCI</td>
+</tr>
+<tr>
+<td><code>DIAR_ACOM</code></td>
+<td>Diárias do acompanhante</td>
+</tr>
+<tr>
+<td><code>QT_DIARIAS</code></td>
+<td>Total geral de diárias</td>
+</tr>
+</tbody>
+</table>
+<h3>Valores (R$)</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VAL_SH</code></td>
+<td>Serviços Hospitalares</td>
+</tr>
+<tr>
+<td><code>VAL_SP</code></td>
+<td>Serviços Profissionais</td>
+</tr>
+<tr>
+<td><code>VAL_SADT</code></td>
+<td>SADT (Diagnose/Terapia) com remoção</td>
+</tr>
+<tr>
+<td><code>VAL_SADTSR</code></td>
+<td>SADT sem remoção</td>
+</tr>
+<tr>
+<td><code>VAL_RN</code></td>
+<td>Recém-nascido</td>
+</tr>
+<tr>
+<td><code>VAL_ACOMP</code></td>
+<td>Acompanhante</td>
+</tr>
+<tr>
+<td><code>VAL_ORTP</code></td>
+<td>Órteses/próteses</td>
+</tr>
+<tr>
+<td><code>VAL_SANGUE</code></td>
+<td>Sangue/hemoderivados</td>
+</tr>
+<tr>
+<td><code>VAL_OBSANG</code></td>
+<td>Observação de sangue (em desuso)</td>
+</tr>
+<tr>
+<td><code>VAL_TRANSP</code></td>
+<td>Transplante</td>
+</tr>
+<tr>
+<td><code>VAL_PED1AC</code></td>
+<td>Pediatria 1º acompanhante</td>
+</tr>
+<tr>
+<td><code>VAL_UTI</code></td>
+<td>UTI</td>
+</tr>
+<tr>
+<td><code>VAL_TOT</code></td>
+<td><strong>Total da AIH</strong> (soma dos componentes)</td>
+</tr>
+<tr>
+<td><code>US_TOT</code></td>
+<td>Total em USD (cotação BC do fechamento)</td>
+</tr>
+<tr>
+<td><code>VAL_SH_FED</code></td>
+<td>Parcela federal de <code>VAL_SH</code></td>
+</tr>
+<tr>
+<td><code>VAL_SP_FED</code></td>
+<td>Parcela federal de <code>VAL_SP</code></td>
+</tr>
+<tr>
+<td><code>VAL_SH_GES</code></td>
+<td>Parcela do gestor (estadual/municipal) de <code>VAL_SH</code></td>
+</tr>
+<tr>
+<td><code>VAL_SP_GES</code></td>
+<td>Parcela do gestor de <code>VAL_SP</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Desfecho</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MORTE</code></td>
+<td>Flag óbito durante internação</td>
+<td><code>0/1</code></td>
+</tr>
+<tr>
+<td><code>COBRANCA</code></td>
+<td>Motivo da saída/cobrança</td>
+<td><code>11</code>=alta curado, <code>12</code>=alta melhorado, <code>14</code>=transferência, <code>21</code>=permanência, <code>28</code>=alta a pedido, <code>41</code>=óbito sem causa externa, <code>42</code>=óbito por causa externa, <code>51</code>=permanência cirurgia</td>
+</tr>
+<tr>
+<td><code>INFEHOSP</code></td>
+<td>Indicador de infecção hospitalar</td>
+<td>flag</td>
+</tr>
+</tbody>
+</table>
+<h3>Gestão / Financiamento</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GESTAO</code></td>
+<td>Esfera de gestão da unidade</td>
+<td><code>M</code>=municipal, <code>E</code>=estadual, <code>D</code>=dupla</td>
+</tr>
+<tr>
+<td><code>NATUREZA</code></td>
+<td>Natureza da unidade (campo antigo, descontinuado)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>NAT_JUR</code></td>
+<td>Natureza jurídica (Cadastro Sec. Receita)</td>
+<td>4 dígitos</td>
+</tr>
+<tr>
+<td><code>COMPLEX</code></td>
+<td>Complexidade</td>
+<td><code>01</code>=básica, <code>02</code>=média, <code>03</code>=alta</td>
+</tr>
+<tr>
+<td><code>FINANC</code></td>
+<td>Tipo de financiamento (subteto)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>FAEC_TP</code></td>
+<td>Tipo FAEC (Fundo de Ações Estratégicas)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>REGCT</code></td>
+<td>Regra contratual</td>
+<td></td>
+</tr>
+<tr>
+<td><code>RUBRICA</code></td>
+<td>Rubrica orçamentária</td>
+<td></td>
+</tr>
+<tr>
+<td><code>GESTOR_COD</code></td>
+<td>Código do gestor que autorizou</td>
+<td></td>
+</tr>
+<tr>
+<td><code>GESTOR_TP</code></td>
+<td>Tipo do gestor</td>
+<td><code>1</code>=municipal, <code>2</code>=estadual, <code>3</code>=federal</td>
+</tr>
+<tr>
+<td><code>GESTOR_CPF</code></td>
+<td>CPF do autorizador</td>
+<td></td>
+</tr>
+<tr>
+<td><code>GESTOR_DT</code></td>
+<td>Data da autorização</td>
+<td><code>YYYYMMDD</code></td>
+</tr>
+<tr>
+<td><code>IND_VDRL</code></td>
+<td>Indicação de VDRL (sífilis gestante)</td>
+<td><code>0/1</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Materno-infantil</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NUM_FILHOS</code></td>
+<td>Filhos vivos</td>
+</tr>
+<tr>
+<td><code>GESTRISCO</code></td>
+<td>Gestação de risco (<code>0/1</code>)</td>
+</tr>
+<tr>
+<td><code>INSC_PN</code></td>
+<td>Inscrição SISPRENATAL</td>
+</tr>
+<tr>
+<td><code>CONTRACEP1</code></td>
+<td>Contraceptivo 1 (código)</td>
+</tr>
+<tr>
+<td><code>CONTRACEP2</code></td>
+<td>Contraceptivo 2 (código)</td>
+</tr>
+</tbody>
+</table>
+<h3>Auditoria</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AUD_JUST</code></td>
+<td>Justificativa textual da auditoria</td>
+</tr>
+<tr>
+<td><code>SIS_JUST</code></td>
+<td>Sistema de auditoria</td>
+</tr>
+<tr>
+<td><code>NUM_PROC</code></td>
+<td>Número de processo judicial associado</td>
+</tr>
+<tr>
+<td><code>CPF_AUT</code></td>
+<td>CPF do autorizador</td>
+</tr>
+</tbody>
+</table>
+<h3>Metadata do registro</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SEQUENCIA</code></td>
+<td>Sequência da linha no arquivo enviado</td>
+</tr>
+<tr>
+<td><code>REMESSA</code></td>
+<td>Identificador da remessa (ex.: <code>HE43000001N202406.DTS</code> — tipo + UF + sequencial + AAAA + MM)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>SP — Serviços Profissionais (37 colunas)</h2>
+<p><strong>Uma linha por procedimento/profissional executado em cada AIH.</strong> ~10× o volume da RD. Use pra análise de custo detalhado, quem executou, e quais procedimentos compõem cada internação.</p>
+<p>Convenção: colunas prefixadas com <code>SP_</code>.</p>
+<h3>Chaves para juntar com RD</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SP_NAIH</code></td>
+<td>Número AIH (junta com <code>RD.N_AIH</code>)</td>
+</tr>
+<tr>
+<td><code>SP_CNES</code></td>
+<td>Estabelecimento</td>
+</tr>
+<tr>
+<td><code>SP_UF</code></td>
+<td>UF (<code>43</code>)</td>
+</tr>
+<tr>
+<td><code>SP_AA</code></td>
+<td>Ano</td>
+</tr>
+<tr>
+<td><code>SP_MM</code></td>
+<td>Mês</td>
+</tr>
+</tbody>
+</table>
+<h3>Datas e localização</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SP_DTINTER</code></td>
+<td>Data internação</td>
+</tr>
+<tr>
+<td><code>SP_DTSAIDA</code></td>
+<td>Data saída</td>
+</tr>
+<tr>
+<td><code>SP_M_HOSP</code></td>
+<td>Município hospital (IBGE 6)</td>
+</tr>
+<tr>
+<td><code>SP_M_PAC</code></td>
+<td>Município paciente (IBGE 6)</td>
+</tr>
+<tr>
+<td><code>SP_DES_HOS</code></td>
+<td>Desempenho hospital (flag)</td>
+</tr>
+<tr>
+<td><code>SP_DES_PAC</code></td>
+<td>Desempenho paciente (flag)</td>
+</tr>
+<tr>
+<td><code>SP_GESTOR</code></td>
+<td>Código do gestor</td>
+</tr>
+</tbody>
+</table>
+<h3>Ato profissional (o coração de SP)</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SP_PROCREA</code></td>
+<td>Procedimento realizado (SIGTAP)</td>
+</tr>
+<tr>
+<td><code>SP_ATOPROF</code></td>
+<td>Código do ato profissional dentro do procedimento</td>
+</tr>
+<tr>
+<td><code>SP_TP_ATO</code></td>
+<td>Tipo do ato</td>
+</tr>
+<tr>
+<td><code>SP_QTD_ATO</code></td>
+<td>Quantidade</td>
+</tr>
+<tr>
+<td><code>SP_PTSP</code></td>
+<td>Pontuação SP</td>
+</tr>
+<tr>
+<td><code>SP_VALATO</code></td>
+<td>Valor unitário do ato (R$)</td>
+</tr>
+<tr>
+<td><code>SP_PF_CBO</code></td>
+<td>CBO do profissional executor</td>
+</tr>
+<tr>
+<td><code>SP_PF_DOC</code></td>
+<td>CNS do profissional (15 dígitos)</td>
+</tr>
+<tr>
+<td><code>SP_PJ_DOC</code></td>
+<td>CNPJ pessoa jurídica</td>
+</tr>
+<tr>
+<td><code>SP_CPFCGC</code></td>
+<td>CPF/CNPJ do estabelecimento</td>
+</tr>
+</tbody>
+</table>
+<h3>Classificação e outras</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IN_TP_VAL</code></td>
+<td>Tipo de valor (federal/gestor)</td>
+</tr>
+<tr>
+<td><code>SERV_CLA</code></td>
+<td>Classificação do serviço</td>
+</tr>
+<tr>
+<td><code>SP_CIDPRI</code></td>
+<td>CID principal</td>
+</tr>
+<tr>
+<td><code>SP_CIDSEC</code></td>
+<td>CID secundário</td>
+</tr>
+<tr>
+<td><code>SP_QT_PROC</code></td>
+<td>Quantidade de procedimentos</td>
+</tr>
+<tr>
+<td><code>SP_U_AIH</code></td>
+<td>Flag uso de AIH</td>
+</tr>
+<tr>
+<td><code>SP_COMPLEX</code></td>
+<td>Complexidade</td>
+</tr>
+<tr>
+<td><code>SP_FINANC</code></td>
+<td>Financiamento</td>
+</tr>
+<tr>
+<td><code>SP_CO_FAEC</code></td>
+<td>Código FAEC</td>
+</tr>
+<tr>
+<td><code>SP_NUM_PR</code></td>
+<td>Número do processo</td>
+</tr>
+<tr>
+<td><code>SP_TIPO</code></td>
+<td>Tipo de registro</td>
+</tr>
+<tr>
+<td><code>SP_NF</code></td>
+<td>Nota fiscal</td>
+</tr>
+<tr>
+<td><code>FONTE_ORC</code></td>
+<td>Fonte orçamentária</td>
+</tr>
+<tr>
+<td><code>SEQUENCIA</code>, <code>REMESSA</code></td>
+<td>Metadata do envio (igual a RD)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>RJ — AIHs Rejeitadas (90 colunas)</h2>
+<p><strong>Subconjunto de RD + 3 colunas de status.</strong> Mesma chave (<code>N_AIH</code>), mas a internação não foi autorizada pelo gestor.</p>
+<h3>Colunas exclusivas de RJ</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ST_SITUAC</code></td>
+<td>Situação da AIH</td>
+</tr>
+<tr>
+<td><code>ST_BLOQ</code></td>
+<td>Status de bloqueio</td>
+</tr>
+<tr>
+<td><code>ST_MOT_BLO</code></td>
+<td><strong>Motivo do bloqueio</strong> (chave da análise — código DataSUS)</td>
+</tr>
+</tbody>
+</table>
+<h3>Colunas presentes em RD mas <strong>ausentes</strong> em RJ</h3>
+<ul>
+<li><code>DIAGSEC1</code>..<code>9</code> e <code>TPDISEC1</code>..<code>9</code> (CIDs secundários extras)</li>
+<li><code>VAL_SH_FED</code>, <code>VAL_SP_FED</code>, <code>VAL_SH_GES</code>, <code>VAL_SP_GES</code> (parcelas)</li>
+<li><code>VAL_UCI</code>, <code>MARCA_UCI</code></li>
+<li><code>AUD_JUST</code>, <code>SIS_JUST</code></li>
+</ul>
+<p>Útil pra entender <strong>padrões de glosa</strong> — quais hospitais/procedimentos/CIDs são rejeitados com mais frequência.</p>
+<hr>
+<h2>ER — Estabelecimentos Rejeitados (13 colunas)</h2>
+<p>Arquivo bem enxuto. <strong>Uma linha por AIH com erro de envio.</strong> Não é a internação rejeitada (isso é RJ) — é o estabelecimento que mandou dado inconsistente.</p>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SEQUENCIA</code></td>
+<td>Linha do envio</td>
+</tr>
+<tr>
+<td><code>REMESSA</code></td>
+<td>Identificador da remessa</td>
+</tr>
+<tr>
+<td><code>CNES</code></td>
+<td>Estabelecimento</td>
+</tr>
+<tr>
+<td><code>AIH</code></td>
+<td>Número da AIH (sem prefixo <code>N_</code>)</td>
+</tr>
+<tr>
+<td><code>ANO</code></td>
+<td>Ano da competência</td>
+</tr>
+<tr>
+<td><code>MES</code></td>
+<td>Mês da competência</td>
+</tr>
+<tr>
+<td><code>DT_INTER</code></td>
+<td>Data internação</td>
+</tr>
+<tr>
+<td><code>DT_SAIDA</code></td>
+<td>Data saída</td>
+</tr>
+<tr>
+<td><code>MUN_MOV</code></td>
+<td>Município do hospital</td>
+</tr>
+<tr>
+<td><code>UF_ZI</code></td>
+<td>UF do hospital</td>
+</tr>
+<tr>
+<td><code>MUN_RES</code></td>
+<td>Município do paciente</td>
+</tr>
+<tr>
+<td><code>UF_RES</code></td>
+<td>UF do paciente (<code>43</code>)</td>
+</tr>
+<tr>
+<td><code>CO_ERRO</code></td>
+<td><strong>Código do erro</strong> — DataSUS publica lista oficial</td>
+</tr>
+</tbody>
+</table>
+<p>Volume típico no RS: poucas dezenas a poucos milhares por mês. Útil pra QA de envio, não pra epidemiologia.</p>
+<hr>
+<h2>Glossário</h2>
+<table>
+<thead>
+<tr>
+<th>Sigla</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AIH</strong></td>
+<td>Autorização de Internação Hospitalar</td>
+</tr>
+<tr>
+<td><strong>CID-10</strong></td>
+<td>Classificação Internacional de Doenças, 10ª revisão</td>
+</tr>
+<tr>
+<td><strong>CNES</strong></td>
+<td>Cadastro Nacional de Estabelecimentos de Saúde</td>
+</tr>
+<tr>
+<td><strong>SIGTAP</strong></td>
+<td>Sistema de Gerenciamento da Tabela de Procedimentos</td>
+</tr>
+<tr>
+<td><strong>CBO</strong></td>
+<td>Classificação Brasileira de Ocupações</td>
+</tr>
+<tr>
+<td><strong>CNS</strong></td>
+<td>Cartão Nacional de Saúde</td>
+</tr>
+<tr>
+<td><strong>FAEC</strong></td>
+<td>Fundo de Ações Estratégicas e Compensação</td>
+</tr>
+<tr>
+<td><strong>SADT</strong></td>
+<td>Serviços Auxiliares de Diagnóstico e Terapia</td>
+</tr>
+<tr>
+<td><strong>UTI</strong></td>
+<td>Unidade de Terapia Intensiva</td>
+</tr>
+<tr>
+<td><strong>UCI</strong></td>
+<td>Unidade de Cuidados Intermediários</td>
+</tr>
+<tr>
+<td><strong>VDRL</strong></td>
+<td>Veneral Disease Research Laboratory (rastreio sífilis)</td>
+</tr>
+<tr>
+<td><strong>DTS</strong></td>
+<td>Sufixo de arquivo de envio do SIH</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Joins típicos</h2>
+<pre><code>RD ─┬─ N_AIH ───── SP_NAIH ─ SP
+    ├─ N_AIH ───── N_AIH ─── RJ
+    ├─ CNES   ──── CNES ──── CNES.ST  (estabelecimento)
+    ├─ CNES   ──── CNES ──── CNES.LT  (leitos)
+    └─ MUNIC_RES ─ codmunbr ─ IBGE     (denominador populacional)
+</code></pre>
+<h2>Caveats que economizam tempo</h2>
+<ol>
+<li><strong><code>SEXO=3</code> significa feminino</strong>, não 2. O valor <code>2</code> não é usado.</li>
+<li><strong><code>COD_IDADE</code> é obrigatório pra interpretar <code>IDADE</code></strong> — uma criança de 6 meses tem <code>IDADE=6, COD_IDADE=3</code>. Não some idade sem normalizar.</li>
+<li><strong><code>VAL_TOT</code> ≠ Σ componentes</strong> em ~1-2% dos casos (arredondamento e ajustes). Use <code>VAL_TOT</code> como verdade e investigue divergências.</li>
+<li><strong><code>DT_INTER &gt; DT_SAIDA</code></strong> acontece (erros de digitação). Filtrar antes de calcular permanência.</li>
+<li><strong><code>DIAG_PRINC = '0000'</code></strong> ou <code>NULL</code> é cabível — internação cadastrada antes do diagnóstico.</li>
+<li><strong><code>MORTE</code> cobre só óbito durante a internação</strong>. Pra mortalidade pós-alta, cruzar com SIM/DO.</li>
+<li><strong><code>PROC_REA</code> ≠ <code>PROC_SOLIC</code></strong> quando o procedimento muda no curso da internação. <code>PROC_REA</code> é o que foi pago.</li>
+<li><strong>RJ e ER só passam a ser publicados a partir de 2008</strong>. Datasets anteriores não existem.</li>
+</ol>
+</section>
+
+<section id="cnes">
+<h1>CNES — Cadastro de Estabelecimentos</h1>
+<p>O CNES é o <strong>"registro civil" dos estabelecimentos de saúde</strong> no Brasil. Cada unidade (hospital, UBS, clínica, laboratório, consultório) tem um código <code>CNES</code> de 7 dígitos que é a chave usada em todos os outros sistemas DataSUS (SIH, SIA, etc).</p>
+<p>Granularidade: <strong>mensal × UF</strong>. Cada competência publica 13 arquivos, um por aspecto cadastrado (estabelecimento, leitos, profissionais, equipes, equipamentos, habilitações, serviços...).</p>
+<p>Convenção de nomes: <code>{TIPO}{UF}{YY}{MM}.parquet</code> (ex.: <code>STRS2602.parquet</code> = Estabelecimentos do RS de fevereiro/2026).</p>
+<hr>
+<h2>Visão geral dos 13 grupos</h2>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Nome</th>
+<th>Linhas/competência típicas (RS)</th>
+<th>Pro projeto NF01006</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ST</strong></td>
+<td>Estabelecimentos</td>
+<td>~40k</td>
+<td>⭐ <strong>central</strong> — geolocalização e tipologia</td>
+</tr>
+<tr>
+<td><strong>LT</strong></td>
+<td>Leitos</td>
+<td>~3k</td>
+<td>⭐ <strong>central</strong> — capacidade hospitalar</td>
+</tr>
+<tr>
+<td><strong>PF</strong></td>
+<td>Profissionais (vínculos)</td>
+<td>~400k</td>
+<td>profissionais por estabelecimento</td>
+</tr>
+<tr>
+<td><strong>EP</strong></td>
+<td>Equipes (atenção básica)</td>
+<td>~6k</td>
+<td>cobertura ESF/NASF</td>
+</tr>
+<tr>
+<td><strong>EQ</strong></td>
+<td>Equipamentos</td>
+<td>~56k</td>
+<td>capacidade diagnóstica</td>
+</tr>
+<tr>
+<td><strong>HB</strong></td>
+<td>Habilitações</td>
+<td>~2.5k</td>
+<td>credenciamentos de alta complexidade</td>
+</tr>
+<tr>
+<td><strong>SR</strong></td>
+<td>Serviços especializados</td>
+<td>~59k</td>
+<td>oncologia, transplante, hemodiálise</td>
+</tr>
+<tr>
+<td><strong>EF</strong></td>
+<td>Estabelecimentos Filantrópicos</td>
+<td>~70</td>
+<td>flag de natureza</td>
+</tr>
+<tr>
+<td><strong>DC</strong></td>
+<td>Dados Complementares (hemoterapia/diálise/oncologia)</td>
+<td>~220</td>
+<td>unidades de serviços críticos</td>
+</tr>
+<tr>
+<td><strong>IN</strong></td>
+<td>Incentivos financeiros</td>
+<td>~975</td>
+<td>repasses específicos</td>
+</tr>
+<tr>
+<td><strong>RC</strong></td>
+<td>Regras Contratuais</td>
+<td>~700</td>
+<td>contratos por unidade</td>
+</tr>
+<tr>
+<td><strong>GM</strong></td>
+<td>Gestão e Metas</td>
+<td>~28</td>
+<td>metas pactuadas</td>
+</tr>
+<tr>
+<td><strong>EE</strong></td>
+<td>Estabelecimentos de Ensino</td>
+<td>~20</td>
+<td>hospitais universitários</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Colunas comuns a quase todos os 13 grupos</h2>
+<p>Aparecem em ST, LT, PF, EP, EQ, HB, SR, IN, RC, GM, EE (com mesmo significado e tipo):</p>
+<h3>Identificação</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio / Exemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CNES</code></td>
+<td><strong>Código do estabelecimento (chave primária)</strong></td>
+<td>7 dígitos: <code>2261235</code></td>
+</tr>
+<tr>
+<td><code>CODUFMUN</code></td>
+<td>Município IBGE (UF + 4)</td>
+<td><code>430003</code> = Aceguá/RS</td>
+</tr>
+<tr>
+<td><code>CPF_CNPJ</code></td>
+<td>CPF ou CNPJ do estabelecimento</td>
+<td>14 dígitos (zero-padded p/ CPF)</td>
+</tr>
+<tr>
+<td><code>CNPJ_MAN</code></td>
+<td>CNPJ da mantenedora</td>
+<td><code>00000000000000</code> se mesmo do estabelecimento</td>
+</tr>
+<tr>
+<td><code>PF_PJ</code></td>
+<td>Pessoa física ou jurídica</td>
+<td><code>1</code>=PF, <code>3</code>=PJ</td>
+</tr>
+<tr>
+<td><code>NIV_DEP</code></td>
+<td>Nível de dependência</td>
+<td><code>1</code>=individual, <code>3</code>=mantida</td>
+</tr>
+<tr>
+<td><code>COD_CEP</code></td>
+<td>CEP da unidade (em alguns grupos)</td>
+<td>8 dígitos</td>
+</tr>
+<tr>
+<td><code>COMPETEN</code></td>
+<td>Competência (ano + mês)</td>
+<td><code>202602</code></td>
+</tr>
+<tr>
+<td><code>NAT_JUR</code></td>
+<td>Natureza jurídica (Receita Federal)</td>
+<td>4 dígitos (<code>1244</code>=município, <code>3999</code>=privado, <code>2062</code>=SS)</td>
+</tr>
+</tbody>
+</table>
+<h3>Classificação administrativa</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TPGESTAO</code></td>
+<td>Tipo de gestão</td>
+<td><code>M</code>=municipal, <code>E</code>=estadual, <code>D</code>=dupla</td>
+</tr>
+<tr>
+<td><code>ESFERA_A</code></td>
+<td>Esfera administrativa</td>
+<td><code>M</code>=municipal, <code>E</code>=estadual, <code>F</code>=federal</td>
+</tr>
+<tr>
+<td><code>REGSAUDE</code></td>
+<td>Região de saúde</td>
+<td>código interno SUS</td>
+</tr>
+<tr>
+<td><code>MICR_REG</code></td>
+<td>Microrregião IBGE</td>
+<td></td>
+</tr>
+<tr>
+<td><code>DISTRSAN</code></td>
+<td>Distrito sanitário</td>
+<td></td>
+</tr>
+<tr>
+<td><code>DISTRADM</code></td>
+<td>Distrito administrativo</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ATIVIDAD</code></td>
+<td>Atividade principal</td>
+<td><code>04</code>=assistência, <code>05</code>=ensino, <code>06</code>=pesquisa</td>
+</tr>
+<tr>
+<td><code>NATUREZA</code></td>
+<td>Natureza (antigo, descontinuado)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CLIENTEL</code></td>
+<td>Tipo de clientela</td>
+<td><code>01</code>=SUS, <code>03</code>=duplo, <code>04</code>=privado</td>
+</tr>
+<tr>
+<td><code>TP_UNID</code></td>
+<td>Tipo de unidade</td>
+<td>ver tabela abaixo</td>
+</tr>
+<tr>
+<td><code>TURNO_AT</code></td>
+<td>Turno de atendimento</td>
+<td><code>01</code>=manhã, <code>02</code>=tarde, <code>03</code>=2 turnos, <code>06</code>=24h</td>
+</tr>
+<tr>
+<td><code>NIV_HIER</code></td>
+<td>Nível hierárquico (atenção)</td>
+<td><code>1</code>-<code>8</code></td>
+</tr>
+<tr>
+<td><code>TERCEIRO</code></td>
+<td>Indicador terceirizado</td>
+<td>flag</td>
+</tr>
+<tr>
+<td><code>RETENCAO</code></td>
+<td>Retenção de impostos</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>SUS</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VINC_SUS</code></td>
+<td>Vinculado ao SUS?</td>
+<td><code>0/1</code></td>
+</tr>
+<tr>
+<td><code>TP_PREST</code></td>
+<td>Tipo de prestador</td>
+<td><code>99</code>=próprio, <code>20</code>=conveniado, etc.</td>
+</tr>
+</tbody>
+</table>
+<h3>Códigos de <code>TP_UNID</code> mais comuns</h3>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>Tipo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>01</code></td>
+<td>Posto de Saúde</td>
+</tr>
+<tr>
+<td><code>02</code></td>
+<td>Centro de Saúde / UBS</td>
+</tr>
+<tr>
+<td><code>04</code></td>
+<td>Policlínica</td>
+</tr>
+<tr>
+<td><code>05</code></td>
+<td>Hospital Geral</td>
+</tr>
+<tr>
+<td><code>07</code></td>
+<td>Hospital Especializado</td>
+</tr>
+<tr>
+<td><code>15</code></td>
+<td>Unidade Mista</td>
+</tr>
+<tr>
+<td><code>20</code></td>
+<td>Pronto Socorro Geral</td>
+</tr>
+<tr>
+<td><code>21</code></td>
+<td>Pronto Socorro Especializado</td>
+</tr>
+<tr>
+<td><code>22</code></td>
+<td>Consultório</td>
+</tr>
+<tr>
+<td><code>36</code></td>
+<td>Clínica/Centro Especializado</td>
+</tr>
+<tr>
+<td><code>39</code></td>
+<td>Unidade de Apoio Diagnose/Terapia (SADT)</td>
+</tr>
+<tr>
+<td><code>40</code></td>
+<td>Unidade Móvel</td>
+</tr>
+<tr>
+<td><code>42</code></td>
+<td>Unidade Móvel Pré-hospitalar (SAMU)</td>
+</tr>
+<tr>
+<td><code>43</code></td>
+<td>Farmácia</td>
+</tr>
+<tr>
+<td><code>50</code></td>
+<td>Unidade de Vigilância</td>
+</tr>
+<tr>
+<td><code>61</code></td>
+<td>Centro Parto Normal</td>
+</tr>
+<tr>
+<td><code>62</code></td>
+<td>Hospital/Dia</td>
+</tr>
+<tr>
+<td><code>64</code></td>
+<td>Central de Regulação</td>
+</tr>
+<tr>
+<td><code>70</code></td>
+<td>Centro de Atenção Psicossocial (CAPS)</td>
+</tr>
+<tr>
+<td><code>71</code></td>
+<td>Centro de Apoio à Saúde da Família</td>
+</tr>
+<tr>
+<td><code>72</code></td>
+<td>Unidade Acadêmica</td>
+</tr>
+<tr>
+<td><code>73</code></td>
+<td>Pronto Atendimento (UPA)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>ST — Estabelecimentos (208 colunas)</h2>
+<p><strong>A "raiz" do CNES.</strong> Uma linha por estabelecimento × competência. Cabeçalho cadastral + ~150 flags de capacidade instalada.</p>
+<h3>Colunas adicionais (além das comuns)</h3>
+<h4>Cadastro bancário/jurídico</h4>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CO_BANCO</code>, <code>CO_AGENC</code>, <code>C_CORREN</code></td>
+<td>Dados bancários da unidade</td>
+</tr>
+<tr>
+<td><code>CONTRATM</code>, <code>DT_PUBLM</code></td>
+<td>Contrato municipal e data</td>
+</tr>
+<tr>
+<td><code>CONTRATE</code>, <code>DT_PUBLE</code></td>
+<td>Contrato estadual e data</td>
+</tr>
+<tr>
+<td><code>ALVARA</code>, <code>DT_EXPED</code>, <code>ORGEXPED</code></td>
+<td>Alvará sanitário</td>
+</tr>
+<tr>
+<td><code>AV_ACRED</code>, <code>CLASAVAL</code>, <code>DT_ACRED</code></td>
+<td>Acreditação hospitalar</td>
+</tr>
+<tr>
+<td><code>AV_PNASS</code>, <code>DT_PNASS</code></td>
+<td>PNASS (Programa Nacional de Avaliação de Serviços)</td>
+</tr>
+<tr>
+<td><code>COD_IR</code></td>
+<td>Código de incentivo regional</td>
+</tr>
+</tbody>
+</table>
+<h4>Capacidade instalada — Programas (1 linha = unidade tem o programa)</h4>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GESPRG{1-6}E</code> / <code>GESPRG{1-6}M</code></td>
+<td>Gestão de programas estaduais/municipais (1=saúde mulher, 2=criança, 3=adolescente, 4=idoso, 5=outros)</td>
+</tr>
+<tr>
+<td><code>NIVATE_A</code></td>
+<td>Nível atenção ambulatorial</td>
+</tr>
+<tr>
+<td><code>NIVATE_H</code></td>
+<td>Nível atenção hospitalar</td>
+</tr>
+</tbody>
+</table>
+<h4>Leitos resumo (detalhe completo está no LT)</h4>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>QTLEITP1</code>, <code>QTLEITP2</code>, <code>QTLEITP3</code></td>
+<td>Leitos por porte (P1-P3)</td>
+</tr>
+<tr>
+<td><code>LEITHOSP</code></td>
+<td>Total de leitos hospitalares</td>
+</tr>
+<tr>
+<td><code>QTLEIT{05-40}</code></td>
+<td>Quantidade de leitos por especialidade (códigos detalhados no LT)</td>
+</tr>
+</tbody>
+</table>
+<h4>Instalações físicas (<code>QTINST01</code>-<code>QTINST37</code>)</h4>
+<p>Quantidade de cada tipo de instalação:
+- <code>QTINST01</code>-<code>QTINST14</code>: Consultórios médicos especializados
+- <code>QTINST15</code>: <strong>Consultório indiferenciado</strong> (típico de UBS)
+- <code>QTINST16</code>-<code>QTINST21</code>: Salas de atendimento
+- <code>QTINST22</code>-<code>QTINST29</code>: Salas de procedimento (curativos, vacina, nebulização, etc.)
+- <code>QTINST30</code>-<code>QTINST37</code>: Cirurgia, parto, terapia</p>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>URGEMERG</code></td>
+<td>Tem urgência/emergência?</td>
+</tr>
+<tr>
+<td><code>ATENDAMB</code></td>
+<td>Atende ambulatorial?</td>
+</tr>
+<tr>
+<td><code>CENTRCIR</code></td>
+<td>Tem centro cirúrgico?</td>
+</tr>
+<tr>
+<td><code>CENTROBS</code></td>
+<td>Centro obstétrico?</td>
+</tr>
+<tr>
+<td><code>CENTRNEO</code></td>
+<td>Centro de neonatologia?</td>
+</tr>
+<tr>
+<td><code>ATENDHOS</code></td>
+<td>Atende internação?</td>
+</tr>
+</tbody>
+</table>
+<h4>Serviços de apoio (<code>SERAP01P/T</code>-<code>SERAP11T</code>)</h4>
+<p>Por tipo de serviço: P=Próprio, T=Terceirizado. Tipos:
+- 01=Lavanderia, 02=SADT, 03=Nutrição, 04=Manutenção, 05=Esterilização, 06=Necrotério, 07=Patologia clínica, 08=Radiologia, 09=Hemoterapia, 10=Anatomia patológica, 11=Resíduos</p>
+<p>| <code>SERAPOIO</code> | Tem serviços de apoio? | flag |
+| <code>RES_BIOL</code>, <code>RES_QUIM</code>, <code>RES_RADI</code>, <code>RES_COMU</code> | Tipos de resíduo gerado |
+| <code>COLETRES</code> | Coleta de resíduos |</p>
+<h4>Comissões hospitalares (<code>COMISS01</code>-<code>COMISS12</code>)</h4>
+<p>01=Óbito, 02=Ética médica, 03=Documentação médica, 04=Farmácia/Terapêutica, 05=Controle de infecção, 06=Ética de enfermagem, 07=Avaliação prontuários, 08=Padronização medicamentos, 09=Biossegurança, 10=CIPA, 11=Apropriação de custos, 12=Ouvidoria</p>
+<p>| <code>COMISSAO</code> | Tem alguma comissão? | flag |</p>
+<h4>Atendimento prestado por convênio (<code>AP01CV01</code>-<code>AP07CV07</code>)</h4>
+<p>Matriz 7×7 (tipo de atendimento × tipo de convênio). Tipos de atendimento:
+1. Internação
+2. Ambulatorial
+3. SADT
+4. Urgência/Emergência
+5. APAC
+6. Plano gestor
+7. Ações coletivas</p>
+<p>Convênios: 01=SUS, 02=Particular, 03=Plano de saúde privado, 04=Plano de saúde público, 05=Outros</p>
+<p>| <code>ATEND_PR</code> | Atendimento prestado? | flag |</p>
+<h4>Outros</h4>
+<p>| <code>DT_ATUAL</code> | Data da última atualização cadastral | <code>YYYYMM</code> |</p>
+<hr>
+<h2>LT — Leitos (28 colunas)</h2>
+<p><strong>Uma linha por (estabelecimento × tipo de leito × competência).</strong> Use pra calcular oferta hospitalar.</p>
+<h3>Colunas específicas</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TP_LEITO</code></td>
+<td>Tipo geral</td>
+<td><code>1</code>=cirúrgico, <code>2</code>=clínico, <code>3</code>=complementar, <code>4</code>=obstétrico, <code>5</code>=pediátrico, <code>6</code>=outras especialidades, <code>7</code>=hospital-dia</td>
+</tr>
+<tr>
+<td><code>CODLEITO</code></td>
+<td><strong>Código detalhado do leito</strong></td>
+<td>tabela DataSUS (45=clínica geral, 51=UTI adulto I, etc.)</td>
+</tr>
+<tr>
+<td><code>QT_EXIST</code></td>
+<td>Leitos existentes</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>QT_CONTR</code></td>
+<td>Leitos contratados (SUS via contrato)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>QT_SUS</code></td>
+<td><strong>Leitos disponíveis ao SUS</strong></td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>QT_NSUS</code></td>
+<td>Leitos NÃO disponíveis ao SUS</td>
+<td>inteiro</td>
+</tr>
+</tbody>
+</table>
+<h3>Códigos <code>CODLEITO</code> mais comuns</h3>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>Especialidade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>01-13</code></td>
+<td>Cirúrgicos (geral, cardio, gastro, oftalmo, ortopedia, etc.)</td>
+</tr>
+<tr>
+<td><code>14-32</code></td>
+<td>Clínicos (geral, cardio, pediatria, geriatria, etc.)</td>
+</tr>
+<tr>
+<td><code>33-40</code></td>
+<td>Complementares (UTI/UI)</td>
+</tr>
+<tr>
+<td><code>41-44</code></td>
+<td>Obstétricos (normal, patológica, cirúrgica)</td>
+</tr>
+<tr>
+<td><code>45-49</code></td>
+<td>Pediátricos</td>
+</tr>
+<tr>
+<td><code>51</code></td>
+<td>UTI adulto tipo I</td>
+</tr>
+<tr>
+<td><code>52</code></td>
+<td>UTI adulto tipo II</td>
+</tr>
+<tr>
+<td><code>53</code></td>
+<td>UTI adulto tipo III</td>
+</tr>
+<tr>
+<td><code>61-63</code></td>
+<td>UTI pediátrica I/II/III</td>
+</tr>
+<tr>
+<td><code>74-76</code></td>
+<td>UTI neonatal I/II/III</td>
+</tr>
+<tr>
+<td><code>77-78</code></td>
+<td>UTI queimados</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cálculo padrão de leitos SUS:</strong> <code>SUM(QT_SUS) GROUP BY CNES</code>.</p>
+<hr>
+<h2>PF — Profissionais (40 colunas)</h2>
+<p><strong>Vínculos profissionais.</strong> Uma linha por (profissional × estabelecimento × ocupação × competência). Não é "uma linha por profissional" — um mesmo médico pode aparecer 3x se tem 3 vínculos.</p>
+<h3>Colunas específicas</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CPF_PROF</code></td>
+<td>CPF do profissional (criptografado/ofuscado nos parquets do pysus)</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>CPFUNICO</code></td>
+<td>CPF padronizado para deduplicação</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CBO</code></td>
+<td>Classificação Brasileira de Ocupações</td>
+<td>6 dígitos (ex.: <code>225235</code>=cirurgião geral)</td>
+</tr>
+<tr>
+<td><code>CBOUNICO</code></td>
+<td>CBO canônico</td>
+<td></td>
+</tr>
+<tr>
+<td><code>NOMEPROF</code></td>
+<td>Nome do profissional</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>CNS_PROF</code></td>
+<td>Cartão Nacional de Saúde do profissional</td>
+<td>15 dígitos</td>
+</tr>
+<tr>
+<td><code>CONSELHO</code></td>
+<td>Conselho de classe</td>
+<td><code>06</code>=CREMERS (RS), <code>08</code>=COREN, etc.</td>
+</tr>
+<tr>
+<td><code>REGISTRO</code></td>
+<td>Número do registro no conselho</td>
+<td></td>
+</tr>
+<tr>
+<td><code>VINCULAC</code></td>
+<td>Tipo de vínculo (código DataSUS)</td>
+<td><code>010301</code>=estatutário, etc.</td>
+</tr>
+<tr>
+<td><code>VINCUL_C</code></td>
+<td>Vínculo contratual (flag)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>VINCUL_A</code></td>
+<td>Vínculo autônomo (flag)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>VINCUL_N</code></td>
+<td>Sem vínculo formal (flag)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>PROF_SUS</code></td>
+<td>Atende SUS?</td>
+<td><code>0/1</code></td>
+</tr>
+<tr>
+<td><code>PROFNSUS</code></td>
+<td>Atende não-SUS?</td>
+<td><code>0/1</code></td>
+</tr>
+<tr>
+<td><code>HORAOUTR</code></td>
+<td>Horas outras atividades</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>HORAHOSP</code></td>
+<td>Horas hospitalares/semana</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>HORA_AMB</code></td>
+<td>Horas ambulatoriais/semana</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>UFMUNRES</code></td>
+<td>Município de residência do profissional</td>
+<td>IBGE 6</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Caveat — confidencialidade:</strong> o <code>CPF_PROF</code> no parquet aparece ofuscado (caracteres altos da tabela ASCII). Use <code>CPFUNICO</code> ou <code>CNS_PROF</code> se precisar identificar/deduplicar.</p>
+<hr>
+<h2>EP — Equipes (108 colunas)</h2>
+<p><strong>Equipes da Atenção Básica</strong> (Saúde da Família, NASF, Consultório na Rua, etc.).</p>
+<h3>Colunas específicas</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IDEQUIPE</code></td>
+<td>ID único da equipe</td>
+<td>18 dígitos</td>
+</tr>
+<tr>
+<td><code>TIPO_EQP</code></td>
+<td>Tipo de equipe</td>
+<td><code>01</code>=eSF, <code>03</code>=eABP, <code>54</code>=eSB, <code>71</code>=eSF Saúde Bucal, <code>34</code>=eAP, <code>35</code>=NASF, etc.</td>
+</tr>
+<tr>
+<td><code>NOME_EQP</code></td>
+<td>Nome da equipe</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>ID_AREA</code>, <code>NOMEAREA</code></td>
+<td>Área de atuação</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ID_SEGM</code>, <code>DESCSEGM</code>, <code>TIPOSEGM</code></td>
+<td>Segmento populacional</td>
+<td></td>
+</tr>
+<tr>
+<td><code>DT_ATIVA</code></td>
+<td>Data de ativação</td>
+<td><code>YYYYMM</code></td>
+</tr>
+<tr>
+<td><code>DT_DESAT</code></td>
+<td>Data de desativação</td>
+<td><code>900001</code> = ativa</td>
+</tr>
+<tr>
+<td><code>QUILOMBO</code>, <code>ASSENTAD</code>, <code>INDIGENA</code></td>
+<td>Populações cobertas (flags)</td>
+<td><code>0/1</code></td>
+</tr>
+<tr>
+<td><code>POPGERAL</code>, <code>ESCOLA</code>, <code>PRONASCI</code></td>
+<td>Outras populações cobertas</td>
+<td><code>0/1</code></td>
+</tr>
+<tr>
+<td><code>MOTDESAT</code>, <code>TP_DESAT</code></td>
+<td>Motivo da desativação</td>
+<td>código</td>
+</tr>
+</tbody>
+</table>
+<p>Resto das colunas: campos administrativos compartilhados com ST/EQ (GESPRG, AP<em>CV</em>, etc.).</p>
+<hr>
+<h2>EQ — Equipamentos (28 colunas)</h2>
+<p><strong>Inventário de equipamentos.</strong> Uma linha por (estabelecimento × tipo equipamento × competência).</p>
+<h3>Colunas específicas</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TIPEQUIP</code></td>
+<td>Categoria do equipamento</td>
+<td><code>01</code>=Diagnose por imagem, <code>02</code>=Infraestrutura, <code>03</code>=Métodos diagnósticos, <code>04</code>=Métodos terapêuticos, <code>05</code>=Odontológicos, <code>06</code>=Outros</td>
+</tr>
+<tr>
+<td><code>CODEQUIP</code></td>
+<td>Código específico</td>
+<td>tabela DataSUS — <code>41</code>=raio-X, <code>42</code>=mamógrafo, <code>43</code>=tomógrafo, <code>44</code>=RM, <code>45</code>=ultrassom</td>
+</tr>
+<tr>
+<td><code>QT_EXIST</code></td>
+<td>Quantidade total</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>QT_USO</code></td>
+<td>Quantidade em uso</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>IND_SUS</code></td>
+<td>Disponível ao SUS?</td>
+<td><code>0/1</code></td>
+</tr>
+<tr>
+<td><code>IND_NSUS</code></td>
+<td>Disponível não-SUS?</td>
+<td><code>0/1</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cálculo padrão:</strong> <code>SUM(QT_USO) WHERE CODEQUIP=44 AND IND_SUS=1 GROUP BY CODUFMUN</code> → ressonâncias SUS por município.</p>
+<hr>
+<h2>HB — Habilitações (32 colunas)</h2>
+<p><strong>Credenciamentos formais</strong> (UNACON, CACON, UTI tipo II, gestação alto risco, etc).</p>
+<h3>Colunas específicas</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SGRUPHAB</code></td>
+<td>Código da habilitação (tabela SUS) — ex.: <code>1901</code>=UNACON, <code>5001</code>=Hosp. Ensino, <code>7008</code>=UTI adulto II</td>
+</tr>
+<tr>
+<td><code>CMPT_INI</code></td>
+<td>Competência inicial (<code>YYYYMM</code>)</td>
+</tr>
+<tr>
+<td><code>CMPT_FIM</code></td>
+<td>Competência final — <code>999999</code> = ativa</td>
+</tr>
+<tr>
+<td><code>DTPORTAR</code></td>
+<td>Data da portaria</td>
+</tr>
+<tr>
+<td><code>PORTARIA</code></td>
+<td>Identificação da portaria</td>
+</tr>
+<tr>
+<td><code>MAPORTAR</code></td>
+<td>Mês/ano da portaria</td>
+</tr>
+<tr>
+<td><code>NULEITOS</code></td>
+<td>Número de leitos da habilitação (quando aplicável)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>SR — Serviços Especializados (32 colunas)</h2>
+<p><strong>Serviços ofertados pela unidade</strong> (oncologia, transplante, hemodiálise, atenção domiciliar...).</p>
+<h3>Colunas específicas</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SERV_ESP</code></td>
+<td>Código do serviço (tabela SUS)</td>
+<td><code>112</code>=Atenção em saúde mental, <code>121</code>=Atenção oncológica, etc.</td>
+</tr>
+<tr>
+<td><code>CLASS_SR</code></td>
+<td>Classificação dentro do serviço</td>
+<td></td>
+</tr>
+<tr>
+<td><code>SRVUNICO</code></td>
+<td>Identificador canônico</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CARACTER</code></td>
+<td>Caráter</td>
+<td><code>1</code>=ambulatorial, <code>2</code>=hospitalar, <code>3</code>=ambos</td>
+</tr>
+<tr>
+<td><code>AMB_NSUS</code>, <code>AMB_SUS</code></td>
+<td>Atende ambulatorial?</td>
+<td>flags</td>
+</tr>
+<tr>
+<td><code>HOSP_NSUS</code>, <code>HOSP_SUS</code></td>
+<td>Atende hospitalar?</td>
+<td>flags</td>
+</tr>
+<tr>
+<td><code>CONTSRVU</code></td>
+<td>Contagem? (controle interno)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CNESTERC</code></td>
+<td>CNES da unidade terceirizada (se houver)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>EF — Estabelecimentos Filantrópicos (31 colunas)</h2>
+<p>Marca os estabelecimentos com <strong>certificação filantrópica</strong> (CEBAS). Estrutura idêntica a HB — usa os mesmos campos <code>SGRUPHAB</code>, <code>CMPT_INI</code>, <code>CMPT_FIM</code>, <code>DTPORTAR</code>, <code>PORTARIA</code>, <code>MAPORTAR</code>.</p>
+<p><code>SGRUPHAB=6001</code> indica certificação filantrópica padrão.</p>
+<hr>
+<h2>DC — Dados Complementares (171 colunas)</h2>
+<p><strong>Detalhes operacionais de unidades de Diálise, Quimio/Radio e Hemoterapia.</strong> Subconjunto restrito de unidades (~220 no RS).</p>
+<h3>Blocos temáticos</h3>
+<table>
+<thead>
+<tr>
+<th>Prefixo</th>
+<th>Tema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>S_HBSAGP</code>, <code>S_HBSAGN</code>, <code>S_DPI</code>, <code>S_DPAC</code>, <code>S_REAGP</code>, <code>S_REAGN</code>, <code>S_REHCV</code></td>
+<td>Capacidade de diálise (sorologias dos pacientes, máquinas)</td>
+</tr>
+<tr>
+<td><code>MAQ_PROP</code>, <code>MAQ_OUTR</code></td>
+<td>Quantidade de máquinas próprias / terceiras</td>
+</tr>
+<tr>
+<td><code>F_AREIA</code>, <code>F_CARVAO</code>, <code>ABRANDAD</code>, <code>DEIONIZA</code>, <code>OSMOSE_R</code>, <code>OUT_TRAT</code></td>
+<td>Tratamento de água (diálise)</td>
+</tr>
+<tr>
+<td><code>CNS_NEFR</code>, <code>DIALISE</code></td>
+<td>Responsável técnico nefrologista</td>
+</tr>
+<tr>
+<td><code>SIMUL_RD</code>, <code>PLANJ_RD</code>, <code>ARMAZ_FT</code>, <code>CONF_MAS</code>, <code>SALA_MOL</code>, <code>BLOCOPER</code></td>
+<td>Áreas físicas de radioterapia/oncologia</td>
+</tr>
+<tr>
+<td><code>S_ARMAZE</code>, <code>S_PREPAR</code>, <code>S_QCDURA</code>, <code>S_QLDURA</code>, <code>S_CPFLUX</code>, <code>S_SIMULA</code>, <code>S_ACELL6</code>, <code>S_ALSEME</code>, <code>S_ALCOME</code></td>
+<td>Salas/equipamentos de radioterapia</td>
+</tr>
+<tr>
+<td><code>ORTV1050</code>, <code>ORV50150</code>, <code>OV150500</code>, <code>UN_COBAL</code></td>
+<td>Equipamentos de ortovoltagem / bomba de cobalto</td>
+</tr>
+<tr>
+<td><code>EQBRBAIX</code>, <code>EQBRMEDI</code>, <code>EQBRALTA</code>, <code>EQ_MAREA</code>, <code>EQ_MINDI</code>, <code>EQSISPLN</code>, <code>EQDOSCLI</code>, <code>EQFONSEL</code></td>
+<td>Braquiterapia (alta/média/baixa taxa)</td>
+</tr>
+<tr>
+<td><code>CNS_ADM</code>, <code>CNS_OPED</code>, <code>CNS_CONC</code>, <code>CNS_OCLIN</code>, <code>CNS_MRAD</code>, <code>CNS_FNUC</code></td>
+<td>Profissionais responsáveis técnicos</td>
+</tr>
+<tr>
+<td><code>QUIMRADI</code></td>
+<td>Tem quimioterapia + radioterapia?</td>
+</tr>
+<tr>
+<td><code>S_RECEPC</code>, <code>S_TRIHMT</code>, <code>S_TRICLI</code>, <code>S_COLETA</code>, <code>S_AFERES</code>, <code>S_PREEST</code>, <code>S_PROCES</code>, <code>S_ESTOQU</code>, <code>S_DISTRI</code>, <code>S_SOROLO</code>, <code>S_IMUNOH</code>, <code>S_PRETRA</code>, <code>S_HEMOST</code>, <code>S_CONTRQ</code>, <code>S_BIOMOL</code>, <code>S_IMUNFE</code>, <code>S_TRANSF</code>, <code>S_SGDOAD</code></td>
+<td>Setores de hemoterapia</td>
+</tr>
+<tr>
+<td><code>QT_CADRE</code>, <code>QT_CENRE</code>, <code>QT_REFSA</code>, <code>QT_CONRA</code>, <code>QT_EXTPL</code>, <code>QT_FRE18</code>, <code>QT_FRE30</code>, <code>QT_AGIPL</code>, <code>QT_SELAD</code>, <code>QT_IRRHE</code>, <code>QT_AGLTN</code>, <code>QT_MAQAF</code>, <code>QT_REFRE</code>, <code>QT_REFAS</code>, <code>QT_CAPFL</code></td>
+<td>Equipamentos de hemoterapia (refrigeradores, freezers, centrífugas, etc.)</td>
+</tr>
+<tr>
+<td><code>CNS_HMTR</code>, <code>CNS_HMTL</code>, <code>CNS_CRES</code>, <code>CNS_RTEC</code></td>
+<td>Hematologistas / responsáveis técnicos</td>
+</tr>
+<tr>
+<td><code>HEMOTERA</code></td>
+<td>Tem hemoterapia?</td>
+</tr>
+</tbody>
+</table>
+<p>Restante: campos comuns (GESPRG, AP<em>CV</em>, ATEND_PR).</p>
+<hr>
+<h2>IN — Incentivos Financeiros (31 colunas)</h2>
+<p>Estrutura <strong>idêntica a HB</strong>: marca quais incentivos federais a unidade recebe. Use <code>SGRUPHAB</code> pra ver o tipo de incentivo (programa Saúde da Família, IAPI, etc.).</p>
+<p><code>SGRUPHAB=8107</code> é exemplo de PAB — Piso de Atenção Básica.</p>
+<hr>
+<h2>RC — Regras Contratuais (31 colunas)</h2>
+<p>Idem HB/IN — <code>SGRUPHAB</code> identifica a regra (<code>7111</code> = contratualização hospitalar).</p>
+<hr>
+<h2>GM — Gestão e Metas (31 colunas)</h2>
+<p>Idem HB — <code>SGRUPHAB</code> identifica a meta pactuada (<code>7008</code> = contratualização rede materno-infantil, etc.).</p>
+<hr>
+<h2>EE — Estabelecimentos de Ensino (31 colunas)</h2>
+<p>Idem HB — certificação de hospital de ensino. <code>SGRUPHAB=5001</code> é a certificação padrão.</p>
+<p><strong>Note:</strong> EE tem poucas linhas (~20 no RS) porque só hospitais universitários/de ensino têm essa certificação.</p>
+<hr>
+<h2>Joins típicos com outros DataSUS</h2>
+<pre><code>CNES.ST ─┬─ CNES ─── CNES (SIH.RD)         → hospital onde a internação aconteceu
+         ├─ CNES ─── CNES (SIH.SP)         → procedimentos por hospital
+         ├─ CNES ─── CNES_EXEC (SIA.PS)    → atendimento ambulatorial
+         └─ CNES ─── CODESTAB (SIM.DO)     → hospital onde ocorreu o óbito
+
+CNES.LT ─── CNES ─── CNES (SIH.RD)         → leitos disponíveis × ocupação
+CNES.HB ─── CNES ─── CNES (SIH.RD)         → habilitações × tipo de internação realizada
+CNES.PF ─── CNES ─── CNES (SIH.SP.SP_CNES) → profissional × procedimento
+</code></pre>
+<h2>Caveats que economizam tempo</h2>
+<ol>
+<li><strong><code>COMPETEN</code> é <code>YYYYMM</code></strong> — não <code>YYYY-MM-DD</code>. Pra date arithmetic, parse antes.</li>
+<li><strong>Mesma <code>CNES</code> aparece em todos os 13 grupos.</strong> Use a <code>CNES</code> como pivot pra cruzar (ex.: ST + LT + HB pra ter "hospital + leitos + habilitações").</li>
+<li><strong><code>NIV_DEP=3</code> significa estabelecimento dependente</strong> (mesma mantenedora) — pode ter <code>CPF_CNPJ=00000000000000</code> e usar a <code>CNPJ_MAN</code>.</li>
+<li><strong><code>CMPT_FIM=999999</code></strong> em HB/EF/IN/RC/GM/EE significa que a habilitação/incentivo está ativo.</li>
+<li><strong>Mudanças cadastrais entre competências são frequentes</strong> — um hospital pode mudar <code>CLIENTEL</code> ou <code>TPGESTAO</code>. Pra análise temporal, fixe a competência de referência ou use snapshot mensal.</li>
+<li><strong><code>QTLEIT*</code> no ST é resumo agregado; o LT é a fonte da verdade</strong> pra leitos detalhados.</li>
+<li><strong>Estabelecimentos descredenciados</strong> continuam aparecendo em competências futuras com <code>DT_ATUAL</code> antigo — filtre por <code>COMPETEN == DT_ATUAL</code> se quiser só os ativos no mês.</li>
+<li><strong><code>CODUFMUN</code></strong>: 6 dígitos IBGE — usar como chave de join com IBGE pra dados populacionais.</li>
+</ol>
+</section>
+
+<section id="sia">
+<h1>SIA — Produção Ambulatorial</h1>
+<p>O SIA registra <strong>atendimentos sem internação</strong> pagos pelo SUS: consultas, exames, procedimentos terapêuticos. É o complemento ambulatorial do SIH.</p>
+<p>Granularidade: <strong>mensal × UF</strong>. Volume gigantesco — <code>PA</code> chega a 4-5 milhões de linhas/mês no RS.</p>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Nome</th>
+<th>Linhas/mês (RS)</th>
+<th>Conteúdo central</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PA</strong></td>
+<td>Produção Ambulatorial</td>
+<td>~4M</td>
+<td>Procedimentos individualizados (uma linha por procedimento)</td>
+</tr>
+<tr>
+<td><strong>BI</strong></td>
+<td>BPA Individualizado</td>
+<td>~350k</td>
+<td>Boletim de Produção Ambulatorial com paciente identificado (descontinuado em 2011)</td>
+</tr>
+<tr>
+<td><strong>PS</strong></td>
+<td>RAAS Psicossocial</td>
+<td>~55k</td>
+<td>Atendimentos em CAPS (saúde mental)</td>
+</tr>
+<tr>
+<td><strong>SAD</strong></td>
+<td>RAAS Atenção Domiciliar</td>
+<td>~300</td>
+<td>Atendimento domiciliar (SAD/Melhor em Casa)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Caveat de escopo:</strong> PA e BI são procedimentos faturados. PS e SAD são RAAS (Registro de Ações Ambulatoriais de Saúde) — formato mais novo, com mais contexto clínico.</p>
+<hr>
+<h2>PA — Produção Ambulatorial (61 colunas)</h2>
+<p>A tabela <strong>maior e mais usada</strong> do SIA. Cada linha = um procedimento executado.</p>
+<p>Convenção: <strong>a maioria das colunas começa com <code>PA_</code></strong>. Algumas raras não (legacy).</p>
+<h3>Identificação do estabelecimento</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PA_CODUNI</code></td>
+<td><strong>CNES do estabelecimento</strong> (chave pra CNES.ST)</td>
+</tr>
+<tr>
+<td><code>PA_GESTAO</code></td>
+<td>Município de gestão</td>
+</tr>
+<tr>
+<td><code>PA_CONDIC</code></td>
+<td>Condição da gestão</td>
+</tr>
+<tr>
+<td><code>PA_UFMUN</code></td>
+<td>Município IBGE da unidade</td>
+</tr>
+<tr>
+<td><code>PA_TPUPS</code></td>
+<td>Tipo de unidade (idêntico a CNES.TP_UNID)</td>
+</tr>
+<tr>
+<td><code>PA_TIPPRE</code></td>
+<td>Tipo de prestador</td>
+</tr>
+<tr>
+<td><code>PA_MN_IND</code></td>
+<td>Município/individual</td>
+</tr>
+<tr>
+<td><code>PA_CNPJCPF</code></td>
+<td>CNPJ/CPF do estabelecimento</td>
+</tr>
+<tr>
+<td><code>PA_CNPJMNT</code></td>
+<td>CNPJ da mantenedora</td>
+</tr>
+<tr>
+<td><code>PA_CNPJ_CC</code></td>
+<td>CNPJ do convênio/contrato</td>
+</tr>
+<tr>
+<td><code>PA_NAT_JUR</code></td>
+<td>Natureza jurídica</td>
+</tr>
+</tbody>
+</table>
+<h3>Competência e processamento</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PA_MVM</code></td>
+<td>Movimento (mês/ano de execução) — <code>YYYYMM</code></td>
+</tr>
+<tr>
+<td><code>PA_CMP</code></td>
+<td>Competência (mês/ano faturamento) — <code>YYYYMM</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Procedimento</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PA_PROC_ID</code></td>
+<td><strong>Procedimento SIGTAP (10 dígitos)</strong></td>
+<td>tabela DataSUS</td>
+</tr>
+<tr>
+<td><code>PA_TPFIN</code></td>
+<td>Tipo de financiamento</td>
+<td><code>06</code>=MAC ambulatorial, <code>04</code>=PAB, etc.</td>
+</tr>
+<tr>
+<td><code>PA_SUBFIN</code></td>
+<td>Subfinanciamento</td>
+<td></td>
+</tr>
+<tr>
+<td><code>PA_NIVCPL</code></td>
+<td>Nível de complexidade</td>
+<td><code>1</code>=básica, <code>2</code>=média, <code>3</code>=alta</td>
+</tr>
+<tr>
+<td><code>PA_DOCORIG</code></td>
+<td>Documento de origem</td>
+<td><code>B</code>=BPA, <code>I</code>=BPA-I, <code>P</code>=APAC</td>
+</tr>
+<tr>
+<td><code>PA_AUTORIZ</code></td>
+<td>Número APAC (se aplicável)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>PA_REGCT</code></td>
+<td>Regra contratual</td>
+<td></td>
+</tr>
+<tr>
+<td><code>PA_INCOUT</code>, <code>PA_INCURG</code></td>
+<td>Incentivos outros / urgência</td>
+<td></td>
+</tr>
+<tr>
+<td><code>PA_SRV_C</code></td>
+<td>Classificação de serviço/CNES.SR</td>
+<td></td>
+</tr>
+<tr>
+<td><code>PA_INE</code></td>
+<td>Identificador da equipe (CNES.EP)</td>
+<td>18 dígitos</td>
+</tr>
+<tr>
+<td><code>PA_FNTORC</code></td>
+<td>Fonte orçamentária</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Profissional executor</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PA_CNSMED</code></td>
+<td>CNS do profissional executor (15 dígitos)</td>
+</tr>
+<tr>
+<td><code>PA_CBOCOD</code></td>
+<td>CBO do profissional</td>
+</tr>
+</tbody>
+</table>
+<h3>Paciente</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PA_IDADE</code></td>
+<td>Idade do paciente</td>
+<td>string 3 dígitos</td>
+</tr>
+<tr>
+<td><code>PA_FLIDADE</code></td>
+<td>Flag idade válida</td>
+<td></td>
+</tr>
+<tr>
+<td><code>IDADEMIN</code>, <code>IDADEMAX</code></td>
+<td>Faixa etária esperada pro procedimento</td>
+<td>inteiros</td>
+</tr>
+<tr>
+<td><code>PA_SEXO</code></td>
+<td>Sexo</td>
+<td><code>M</code>/<code>F</code></td>
+</tr>
+<tr>
+<td><code>PA_RACACOR</code></td>
+<td>Raça/cor</td>
+<td>mesmo padrão do SIH (<code>01</code>=branca etc.)</td>
+</tr>
+<tr>
+<td><code>PA_MUNPCN</code></td>
+<td>Município de residência do paciente</td>
+<td>IBGE 6</td>
+</tr>
+<tr>
+<td><code>PA_ETNIA</code></td>
+<td>Etnia indígena</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Quantidades e valores (R$)</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PA_QTDPRO</code></td>
+<td>Quantidade produzida</td>
+</tr>
+<tr>
+<td><code>PA_QTDAPR</code></td>
+<td>Quantidade aprovada</td>
+</tr>
+<tr>
+<td><code>PA_VALPRO</code></td>
+<td>Valor produzido (R$)</td>
+</tr>
+<tr>
+<td><code>PA_VALAPR</code></td>
+<td>Valor aprovado (R$) — <strong>o que vale pra análise financeira</strong></td>
+</tr>
+<tr>
+<td><code>PA_DIF_VAL</code></td>
+<td>Diferença (produzido - aprovado)</td>
+</tr>
+<tr>
+<td><code>NU_VPA_TOT</code></td>
+<td>Valor total VPA</td>
+</tr>
+<tr>
+<td><code>NU_PA_TOT</code></td>
+<td>Valor total PA</td>
+</tr>
+<tr>
+<td><code>PA_VL_CF</code></td>
+<td>Valor componente federal</td>
+</tr>
+<tr>
+<td><code>PA_VL_CL</code></td>
+<td>Valor componente local</td>
+</tr>
+<tr>
+<td><code>PA_VL_INC</code></td>
+<td>Valor incentivo</td>
+</tr>
+</tbody>
+</table>
+<h3>Desfecho (preenchido pra APAC)</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PA_MOTSAI</code></td>
+<td>Motivo de saída</td>
+</tr>
+<tr>
+<td><code>PA_OBITO</code>, <code>PA_ENCERR</code>, <code>PA_PERMAN</code>, <code>PA_ALTA</code>, <code>PA_TRANSF</code></td>
+<td>Flags de desfecho (mutuamente exclusivos)</td>
+</tr>
+</tbody>
+</table>
+<h3>CID (preenchido só em APAC e alguns procedimentos)</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PA_CIDPRI</code></td>
+<td>CID-10 principal</td>
+</tr>
+<tr>
+<td><code>PA_CIDSEC</code></td>
+<td>CID-10 secundário</td>
+</tr>
+<tr>
+<td><code>PA_CIDCAS</code></td>
+<td>CID-10 caso (causa)</td>
+</tr>
+<tr>
+<td><code>PA_CATEND</code></td>
+<td>Caráter de atendimento</td>
+</tr>
+</tbody>
+</table>
+<h3>Outros</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PA_UFDIF</code>, <code>PA_MNDIF</code></td>
+<td>Flag procedimento em UF/município diferente da residência</td>
+</tr>
+<tr>
+<td><code>PA_INDICA</code></td>
+<td>Indicação (código DataSUS)</td>
+</tr>
+<tr>
+<td><code>PA_CODOCO</code></td>
+<td>Código de ocorrência</td>
+</tr>
+<tr>
+<td><code>PA_FLQT</code></td>
+<td>Flag de quantidade</td>
+</tr>
+<tr>
+<td><code>PA_FLER</code></td>
+<td>Flag de erro</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>BI — BPA Individualizado (35 colunas)</h2>
+<p><strong>Procedimentos com paciente identificado.</strong> Subconjunto do PA com CNS, data de nascimento, etc. <strong>Descontinuado em 2011</strong> — substituído pelo PA-I em 2012 (que vive dentro do PA com <code>PA_DOCORIG='I'</code>).</p>
+<h3>Colunas específicas (sem prefixo)</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CODUNI</code></td>
+<td>CNES da unidade</td>
+<td></td>
+</tr>
+<tr>
+<td><code>GESTAO</code></td>
+<td>Município de gestão</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CONDIC</code></td>
+<td>Condição da gestão</td>
+<td></td>
+</tr>
+<tr>
+<td><code>UFMUN</code></td>
+<td>Município IBGE</td>
+<td></td>
+</tr>
+<tr>
+<td><code>TPUPS</code>, <code>TIPPRE</code>, <code>MN_IND</code></td>
+<td>Tipo unidade, prestador, indicador</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CNPJCPF</code>, <code>CNPJMNT</code>, <code>CNPJ_CC</code></td>
+<td>Documentos</td>
+<td></td>
+</tr>
+<tr>
+<td><code>DT_PROCESS</code></td>
+<td>Data de processamento</td>
+<td><code>YYYYMM</code></td>
+</tr>
+<tr>
+<td><code>DT_ATEND</code></td>
+<td>Data do atendimento</td>
+<td><code>YYYYMM</code></td>
+</tr>
+<tr>
+<td><code>PROC_ID</code></td>
+<td>Procedimento SIGTAP</td>
+<td></td>
+</tr>
+<tr>
+<td><code>TPFIN</code>, <code>SUBFIN</code>, <code>COMPLEX</code></td>
+<td>Financiamento e complexidade</td>
+<td></td>
+</tr>
+<tr>
+<td><code>AUTORIZ</code></td>
+<td>Autorização</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CNSPROF</code></td>
+<td>CNS do profissional</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CBOPROF</code></td>
+<td>CBO do profissional</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CIDPRI</code></td>
+<td>CID principal</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CATEND</code></td>
+<td>Caráter de atendimento</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CNS_PAC</code></td>
+<td><strong>CNS do paciente</strong> (ofuscado no parquet do pysus)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>DTNASC</code></td>
+<td>Data de nascimento</td>
+<td><code>YYYYMMDD</code></td>
+</tr>
+<tr>
+<td><code>TPIDADEPAC</code></td>
+<td>Tipo da idade</td>
+<td><code>4</code>=anos</td>
+</tr>
+<tr>
+<td><code>IDADEPAC</code></td>
+<td>Idade</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>SEXOPAC</code></td>
+<td>Sexo</td>
+<td></td>
+</tr>
+<tr>
+<td><code>RACACOR</code>, <code>ETNIA</code></td>
+<td>Raça/cor e etnia</td>
+<td></td>
+</tr>
+<tr>
+<td><code>MUNPAC</code></td>
+<td>Município residência</td>
+<td></td>
+</tr>
+<tr>
+<td><code>QT_APRES</code>, <code>QT_APROV</code></td>
+<td>Quantidades apresentada/aprovada</td>
+<td></td>
+</tr>
+<tr>
+<td><code>VL_APRES</code>, <code>VL_APROV</code></td>
+<td>Valores apresentado/aprovado</td>
+<td></td>
+</tr>
+<tr>
+<td><code>UFDIF</code>, <code>MNDIF</code></td>
+<td>Flags UF/município diferente</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Caveat:</strong> desde 2012 esses dados estão dentro do PA com <code>PA_DOCORIG='I'</code>. <strong>Use BI só pra análise histórica pré-2012.</strong></p>
+<hr>
+<h2>PS — RAAS Psicossocial (45 colunas)</h2>
+<p><strong>Atendimentos em CAPS</strong> (Centros de Atenção Psicossocial). Estrutura RAAS = registro detalhado de longa duração (não 1 procedimento/linha, mas 1 plano de cuidado/linha).</p>
+<h3>Identificação</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CNES_EXEC</code></td>
+<td>CNES do CAPS (chave)</td>
+</tr>
+<tr>
+<td><code>GESTAO</code>, <code>CONDIC</code>, <code>UFMUN</code>, <code>TPUPS</code>, <code>TIPPRE</code>, <code>MN_IND</code></td>
+<td>Padrão SIA</td>
+</tr>
+<tr>
+<td><code>CNPJCPF</code>, <code>CNPJMNT</code></td>
+<td>Documentos</td>
+</tr>
+<tr>
+<td><code>NAT_JUR</code></td>
+<td>Natureza jurídica</td>
+</tr>
+</tbody>
+</table>
+<h3>Competência</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DT_PROCESS</code></td>
+<td>Mês de processamento (<code>YYYYMM</code>)</td>
+</tr>
+<tr>
+<td><code>DT_ATEND</code></td>
+<td>Mês do atendimento (<code>YYYYMM</code>)</td>
+</tr>
+<tr>
+<td><code>INICIO</code>, <code>FIM</code></td>
+<td>Datas de início/fim do período RAAS (<code>YYYYMMDD</code>)</td>
+</tr>
+<tr>
+<td><code>PERMANEN</code></td>
+<td>Permanência em dias</td>
+</tr>
+</tbody>
+</table>
+<h3>Paciente</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CNS_PAC</code></td>
+<td>CNS do paciente (ofuscado)</td>
+</tr>
+<tr>
+<td><code>DTNASC</code></td>
+<td>Nascimento</td>
+</tr>
+<tr>
+<td><code>TPIDADEPAC</code>, <code>IDADEPAC</code>, <code>SEXOPAC</code>, <code>RACACOR</code>, <code>ETNIA</code>, <code>NACION_PAC</code>, <code>MUNPAC</code></td>
+<td>Demografia padrão</td>
+</tr>
+<tr>
+<td><code>SIT_RUA</code></td>
+<td>Situação de rua?</td>
+</tr>
+<tr>
+<td><code>TP_DROGA</code></td>
+<td>Tipo de droga</td>
+</tr>
+<tr>
+<td><code>LOC_REALIZ</code></td>
+<td>Local</td>
+</tr>
+</tbody>
+</table>
+<h3>Atendimento</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CATEND</code></td>
+<td>Caráter de atendimento</td>
+</tr>
+<tr>
+<td><code>CIDPRI</code></td>
+<td>CID principal (geralmente F00-F99, transtornos mentais)</td>
+</tr>
+<tr>
+<td><code>CIDASSOC</code></td>
+<td>CID associado</td>
+</tr>
+<tr>
+<td><code>ORIGEM_PAC</code></td>
+<td>Origem do paciente</td>
+</tr>
+<tr>
+<td><code>MOT_COB</code>, <code>DT_MOTCOB</code></td>
+<td>Motivo da cobrança e data</td>
+</tr>
+<tr>
+<td><code>DESTINOPAC</code></td>
+<td>Destino final</td>
+</tr>
+<tr>
+<td><code>COB_ESF</code></td>
+<td>Cobertura ESF (paciente)?</td>
+</tr>
+<tr>
+<td><code>CNES_ESF</code></td>
+<td>CNES da equipe ESF</td>
+</tr>
+</tbody>
+</table>
+<h3>Procedimento</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PA_PROC_ID</code></td>
+<td>Procedimento SIGTAP</td>
+</tr>
+<tr>
+<td><code>PA_QTDPRO</code>, <code>PA_QTDAPR</code></td>
+<td>Quantidades</td>
+</tr>
+<tr>
+<td><code>PA_SRV</code></td>
+<td>Serviço (CNES.SR)</td>
+</tr>
+<tr>
+<td><code>PA_CLASS_S</code></td>
+<td>Classificação do serviço</td>
+</tr>
+<tr>
+<td><code>QTDATE</code>, <code>QTDPCN</code></td>
+<td>Quantidade atendimentos / pacientes</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>SAD — RAAS Atenção Domiciliar (44 colunas)</h2>
+<p><strong>Atendimento domiciliar</strong> (Serviço de Atenção Domiciliar / Melhor em Casa). Estrutura quase idêntica à do PS.</p>
+<h3>Diferenças vs. PS</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PA_EQUIPE</code></td>
+<td>Identificador da equipe SAD</td>
+</tr>
+<tr>
+<td><code>PA_TP_EQP</code></td>
+<td>Tipo de equipe</td>
+</tr>
+<tr>
+<td><code>PA_CID</code></td>
+<td>CID do procedimento</td>
+</tr>
+<tr>
+<td><code>CO_INE</code></td>
+<td>Identificador INE da equipe (CNES.EP)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sem:</strong> <code>SIT_RUA</code>, <code>TP_DROGA</code>, <code>LOC_REALIZ</code>, <code>CIDASSOC</code>, <code>ORIGEM_PAC</code>, <code>COB_ESF</code> (não fazem sentido pro contexto domiciliar).</p>
+<hr>
+<h2>Glossário</h2>
+<table>
+<thead>
+<tr>
+<th>Sigla</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SIGTAP</strong></td>
+<td>Sistema de Gerenciamento da Tabela de Procedimentos</td>
+</tr>
+<tr>
+<td><strong>BPA</strong></td>
+<td>Boletim de Produção Ambulatorial</td>
+</tr>
+<tr>
+<td><strong>BPA-I</strong></td>
+<td>BPA Individualizado</td>
+</tr>
+<tr>
+<td><strong>APAC</strong></td>
+<td>Autorização de Procedimentos Ambulatoriais (alta complexidade)</td>
+</tr>
+<tr>
+<td><strong>RAAS</strong></td>
+<td>Registro de Ações Ambulatoriais de Saúde</td>
+</tr>
+<tr>
+<td><strong>PS</strong></td>
+<td>RAAS Psicossocial</td>
+</tr>
+<tr>
+<td><strong>SAD</strong></td>
+<td>RAAS Serviço de Atenção Domiciliar</td>
+</tr>
+<tr>
+<td><strong>CAPS</strong></td>
+<td>Centro de Atenção Psicossocial</td>
+</tr>
+<tr>
+<td><strong>MAC</strong></td>
+<td>Média e Alta Complexidade (subteto financeiro)</td>
+</tr>
+<tr>
+<td><strong>PAB</strong></td>
+<td>Piso de Atenção Básica</td>
+</tr>
+<tr>
+<td><strong>CNS</strong></td>
+<td>Cartão Nacional de Saúde</td>
+</tr>
+<tr>
+<td><strong>INE</strong></td>
+<td>Identificador Nacional de Equipes</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Joins típicos</h2>
+<pre><code>SIA.PA ─┬─ PA_CODUNI ─── CNES (CNES.ST)         → estabelecimento
+        ├─ PA_PROC_ID ── proc       (SIGTAP)    → custo unitário oficial
+        ├─ PA_INE    ─── IDEQUIPE (CNES.EP)     → equipe da AB executora
+        ├─ PA_CNSMED ─── CNS_PROF (CNES.PF)     → profissional executor (vínculos)
+        └─ PA_MUNPCN ─── codmun    (IBGE)        → residência do paciente
+
+SIA.PS / SAD ─── CNS_PAC ─── (SIH.RD)  → não existe link direto; PA-I é a única ligação por paciente
+</code></pre>
+<h2>Caveats que economizam tempo</h2>
+<ol>
+<li><strong>Volume:</strong> PA é descomunal (~4M linhas/mês no RS, ~70 MB parquet). Pra agregar, prefira pyspark/duckdb ao pandas. Pro range de 10 anos × 12 meses, são ~500M linhas — não cabe em pandas.</li>
+<li><strong><code>PA_VALAPR</code> ≠ <code>PA_VALPRO</code> em ~5% dos casos</strong> — glosas. Use <code>PA_VALAPR</code> pra orçamento real, <code>PA_VALPRO</code> pra "intenção".</li>
+<li><strong><code>PA_DOCORIG='I'</code> é BI moderno</strong>, integrado ao PA desde 2012. Use isso pra reconstituir a série histórica de BPA-I sem precisar de BI legado.</li>
+<li><strong><code>PA_CIDPRI</code> é vazio (<code>0000</code>) na maioria dos procedimentos</strong> — só preenchido em APAC e alguns BPA-I específicos (ex.: oncologia, psicossocial).</li>
+<li><strong><code>PA_NIVCPL</code> pode estar errado</strong> em comparação ao SIGTAP — alguns procedimentos básicos aparecem como média complexidade por engano cadastral. Sempre cruze com a tabela SIGTAP oficial.</li>
+<li><strong>PS e SAD são RAAS</strong> — não é "1 linha = 1 procedimento", é "1 linha = 1 período de cuidado". <code>PERMANEN</code> é em dias.</li>
+<li><strong><code>MUNPAC</code> (BI/PS/SAD) vs <code>PA_MUNPCN</code> (PA)</strong> — mesma semântica, nomes diferentes. Pegadinha em joins multi-grupo.</li>
+<li><strong>BI parou de ser publicado em 2011.</strong> No catálogo pysus aparece como <code>BIRS1106.parquet</code> (junho/2011) como último. Pra dados modernos, use PA com filtro <code>PA_DOCORIG='I'</code>.</li>
+</ol>
+</section>
+
+<section id="sim">
+<h1>SIM — Mortalidade</h1>
+<p>O SIM consolida <strong>todos os óbitos</strong> registrados no Brasil, com base na Declaração de Óbito (DO). Granularidade: <strong>anual × UF</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Nome</th>
+<th>Conteúdo</th>
+<th>Relacionado a DO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DO</strong></td>
+<td>Declaração de Óbito geral</td>
+<td><strong>Todos os óbitos</strong> (universo)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>DOFET</code></td>
+<td>Óbitos fetais</td>
+<td>≥22 sem ou ≥500g</td>
+<td>subconjunto</td>
+</tr>
+<tr>
+<td><code>DOEXT</code></td>
+<td>Óbitos por causas externas</td>
+<td>CID V-Y</td>
+<td>subconjunto</td>
+</tr>
+<tr>
+<td><code>DOINF</code></td>
+<td>Óbitos infantis</td>
+<td>&lt; 1 ano</td>
+<td>subconjunto</td>
+</tr>
+<tr>
+<td><code>DOMAT</code></td>
+<td>Óbitos maternos</td>
+<td>causas obstétricas</td>
+<td>subconjunto</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Atenção:</strong> <code>DO</code> é o grupo geral; os 4 subgrupos são <strong>extrações temáticas</strong> com colunas extras. <strong>Não some</strong> entre eles — geraria duplicata. No catálogo pysus pra RS, só o <code>DO</code> está publicado. <strong>O dicionário abaixo cobre o <code>DO</code>.</strong></p>
+<p>Convenção do nome do arquivo: <code>DO{UF}{YYYY}.parquet</code> (ex.: <code>DORS2024.parquet</code>).</p>
+<hr>
+<h2>DO — Declaração de Óbito (87 colunas)</h2>
+<p>Cada linha = <strong>um óbito</strong>. ~100k/ano no RS.</p>
+<h3>Identificação do registro</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CONTADOR</code></td>
+<td>Sequencial dentro do lote</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>NUMEROLOTE</code></td>
+<td>Número do lote de envio</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>ORIGEM</code></td>
+<td>Origem do registro</td>
+<td><code>1</code>=Oracle (sistema novo), <code>2</code>=BD antigo</td>
+</tr>
+<tr>
+<td><code>TIPOBITO</code></td>
+<td>Tipo de óbito</td>
+<td><code>1</code>=fetal, <code>2</code>=não-fetal</td>
+</tr>
+<tr>
+<td><code>VERSAOSIST</code>, <code>VERSAOSCB</code></td>
+<td>Versões do sistema e classificador</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>STCODIFICA</code></td>
+<td>Status de codificação</td>
+<td><code>S</code>/<code>N</code></td>
+</tr>
+<tr>
+<td><code>CODIFICADO</code></td>
+<td>Foi codificado?</td>
+<td><code>S</code>/<code>N</code></td>
+</tr>
+<tr>
+<td><code>ATESTANTE</code></td>
+<td>Quem atestou</td>
+<td><code>1</code>=médico assistente, <code>2</code>=substituto, <code>3</code>=IML, <code>4</code>=SVO</td>
+</tr>
+</tbody>
+</table>
+<h3>Datas e horários</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DTOBITO</code></td>
+<td>Data do óbito</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>HORAOBITO</code></td>
+<td>Hora do óbito</td>
+<td><code>HHMM</code></td>
+</tr>
+<tr>
+<td><code>DTNASC</code></td>
+<td>Data de nascimento</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>DTATESTADO</code></td>
+<td>Data do atestado</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>DTINVESTIG</code></td>
+<td>Data da investigação (causas externas)</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>DTCADASTRO</code></td>
+<td>Cadastro no SIM</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>DTCADINV</code></td>
+<td>Cadastro da investigação</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>DTCADINF</code></td>
+<td>Cadastro de informação adicional</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>DTRECEBIM</code></td>
+<td>Recebimento na esfera estadual</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>DTRECORIGA</code></td>
+<td>Recebimento na origem (município)</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>DTCONCASO</code></td>
+<td>Conclusão do caso</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>DTCONINV</code></td>
+<td>Conclusão da investigação</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>DIFDATA</code></td>
+<td>Diferença em dias (informativo)</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>NUDIASOBCO</code></td>
+<td>Dias entre óbito e conclusão</td>
+<td></td>
+</tr>
+<tr>
+<td><code>NUDIASOBIN</code></td>
+<td>Dias entre óbito e investigação</td>
+<td></td>
+</tr>
+<tr>
+<td><code>NUDIASINF</code></td>
+<td>Dias até cadastro de informação</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Caveat de formato:</strong> datas no SIM vêm como <code>DDMMYYYY</code> (não <code>YYYYMMDD</code> como no SIH). Cuidado no parse.</p>
+<h3>Demografia do falecido</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IDADE</code></td>
+<td><strong>Idade codificada</strong></td>
+<td>3-4 dígitos, ver tabela abaixo</td>
+</tr>
+<tr>
+<td><code>SEXO</code></td>
+<td>Sexo</td>
+<td><code>1</code>=masc, <code>2</code>=fem, <code>0</code>=ignorado (lacuna intencional: difere de SIH onde 3=fem)</td>
+</tr>
+<tr>
+<td><code>RACACOR</code></td>
+<td>Raça/cor</td>
+<td><code>1</code>=branca, <code>2</code>=preta, <code>3</code>=amarela, <code>4</code>=parda, <code>5</code>=indígena, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>ESTCIV</code></td>
+<td>Estado civil</td>
+<td><code>1</code>=solteiro, <code>2</code>=casado, <code>3</code>=viúvo, <code>4</code>=separado, <code>5</code>=união estável, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>ESC</code></td>
+<td>Escolaridade (campo antigo)</td>
+<td><code>1</code>=nenhuma, <code>2</code>=1-3 anos, <code>3</code>=4-7 anos, <code>4</code>=8-11 anos, <code>5</code>=≥12 anos, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>ESC2010</code></td>
+<td>Escolaridade (Censo 2010, recomendado)</td>
+<td><code>0</code>-<code>5</code> + <code>9</code></td>
+</tr>
+<tr>
+<td><code>ESCFALAGR1</code></td>
+<td>Escolaridade agregada</td>
+<td></td>
+</tr>
+<tr>
+<td><code>SERIESCFAL</code></td>
+<td>Série de escolaridade</td>
+<td></td>
+</tr>
+<tr>
+<td><code>OCUP</code></td>
+<td>Ocupação habitual (CBO-2002)</td>
+<td>6 dígitos</td>
+</tr>
+<tr>
+<td><code>NATURAL</code></td>
+<td>Naturalidade</td>
+<td>código (<code>843</code>=Brasil)</td>
+</tr>
+<tr>
+<td><code>CODMUNNATU</code></td>
+<td>Município de naturalidade</td>
+<td>IBGE 6</td>
+</tr>
+<tr>
+<td><code>CODMUNRES</code></td>
+<td><strong>Município de residência</strong> (chave de geolocalização)</td>
+<td>IBGE 6</td>
+</tr>
+</tbody>
+</table>
+<h4>Tabela de decodificação de <code>IDADE</code></h4>
+<table>
+<thead>
+<tr>
+<th>1º dígito</th>
+<th>Unidade</th>
+<th>Demais dígitos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>Anos (especial)</td>
+<td>reservado</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>Minutos</td>
+<td><code>&lt;60</code></td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td>Horas</td>
+<td><code>&lt;24</code></td>
+</tr>
+<tr>
+<td><code>3</code></td>
+<td>Dias</td>
+<td><code>&lt;30</code></td>
+</tr>
+<tr>
+<td><code>4</code></td>
+<td>Meses</td>
+<td><code>&lt;12</code></td>
+</tr>
+<tr>
+<td><code>4</code></td>
+<td><strong>Anos</strong></td>
+<td><code>40</code> a <code>99</code> (idade direta)</td>
+</tr>
+<tr>
+<td><code>5</code></td>
+<td>Anos</td>
+<td><code>0</code> a <code>19</code> (centenários: 100-119 anos)</td>
+</tr>
+</tbody>
+</table>
+<p>Exemplo: <code>IDADE=470</code> significa 70 anos. <code>IDADE=4070</code> também (70 anos). Para <code>&lt;1 ano</code>: <code>IDADE=305</code> = 5 dias, <code>IDADE=402</code> = 2 meses.</p>
+<h3>Local do óbito</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LOCOCOR</code></td>
+<td>Local de ocorrência</td>
+<td><code>1</code>=hospital, <code>2</code>=outro estab. saúde, <code>3</code>=domicílio, <code>4</code>=via pública, <code>5</code>=outros, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>CODESTAB</code></td>
+<td><strong>CNES do estabelecimento</strong> (se hospital)</td>
+<td>7 dígitos</td>
+</tr>
+<tr>
+<td><code>ESTABDESCR</code></td>
+<td>Descrição do estabelecimento</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>CODMUNOCOR</code></td>
+<td>Município de ocorrência (IBGE 6)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Materno-fetal (se aplicável)</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IDADEMAE</code></td>
+<td>Idade da mãe</td>
+</tr>
+<tr>
+<td><code>ESCMAE</code>, <code>ESCMAE2010</code>, <code>SERIESCMAE</code>, <code>ESCMAEAGR1</code></td>
+<td>Escolaridade da mãe</td>
+</tr>
+<tr>
+<td><code>OCUPMAE</code></td>
+<td>Ocupação da mãe (CBO)</td>
+</tr>
+<tr>
+<td><code>QTDFILVIVO</code></td>
+<td>Filhos vivos</td>
+</tr>
+<tr>
+<td><code>QTDFILMORT</code></td>
+<td>Filhos mortos anteriores</td>
+</tr>
+<tr>
+<td><code>GRAVIDEZ</code></td>
+<td>Tipo de gravidez</td>
+</tr>
+<tr>
+<td><code>SEMAGESTAC</code></td>
+<td>Semanas de gestação</td>
+</tr>
+<tr>
+<td><code>GESTACAO</code></td>
+<td>Faixa gestacional</td>
+</tr>
+<tr>
+<td><code>PARTO</code></td>
+<td>Tipo de parto</td>
+</tr>
+<tr>
+<td><code>OBITOPARTO</code></td>
+<td>Óbito em relação ao parto</td>
+</tr>
+<tr>
+<td><code>PESO</code></td>
+<td>Peso ao nascer (g)</td>
+</tr>
+<tr>
+<td><code>TPMORTEOCO</code></td>
+<td>Momento óbito materno</td>
+</tr>
+<tr>
+<td><code>OBITOGRAV</code></td>
+<td>Óbito durante gravidez?</td>
+</tr>
+<tr>
+<td><code>OBITOPUERP</code></td>
+<td>Óbito no puerpério?</td>
+</tr>
+<tr>
+<td><code>MORTEPARTO</code></td>
+<td>Morte em relação ao parto</td>
+</tr>
+<tr>
+<td><code>CAUSAMAT</code></td>
+<td>Causa materna</td>
+</tr>
+</tbody>
+</table>
+<h3>Atendimento médico</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ASSISTMED</code></td>
+<td>Recebeu assistência médica?</td>
+<td><code>1</code>=sim, <code>2</code>=não, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>EXAME</code></td>
+<td>Exames complementares?</td>
+<td><code>1/2</code></td>
+</tr>
+<tr>
+<td><code>CIRURGIA</code></td>
+<td>Cirurgia?</td>
+<td><code>1/2</code></td>
+</tr>
+<tr>
+<td><code>NECROPSIA</code></td>
+<td>Necropsia?</td>
+<td><code>1</code>=sim, <code>2</code>=não, <code>9</code>=ignorado</td>
+</tr>
+</tbody>
+</table>
+<h3>Causa do óbito (CID-10) — <strong>o coração do SIM</strong></h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LINHAA</code></td>
+<td>Causa terminal (1ª linha do atestado) — ex.: <code>*J960</code> (insuf respiratória aguda)</td>
+</tr>
+<tr>
+<td><code>LINHAB</code></td>
+<td>Causa antecedente intermediária</td>
+</tr>
+<tr>
+<td><code>LINHAC</code></td>
+<td>Causa antecedente</td>
+</tr>
+<tr>
+<td><code>LINHAD</code></td>
+<td>Causa básica original do atestante</td>
+</tr>
+<tr>
+<td><code>LINHAII</code></td>
+<td>Outras causas contribuintes (Parte II do atestado)</td>
+</tr>
+<tr>
+<td><code>ATESTADO</code></td>
+<td>Texto literal das causas (concatenação das linhas)</td>
+</tr>
+<tr>
+<td><strong><code>CAUSABAS</code></strong></td>
+<td><strong>Causa básica codificada</strong> (após SCB) — <strong>chave da maioria das análises</strong></td>
+</tr>
+<tr>
+<td><code>CAUSABAS_O</code></td>
+<td>Causa básica original (sem ajustes do SCB)</td>
+</tr>
+<tr>
+<td><code>CB_PRE</code></td>
+<td>Causa básica pré-codificada</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Como o SCB (Seletor de Causa Básica) decide CAUSABAS:</strong> algoritmo do MS aplica regras da CID-10 sobre as 5 linhas pra escolher qual evento patológico <strong>iniciou a cadeia</strong> que levou à morte. Quase sempre é uma das linhas C/D, raramente A.</p>
+<h3>Causas externas (preenchido só se CAUSABAS começa com V-Y)</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CIRCOBITO</code></td>
+<td>Circunstância</td>
+<td><code>1</code>=acidente, <code>2</code>=suicídio, <code>3</code>=homicídio, <code>4</code>=outros, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>ACIDTRAB</code></td>
+<td>Acidente de trabalho?</td>
+<td><code>1/2/9</code></td>
+</tr>
+<tr>
+<td><code>FONTE</code></td>
+<td>Fonte da informação</td>
+<td>código</td>
+</tr>
+</tbody>
+</table>
+<h3>Investigação adicional (mortalidade materna/infantil)</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>STDOEPIDEM</code></td>
+<td>DO foi investigada por vigilância epidemiológica?</td>
+</tr>
+<tr>
+<td><code>STDONOVA</code></td>
+<td>DO substitui outra (correção)?</td>
+</tr>
+<tr>
+<td><code>TPPOS</code></td>
+<td>Tipo de pós-investigação</td>
+</tr>
+<tr>
+<td><code>FONTEINV</code></td>
+<td>Fonte da investigação</td>
+</tr>
+<tr>
+<td><code>TPNIVELINV</code></td>
+<td>Nível de investigação</td>
+</tr>
+<tr>
+<td><code>TPRESGINFO</code></td>
+<td>Tipo de resgate de informação</td>
+</tr>
+<tr>
+<td><code>TPOBITOCOR</code></td>
+<td>Tipo de óbito corrigido</td>
+</tr>
+<tr>
+<td><code>FONTES</code>, <code>FONTESINF</code></td>
+<td>Fontes de informação</td>
+</tr>
+<tr>
+<td><code>ALTCAUSA</code></td>
+<td>Alteração de causa após investigação?</td>
+</tr>
+<tr>
+<td><code>COMUNSVOIM</code></td>
+<td>Comunicação à vigilância de óbito infantil/materno</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Glossário</h2>
+<table>
+<thead>
+<tr>
+<th>Sigla</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DO</strong></td>
+<td>Declaração de Óbito</td>
+</tr>
+<tr>
+<td><strong>SIM</strong></td>
+<td>Sistema de Informações sobre Mortalidade</td>
+</tr>
+<tr>
+<td><strong>CID-10</strong></td>
+<td>Classificação Internacional de Doenças, 10ª revisão</td>
+</tr>
+<tr>
+<td><strong>SCB</strong></td>
+<td>Seletor de Causa Básica (algoritmo MS)</td>
+</tr>
+<tr>
+<td><strong>SVO</strong></td>
+<td>Serviço de Verificação de Óbito</td>
+</tr>
+<tr>
+<td><strong>IML</strong></td>
+<td>Instituto Médico Legal</td>
+</tr>
+<tr>
+<td><strong>CBO-2002</strong></td>
+<td>Classificação Brasileira de Ocupações</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Joins típicos</h2>
+<pre><code>SIM.DO ─┬─ CODESTAB ─── CNES (CNES.ST)    → estabelecimento onde ocorreu o óbito
+        ├─ CODMUNRES ── codmun (IBGE)     → município de residência
+        ├─ CODMUNOCOR ── codmun (IBGE)    → município de ocorrência
+        └─ N_AIH    ─── (SIH.RD)          → ❌ não existe — usar (CODESTAB + CODMUNRES + DTOBITO ± idade) pra &quot;linkage probabilístico&quot;
+
+CAUSABAS ─── CID-10 (referência externa)  → tabela oficial WHO/MS
+</code></pre>
+<h2>Caveats que economizam tempo</h2>
+<ol>
+<li><strong>Datas em <code>DDMMYYYY</code></strong> — não <code>YYYYMMDD</code>. Pegadinha clássica. Parse com <code>pd.to_datetime(s, format="%d%m%Y")</code>.</li>
+<li><strong>`SEXO=2 é feminino no SIM, diferente do SIH (SEXO=3).</strong> Inconsistência famosa entre sistemas DataSUS.</li>
+<li><strong><code>IDADE</code> é codificada</strong> (primeiro dígito = unidade). Não interprete como inteiro direto.</li>
+<li><strong><code>CAUSABAS</code> é o que você quer pra maioria das análises</strong> — é a causa "que iniciou a cadeia", já aplicado o algoritmo SCB. Não use <code>LINHAA</code> (causa imediata).</li>
+<li><strong><code>CAUSABAS_O</code> pode diferir de <code>CAUSABAS</code></strong> em ~10% dos óbitos (correções pelo SCB ou investigação).</li>
+<li><strong>Óbitos por causas externas (<code>V*</code>-<code>Y*</code> em <code>CAUSABAS</code>) frequentemente têm CODESTAB vazio</strong> — morrem na via pública ou em casa.</li>
+<li><strong>Subnotificação:</strong> mortalidade infantil e materna têm subnotificação histórica de ~10-15% no Brasil; melhor no Sul. Pra análise rigorosa, usar fatores de correção (PRO-SUS / IHME).</li>
+<li><strong>Defasagem:</strong> o SIM tem <strong>lag de ~1 ano</strong> — dados de 2024 só ficam completos em 2025. O catálogo pysus tem <code>DORS2024.parquet</code> como mais recente em jun/2026.</li>
+<li><strong><code>LOCOCOR=1</code> (hospital) + <code>CODESTAB</code></strong> = chave pra cruzar com SIH e ver se houve internação prévia (mas não há join direto — precisa ser linkage probabilístico).</li>
+<li><strong>Para cruzar "óbitos hospitalares" com "internações que terminaram em óbito" (SIH.MORTE=1):</strong> os universos não batem exatamente — SIH cobre só óbitos que ocorreram durante AIHs SUS; SIM cobre TODOS os óbitos hospitalares. Diferença típica: ~20-30%.</li>
+</ol>
+</section>
+
+<section id="sinasc">
+<h1>SINASC — Nascidos Vivos</h1>
+<p>O SINASC registra <strong>todos os nascidos vivos</strong> no Brasil via Declaração de Nascido Vivo (DN). Granularidade: <strong>anual × UF</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Grupo</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DN</strong></td>
+<td>Declaração de Nascido Vivo padrão</td>
+</tr>
+<tr>
+<td><code>DNEX</code></td>
+<td>Externo — registros tardios / fora da UF de residência</td>
+</tr>
+</tbody>
+</table>
+<p>Convenção de nome: <code>DN{UF}{YYYY}.parquet</code> (ex.: <code>DNRS2024.parquet</code>).</p>
+<p>No catálogo pysus pra RS só <code>DN</code> está disponível. <strong>O dicionário abaixo cobre o DN.</strong></p>
+<hr>
+<h2>DN — Declaração de Nascido Vivo</h2>
+<p>Cada linha = <strong>um nascimento vivo</strong>. Cerca de <strong>120-140k/ano no RS</strong>.</p>
+<p>Esquema com ~80-90 colunas dependendo da versão do sistema (mudou em ~2010 com <code>_2010</code> suffixes). Abaixo cobertura das principais.</p>
+<h3>Identificação do registro</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NUMERODN</code></td>
+<td>Número da DN (chave)</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>ORIGEM</code></td>
+<td>Origem do registro</td>
+<td><code>1</code>=Oracle, <code>2</code>=BD antigo</td>
+</tr>
+<tr>
+<td><code>NUMEROLOTE</code></td>
+<td>Número do lote</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>VERSAOSIST</code></td>
+<td>Versão do sistema</td>
+<td>string</td>
+</tr>
+<tr>
+<td><code>DTCADASTRO</code></td>
+<td>Data de cadastro</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>DTRECEBIM</code></td>
+<td>Recebimento na esfera estadual</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>DTRECORIGA</code></td>
+<td>Recebimento na origem</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Mãe</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IDADEMAE</code></td>
+<td>Idade da mãe</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>ESTCIVMAE</code></td>
+<td>Estado civil</td>
+<td><code>1</code>=solteira, <code>2</code>=casada, <code>3</code>=viúva, <code>4</code>=separada, <code>5</code>=união estável, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>ESCMAE</code></td>
+<td>Escolaridade (antigo)</td>
+<td><code>1</code>=nenhuma, <code>2</code>=1-3 anos, <code>3</code>=4-7 anos, <code>4</code>=8-11 anos, <code>5</code>=≥12 anos, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>ESCMAE2010</code></td>
+<td>Escolaridade (Censo 2010)</td>
+<td><code>0</code>=sem instrução, <code>1</code>=fundamental I, <code>2</code>=fundamental II, <code>3</code>=médio, <code>4</code>=superior incompleto, <code>5</code>=superior completo, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>ESCMAEAGR1</code></td>
+<td>Escolaridade agregada</td>
+<td></td>
+</tr>
+<tr>
+<td><code>SERIESCMAE</code></td>
+<td>Série escolar</td>
+<td></td>
+</tr>
+<tr>
+<td><code>OCUPMAE</code></td>
+<td>Ocupação (CBO-2002)</td>
+<td>6 dígitos</td>
+</tr>
+<tr>
+<td><code>RACACORMAE</code></td>
+<td>Raça/cor da mãe</td>
+<td><code>1</code>=branca, <code>2</code>=preta, <code>3</code>=amarela, <code>4</code>=parda, <code>5</code>=indígena, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>NATURALMAE</code></td>
+<td>Naturalidade</td>
+<td>código</td>
+</tr>
+<tr>
+<td><code>CODMUNNATU</code></td>
+<td>Município de naturalidade da mãe (IBGE 6)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CODMUNRES</code></td>
+<td><strong>Município de residência</strong> (IBGE 6) — chave de geolocalização</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CODPAISRES</code></td>
+<td>País de residência</td>
+<td><code>1</code>=Brasil</td>
+</tr>
+<tr>
+<td><code>CODUFNATU</code></td>
+<td>UF de naturalidade da mãe</td>
+<td>2 dígitos</td>
+</tr>
+<tr>
+<td><code>QTDFILVIVO</code></td>
+<td>Filhos vivos anteriores</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>QTDFILMORT</code></td>
+<td>Filhos mortos anteriores</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>QTDGESTANT</code></td>
+<td>Gestações anteriores</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>QTDPARTNOR</code></td>
+<td>Partos vaginais anteriores</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>QTDPARTCES</code></td>
+<td>Partos cesáreos anteriores</td>
+<td>inteiro</td>
+</tr>
+</tbody>
+</table>
+<h3>Gestação</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GESTACAO</code></td>
+<td>Faixa gestacional</td>
+<td><code>1</code>=&lt;22 sem, <code>2</code>=22-27, <code>3</code>=28-31, <code>4</code>=32-36, <code>5</code>=37-41, <code>6</code>=≥42, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>SEMAGESTAC</code></td>
+<td>Semanas de gestação</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>TPMETESTIM</code></td>
+<td>Método de estimativa da idade gestacional</td>
+<td><code>1</code>=DUM, <code>2</code>=USG, <code>3</code>=ex físico/outro</td>
+</tr>
+<tr>
+<td><code>GRAVIDEZ</code></td>
+<td>Tipo de gravidez</td>
+<td><code>1</code>=única, <code>2</code>=dupla, <code>3</code>=tripla ou mais, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>CONSULTAS</code></td>
+<td>Faixa de consultas pré-natal</td>
+<td><code>1</code>=nenhuma, <code>2</code>=1-3, <code>3</code>=4-6, <code>4</code>=≥7, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>CONSPRENAT</code></td>
+<td>Número exato de consultas pré-natal</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>MESPRENAT</code></td>
+<td>Mês de início do pré-natal</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>PARTO</code></td>
+<td>Tipo de parto</td>
+<td><code>1</code>=vaginal, <code>2</code>=cesário, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>STTRABPART</code></td>
+<td>Trabalho de parto induzido?</td>
+<td><code>1</code>=sim, <code>2</code>=não, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>STCESPARTO</code></td>
+<td>Cesárea ocorreu antes do trabalho de parto?</td>
+<td><code>1</code>=sim, <code>2</code>=não, <code>3</code>=não aplica</td>
+</tr>
+<tr>
+<td><code>TPAPRESENT</code></td>
+<td>Tipo de apresentação</td>
+<td><code>1</code>=cefálica, <code>2</code>=pélvica, <code>3</code>=transversa, <code>9</code>=ignorado</td>
+</tr>
+</tbody>
+</table>
+<h3>Nascido vivo</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DTNASC</code></td>
+<td>Data de nascimento</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>HORANASC</code></td>
+<td>Hora de nascimento</td>
+<td><code>HHMM</code></td>
+</tr>
+<tr>
+<td><code>SEXO</code></td>
+<td>Sexo</td>
+<td><code>1</code>=masc, <code>2</code>=fem, <code>0</code>=ignorado (igual SIM, diferente SIH)</td>
+</tr>
+<tr>
+<td><code>RACACOR</code></td>
+<td>Raça/cor do RN</td>
+<td><code>1</code>=branca, <code>2</code>=preta, <code>3</code>=amarela, <code>4</code>=parda, <code>5</code>=indígena, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>RACACOR_RN</code></td>
+<td>Raça/cor (campo redundante em versões mais novas)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>PESO</code></td>
+<td>Peso ao nascer (gramas)</td>
+<td>inteiro</td>
+</tr>
+<tr>
+<td><code>APGAR1</code></td>
+<td>Apgar no 1º minuto</td>
+<td><code>0</code>-<code>10</code></td>
+</tr>
+<tr>
+<td><code>APGAR5</code></td>
+<td><strong>Apgar no 5º minuto</strong> (indicador de saúde neonatal)</td>
+<td><code>0</code>-<code>10</code></td>
+</tr>
+<tr>
+<td><code>IDANOMAL</code></td>
+<td>Tem anomalia congênita?</td>
+<td><code>1</code>=sim, <code>2</code>=não, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>CODANOMAL</code></td>
+<td>Código CID-10 da anomalia</td>
+<td>4 chars</td>
+</tr>
+</tbody>
+</table>
+<h3>Parto</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LOCNASC</code></td>
+<td>Local de nascimento</td>
+<td><code>1</code>=hospital, <code>2</code>=outro estab. saúde, <code>3</code>=domicílio, <code>4</code>=outros</td>
+</tr>
+<tr>
+<td><code>CODESTAB</code></td>
+<td><strong>CNES do estabelecimento</strong></td>
+<td>7 dígitos</td>
+</tr>
+<tr>
+<td><code>CODMUNNASC</code></td>
+<td>Município de nascimento (IBGE 6)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>TPFUNCRESP</code></td>
+<td>Tipo de profissional responsável</td>
+<td><code>1</code>=médico, <code>2</code>=enfermeiro/obstetriz, <code>3</code>=parteira, <code>4</code>=outros, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>TPNASCASSI</code></td>
+<td>Nascimento assistido por:</td>
+<td><code>1</code>=médico, <code>2</code>=enfermagem, <code>3</code>=parteira, <code>4</code>=outros</td>
+</tr>
+<tr>
+<td><code>TPDOCRESP</code></td>
+<td>Tipo de documento do responsável</td>
+<td><code>1</code>=CNES, <code>2</code>=CRM, etc.</td>
+</tr>
+<tr>
+<td><code>DTDECLARAC</code></td>
+<td>Data da declaração</td>
+<td><code>DDMMYYYY</code></td>
+</tr>
+<tr>
+<td><code>KOTELCHUCK</code></td>
+<td>Índice Kotelchuck (adequação pré-natal)</td>
+<td><code>1</code>-<code>4</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Pai</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IDADEPAI</code></td>
+<td>Idade do pai</td>
+</tr>
+</tbody>
+</table>
+<h3>Auditoria/investigação (raro)</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>STDNEPIDEM</code></td>
+<td>DN investigada por epidemio?</td>
+</tr>
+<tr>
+<td><code>STDNNOVA</code></td>
+<td>Substitui DN anterior?</td>
+</tr>
+<tr>
+<td><code>DIFDATA</code></td>
+<td>Diferença em dias (informativo)</td>
+</tr>
+<tr>
+<td><code>NATURALIDADE</code></td>
+<td>Estado de naturalidade</td>
+</tr>
+<tr>
+<td><code>CODMUNCART</code></td>
+<td>Município do cartório de registro</td>
+</tr>
+<tr>
+<td><code>NUMREGCART</code></td>
+<td>Número de registro civil</td>
+</tr>
+<tr>
+<td><code>DTREGCART</code></td>
+<td>Data do registro civil</td>
+</tr>
+<tr>
+<td><code>PARIDADE</code></td>
+<td>Paridade calculada</td>
+</tr>
+<tr>
+<td><code>TPROBSON</code></td>
+<td>Classificação de Robson (cesárea)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Glossário</h2>
+<table>
+<thead>
+<tr>
+<th>Sigla</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DN</strong></td>
+<td>Declaração de Nascido Vivo</td>
+</tr>
+<tr>
+<td><strong>SINASC</strong></td>
+<td>Sistema de Informações sobre Nascidos Vivos</td>
+</tr>
+<tr>
+<td><strong>DUM</strong></td>
+<td>Data da Última Menstruação</td>
+</tr>
+<tr>
+<td><strong>USG</strong></td>
+<td>Ultrassonografia</td>
+</tr>
+<tr>
+<td><strong>Apgar</strong></td>
+<td>Avaliação de vitalidade do RN (Activity, Pulse, Grimace, Appearance, Respiration)</td>
+</tr>
+<tr>
+<td><strong>CID-10</strong></td>
+<td>Classificação Internacional de Doenças</td>
+</tr>
+<tr>
+<td><strong>CBO-2002</strong></td>
+<td>Classificação Brasileira de Ocupações</td>
+</tr>
+<tr>
+<td><strong>Robson</strong></td>
+<td>Classificação de Robson de cesáreas (10 grupos)</td>
+</tr>
+<tr>
+<td><strong>Kotelchuck</strong></td>
+<td>Índice de adequação do pré-natal</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Joins típicos</h2>
+<pre><code>SINASC.DN ─┬─ CODESTAB ─── CNES (CNES.ST)    → hospital onde nasceu
+           ├─ CODMUNRES ── codmun (IBGE)     → município de residência da mãe
+           ├─ CODMUNNASC ── codmun (IBGE)    → município onde nasceu
+           └─ (mãe)    ─── (SIM.DOMAT)       → ❌ sem chave direta; linkage probabilístico (data, município, idade)
+</code></pre>
+<h2>Caveats que economizam tempo</h2>
+<ol>
+<li><strong>Datas em <code>DDMMYYYY</code></strong> — igual SIM, diferente do SIH. Parse com <code>pd.to_datetime(s, format="%d%m%Y")</code>.</li>
+<li><strong><code>SEXO=2 é feminino</code></strong> (padrão SIM/SINASC, diferente de SIH onde <code>3=fem</code>).</li>
+<li><strong>Lag típico: ~1 ano.</strong> Catálogo pysus tem <code>DNRS2022.parquet</code> como mais recente em jun/2026 — ainda atrasado.</li>
+<li><strong><code>PESO</code></strong> crítico pra análise: baixo peso ao nascer = <code>&lt;2500g</code>. Filtrar <code>PESO &lt; 500</code> ou <code>PESO &gt; 6000</code> (provavelmente erros).</li>
+<li><strong><code>APGAR5 &lt; 7</code> é o ponto de corte clássico</strong> para asfixia neonatal. <code>APGAR5</code> é melhor preditor de desfecho que <code>APGAR1</code>.</li>
+<li><strong><code>KOTELCHUCK</code></strong> consolida <code>CONSPRENAT</code>+<code>MESPRENAT</code> num índice de adequação. Já vem calculado, não precisa derivar.</li>
+<li><strong><code>TPROBSON</code></strong> vem pré-calculado nas versões &gt;= 2018. Cesárea geral é a soma dos grupos 1-10; grupos 1-4 são pop de baixo risco (taxa esperada de cesárea baixa).</li>
+<li><strong><code>CODANOMAL</code></strong> quase sempre vazio (~98% dos nascimentos) — só preenchido se <code>IDANOMAL=1</code>. Use com cuidado pra prevalência (subnotificação).</li>
+<li><strong><code>CONSULTAS=4</code> (≥7 consultas)</strong> é o indicador clássico de pré-natal adequado por contagem (mas Kotelchuck é mais correto).</li>
+<li><strong>Para cruzar com SIH</strong> (parto → AIH 4101<em>, 4102</em>): não há chave direta entre DN e N_AIH. Use linkage probabilístico por <code>CODESTAB + DTNASC + IDADEMAE + CODMUNRES</code>.</li>
+<li><strong>Para cruzar com SIM</strong> pra mortalidade infantil/perinatal: idem, sem chave direta. <strong><code>CODESTAB + DTNASC ± dias</code></strong> + <code>IDADE</code> da DO codificada como dias.</li>
+<li><strong>Dado de cor da pele do RN</strong> é frequentemente preenchido como "branca" por padrão (qualidade ruim em algumas regiões).</li>
+</ol>
+</section>
+
+<section id="sinan">
+<h1>SINAN — Doenças de Notificação</h1>
+<p>O SINAN consolida <strong>notificações compulsórias</strong> de doenças e agravos. Granularidade: <strong>anual × Brasil</strong> (não tem UF no nome — todos os arquivos terminam em <code>BR</code>).</p>
+<p>Convenção de nome: <code>{DOENÇA}BR{YY}.parquet</code> (ex.: <code>DENGBR25.parquet</code> = dengue, 2025).</p>
+<p>São <strong>~58 doenças/agravos</strong> diferentes, cada uma com um arquivo por ano. O esquema <strong>muda por doença</strong> — algumas têm 30 colunas, outras 150 — mas tem um <strong>núcleo comum</strong>.</p>
+<hr>
+<h2>Estrutura desta documentação</h2>
+<p>Por causa do volume (58 doenças), vou organizar em:</p>
+<ol>
+<li><strong>Núcleo comum</strong> (~25 colunas presentes em ~todas as doenças)</li>
+<li><strong>Grupos temáticos de doenças</strong> com os campos específicos de cada grupo</li>
+<li><strong>Lista completa</strong> das 58 doenças com 1 frase + colunas-chave</li>
+</ol>
+<hr>
+<h2>1. Núcleo comum (presente em quase todas as 58)</h2>
+<h3>Identificação da notificação</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TP_NOT</code></td>
+<td>Tipo de notificação</td>
+<td><code>1</code>=negativa, <code>2</code>=individual, <code>3</code>=conglomerado, <code>4</code>=surto</td>
+</tr>
+<tr>
+<td><code>ID_AGRAVO</code></td>
+<td><strong>CID-10 do agravo</strong> (chave do que está sendo notificado)</td>
+<td>4 chars (ex.: <code>A920</code>=chikungunya)</td>
+</tr>
+<tr>
+<td><code>DT_NOTIFIC</code></td>
+<td>Data da notificação</td>
+<td><code>YYYYMMDD</code></td>
+</tr>
+<tr>
+<td><code>SEM_NOT</code></td>
+<td>Semana epidemiológica da notificação</td>
+<td><code>YYYYWW</code> (ex.: <code>202501</code>)</td>
+</tr>
+<tr>
+<td><code>NU_ANO</code></td>
+<td>Ano da notificação</td>
+<td><code>YYYY</code></td>
+</tr>
+<tr>
+<td><code>SG_UF_NOT</code></td>
+<td>UF de notificação (IBGE 2)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ID_MUNICIP</code></td>
+<td>Município de notificação (IBGE 6)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ID_REGIONA</code></td>
+<td>Regional de saúde</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ID_UNIDADE</code></td>
+<td><strong>CNES da unidade notificadora</strong></td>
+<td>7 dígitos</td>
+</tr>
+<tr>
+<td><code>NU_LOTE_V</code></td>
+<td>Lote de envio vertical (mun → SES)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>NU_LOTE_H</code></td>
+<td>Lote de envio horizontal (SES → MS)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>DT_DIGITA</code></td>
+<td>Data de digitação</td>
+<td><code>YYYYMMDD</code></td>
+</tr>
+<tr>
+<td><code>DT_TRANSUS</code>, <code>DT_TRANSDM</code>, <code>DT_TRANSSM</code>, <code>DT_TRANSRM</code>, <code>DT_TRANSRS</code>, <code>DT_TRANSSE</code></td>
+<td>Datas de transferência entre níveis (US, DM, SM, RM, RS, SE)</td>
+<td><code>YYYYMMDD</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Demografia do caso</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ANO_NASC</code></td>
+<td>Ano de nascimento</td>
+<td><code>YYYY</code></td>
+</tr>
+<tr>
+<td><code>NU_IDADE_N</code></td>
+<td><strong>Idade codificada</strong> (igual SIM)</td>
+<td>4 dígitos — ver tabela abaixo</td>
+</tr>
+<tr>
+<td><code>CS_SEXO</code></td>
+<td>Sexo</td>
+<td><code>M</code>=masc, <code>F</code>=fem, <code>I</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>CS_GESTANT</code></td>
+<td>Gestante?</td>
+<td><code>1</code>=1º trim, <code>2</code>=2º trim, <code>3</code>=3º trim, <code>4</code>=ignorado período, <code>5</code>=não, <code>6</code>=não se aplica, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>CS_RACA</code></td>
+<td>Raça/cor</td>
+<td><code>1</code>=branca, <code>2</code>=preta, <code>3</code>=amarela, <code>4</code>=parda, <code>5</code>=indígena, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>CS_ESCOL_N</code></td>
+<td>Escolaridade</td>
+<td><code>00</code>=analfabeto, <code>01-05</code>=fundamental incompleto/completo, etc., <code>10</code>=não se aplica</td>
+</tr>
+<tr>
+<td><code>SG_UF</code></td>
+<td>UF de residência</td>
+<td>IBGE 2</td>
+</tr>
+<tr>
+<td><code>ID_MN_RESI</code></td>
+<td>Município de residência</td>
+<td>IBGE 6</td>
+</tr>
+<tr>
+<td><code>ID_RG_RESI</code></td>
+<td>Regional de residência</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ID_PAIS</code></td>
+<td>País de residência</td>
+<td><code>1</code>=Brasil</td>
+</tr>
+<tr>
+<td><code>ID_OCUPA_N</code></td>
+<td>Ocupação (CBO-2002)</td>
+<td>6 dígitos</td>
+</tr>
+</tbody>
+</table>
+<h4>Decodificação de <code>NU_IDADE_N</code> (igual SIM/SINASC)</h4>
+<p>4 dígitos: primeiro = unidade, restantes = valor.
+- <code>1XXX</code> = horas (<code>&lt;24</code>)
+- <code>2XXX</code> = dias (<code>&lt;30</code>)
+- <code>3XXX</code> = meses (<code>&lt;12</code>)
+- <code>4XXX</code> = anos</p>
+<p>Exemplos: <code>4028</code>=28 anos, <code>3005</code>=5 meses, <code>2010</code>=10 dias.</p>
+<h3>Datas do caso</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DT_SIN_PRI</code></td>
+<td>Data dos primeiros sintomas (<code>YYYYMMDD</code>)</td>
+</tr>
+<tr>
+<td><code>SEM_PRI</code></td>
+<td>Semana epidemiológica do primeiro sintoma</td>
+</tr>
+<tr>
+<td><code>DT_INVEST</code></td>
+<td>Data de início da investigação</td>
+</tr>
+<tr>
+<td><code>DT_ENCERRA</code></td>
+<td>Data de encerramento do caso</td>
+</tr>
+<tr>
+<td><code>DT_OBITO</code></td>
+<td>Data do óbito (se ocorreu)</td>
+</tr>
+</tbody>
+</table>
+<h3>Desfecho</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+<th>Domínio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CLASSI_FIN</code></td>
+<td><strong>Classificação final</strong></td>
+<td>varia por doença — <code>1</code>=confirmado, <code>2</code>=descartado, <code>3</code>=inconclusivo, <code>5</code>=confirmado autóctone (alguns), <code>8</code>=descartado/inadequado</td>
+</tr>
+<tr>
+<td><code>CRITERIO</code></td>
+<td>Critério de confirmação</td>
+<td>varia: <code>1</code>=laboratorial, <code>2</code>=clínico-epidemiológico, <code>3</code>=clínico, <code>4</code>=óbito investigado</td>
+</tr>
+<tr>
+<td><code>EVOLUCAO</code></td>
+<td>Desfecho do caso</td>
+<td><code>1</code>=cura, <code>2</code>=óbito pelo agravo, <code>3</code>=óbito outras causas, <code>4</code>=óbito em investigação, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>DOENCA_TRA</code></td>
+<td>Doença relacionada ao trabalho?</td>
+<td><code>1</code>=sim, <code>2</code>=não, <code>9</code>=ignorado</td>
+</tr>
+<tr>
+<td><code>TPAUTOCTO</code></td>
+<td>Caso autóctone?</td>
+<td><code>1</code>=sim, <code>2</code>=não importado</td>
+</tr>
+<tr>
+<td><code>COUFINF</code></td>
+<td>UF provável de infecção</td>
+<td></td>
+</tr>
+<tr>
+<td><code>COMUNINF</code></td>
+<td>Município provável de infecção</td>
+<td></td>
+</tr>
+<tr>
+<td><code>COPAISINF</code></td>
+<td>País provável de infecção</td>
+<td></td>
+</tr>
+<tr>
+<td><code>MIGRADO_W</code></td>
+<td>Flag interna do sistema</td>
+<td></td>
+</tr>
+<tr>
+<td><code>TP_SISTEMA</code></td>
+<td>Tipo de sistema (NetSinan / SinanWeb)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>NDUPLIC_N</code></td>
+<td>Flag de duplicidade</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CS_FLXRET</code></td>
+<td>Fluxo de retorno</td>
+<td></td>
+</tr>
+<tr>
+<td><code>FLXRECEBI</code></td>
+<td>Recebido pelo destino?</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>2. Grupos temáticos</h2>
+<h3>2.1 Arboviroses — DENG, CHIK, ZIKA</h3>
+<p>Doenças virais transmitidas pelo <em>Aedes aegypti</em>. Compartilham um schema robusto com <strong>sinais/sintomas + classificação de gravidade</strong>.</p>
+<h4>Sinais e sintomas (flag <code>1</code>=sim / <code>2</code>=não / <code>9</code>=ignorado)</h4>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Sintoma</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FEBRE</code>, <code>MIALGIA</code>, <code>CEFALEIA</code>, <code>EXANTEMA</code>, <code>VOMITO</code>, <code>NAUSEA</code></td>
+<td>Sinais cardinais</td>
+</tr>
+<tr>
+<td><code>DOR_COSTAS</code>, <code>CONJUNTVIT</code>, <code>ARTRITE</code>, <code>ARTRALGIA</code></td>
+<td>Articular/musc</td>
+</tr>
+<tr>
+<td><code>PETEQUIA_N</code>, <code>LEUCOPENIA</code>, <code>LACO</code></td>
+<td>Sinais hemorrágicos</td>
+</tr>
+<tr>
+<td><code>DOR_RETRO</code></td>
+<td>Dor retro-orbitária</td>
+</tr>
+</tbody>
+</table>
+<h4>Comorbidades</h4>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DIABETES</code>, <code>HEMATOLOG</code>, <code>HEPATOPAT</code>, <code>RENAL</code>, <code>HIPERTENSA</code>, <code>ACIDO_PEPT</code>, <code>AUTO_IMUNE</code></td>
+<td>Doenças prévias</td>
+</tr>
+</tbody>
+</table>
+<h4>Sorologia/PCR</h4>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DT_SORO</code>, <code>RESUL_SORO</code></td>
+<td>Sorologia (IgM)</td>
+</tr>
+<tr>
+<td><code>DT_NS1</code>, <code>RESUL_NS1</code></td>
+<td>NS1 (antígeno, só DENG)</td>
+</tr>
+<tr>
+<td><code>DT_VIRAL</code>, <code>RESUL_VI_N</code></td>
+<td>Isolamento viral</td>
+</tr>
+<tr>
+<td><code>DT_PCR</code>, <code>RESUL_PCR_</code></td>
+<td>PCR</td>
+</tr>
+<tr>
+<td><code>DT_CHIK_S1</code>, <code>DT_CHIK_S2</code>, <code>DT_PRNT</code>, <code>RES_CHIKS1</code>, <code>RES_CHIKS2</code>, <code>RESUL_PRNT</code></td>
+<td>Sorologias seriadas chikungunya</td>
+</tr>
+<tr>
+<td><code>SOROTIPO</code></td>
+<td>Sorotipo DENV (1-4)</td>
+</tr>
+<tr>
+<td><code>HISTOPA_N</code>, <code>IMUNOH_N</code></td>
+<td>Histopatologia/imuno-histoquímica (pós-óbito)</td>
+</tr>
+</tbody>
+</table>
+<h4>Sinais de alarme (dengue grave)</h4>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ALRM_HIPOT</code>, <code>ALRM_PLAQ</code>, <code>ALRM_VOM</code>, <code>ALRM_SANG</code>, <code>ALRM_HEMAT</code>, <code>ALRM_ABDOM</code>, <code>ALRM_LETAR</code>, <code>ALRM_HEPAT</code>, <code>ALRM_LIQ</code></td>
+<td>Sinais de alarme + datas</td>
+</tr>
+</tbody>
+</table>
+<h4>Sinais de gravidade</h4>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GRAV_PULSO</code>, <code>GRAV_CONV</code>, <code>GRAV_ENCH</code>, <code>GRAV_INSUF</code>, <code>GRAV_TAQUI</code>, <code>GRAV_EXTRE</code>, <code>GRAV_HIPOT</code>, <code>GRAV_HEMAT</code>, <code>GRAV_MELEN</code>, <code>GRAV_METRO</code>, <code>GRAV_SANG</code>, <code>GRAV_AST</code>, <code>GRAV_MIOC</code>, <code>GRAV_CONSC</code>, <code>GRAV_ORGAO</code></td>
+<td>Sinais de gravidade clínica</td>
+</tr>
+</tbody>
+</table>
+<h4>Manifestações hemorrágicas</h4>
+<p>| <code>MANI_HEMOR</code>, <code>EPISTAXE</code>, <code>GENGIVO</code>, <code>METRO</code>, <code>PETEQUIAS</code>, <code>HEMATURA</code>, <code>SANGRAM</code>, <code>LACO_N</code>, <code>PLASMATICO</code>, <code>EVIDENCIA</code>, <code>PLAQ_MENOR</code>, <code>CON_FHD</code>, <code>COMPLICA</code> |</p>
+<h4>Específicas</h4>
+<ul>
+<li><strong>DENG (<code>DENGBR{YY}</code>)</strong>: ~122 colunas; <code>CLASSI_FIN</code> codifica <code>5</code>=clássica, <code>10</code>=com sinais de alarme, <code>11</code>=grave, <code>12</code>=descartado, <code>13</code>=chikungunya/zika</li>
+<li><strong>CHIK (<code>CHIKBR{YY}</code>)</strong>: ~122 colunas; <code>CLINC_CHIK</code>=manifestação atípica</li>
+<li><strong>ZIKA (<code>ZIKABR{YY}</code>)</strong>: schema mais enxuto (~94 col); foco em gestantes, microcefalia. Específica: <code>RES_PCR_ZI</code>, <code>CSTRA_ZIKA</code></li>
+</ul>
+<h3>2.2 Doenças bacterianas — TUBE, MENI, COLE, COQU, DIFT, FTIF, LEPT, TETA, TETN, TRAC</h3>
+<h4>TUBE (Tuberculose)</h4>
+<p>Schema rico (~85 col). Específico:
+- <code>BACILOSC_E</code> — baciloscopia escarro
+- <code>RAIOX_TORA</code> — Rx tórax
+- <code>HIV</code> — sorologia HIV
+- <code>HISTOPATOL</code> — histopatologia
+- <code>BAAR</code>, <code>TESTE_SENS</code> — testes
+- <code>TRATAMENTO</code> — esquema (<code>1</code>=básico, <code>2</code>=multiresistente)
+- <code>FORMA</code> — forma clínica (<code>1</code>=pulmonar, <code>2</code>=extra-pulmonar)
+- <code>EXTRAPU1_N</code>, <code>EXTRAPU2_N</code> — sítios extra-pulmonares
+- <code>BENEFICIO</code> — recebe benefício social?
+- <code>SITUA_9_M</code> — situação no 9º mês de tratamento (cura/abandono)</p>
+<h4>MENI (Meningite)</h4>
+<ul>
+<li><code>CRITERIO</code> codifica diagnóstico etiológico</li>
+<li><code>SOROGRUPO</code> — sorogrupo meningocócica</li>
+<li><code>CON_LCR</code>, <code>QT_PROT_LC</code>, <code>QT_GLIC_LC</code>, <code>QT_CELU_LC</code> — análise do líquor</li>
+</ul>
+<h4>LEPT (Leptospirose)</h4>
+<ul>
+<li><code>FEBRE</code>, <code>CEFALEIA</code>, <code>MIALGIA</code>, <code>PROST</code>, <code>ICTERICIA</code>, <code>ANUR_OLIG</code>, <code>CONJUNTIVAL</code> — sinais</li>
+<li><code>EVOL_CASO</code> — desfecho</li>
+</ul>
+<h4>Outras: COLE, COQU, DIFT, FTIF, TETA, TETN, TRAC</h4>
+<p>Esquemas mais enxutos (40-70 col). Foco em sintomas + exame laboratorial + vacinação prévia.</p>
+<h3>2.3 Viroses — EXAN, HANT, HEPA, RAIV, ROTA, VARC</h3>
+<ul>
+<li><strong>EXAN (exantemáticas)</strong>: dengue/sarampo/rubéola/etc. Sinais: <code>FEBRE</code>, <code>EXANTEMA</code>, <code>CONJUNTVIT</code>, <code>TOSSE</code>, <code>CORIZA</code>. Sorologias: <code>SOROIGM_S</code>, <code>SOROIGG_S</code></li>
+<li><strong>HEPA (hepatites virais)</strong>: tipo viral em <code>CLASSI_FIN</code> (<code>1</code>=A, <code>2</code>=B, <code>3</code>=C, <code>4</code>=D, <code>5</code>=E). Marcadores: <code>HBSAG</code>, <code>ANTIHBS</code>, <code>ANTIHBC</code>, <code>HBEAG</code>, <code>ANTIHBE</code>, <code>ANTI_HAV</code>, <code>ANTI_HCV</code>, <code>ANTI_HEV</code>, <code>HCVRNA</code></li>
+<li><strong>RAIV (raiva humana)</strong>: sintomas neurológicos + histórico de exposição (<code>ANIMAL</code>, <code>EXPO_RAIV</code>)</li>
+<li><strong>HANT (hantavirose)</strong>: pulmonar/renal; foco no contato (<code>CONTATO</code>, <code>LIMPESA_R</code>, <code>RATOEXP</code>)</li>
+<li><strong>ROTA (rotavírus)</strong>: gastroenterite. Específico: vacinação (<code>VAC_ROTA</code>)</li>
+<li><strong>VARC (varicela)</strong>: vacinação (<code>VAC_PRECED</code>), gravidade (<code>ENCEFALIT</code>, <code>PNEUMONIA</code>)</li>
+</ul>
+<h3>2.4 Parasitoses — CHAG, ESQU, LEIV, LTAN, MALA, TOXG, TOXC</h3>
+<ul>
+<li><strong>MALA (malária)</strong>: <code>EXAME</code> (laboratorial), <code>RESULT_EX</code> (espécie: P. falciparum, vivax, malariae, etc.)</li>
+<li><strong>CHAG (Chagas aguda)</strong>: forma de transmissão (<code>ORAL</code>, <code>MAECHAGA</code>), parasitológico</li>
+<li><strong>ESQU (esquistossomose)</strong>: contato com água, ovos no exame</li>
+<li><strong>LEIV/LTAN (leishmaniose visceral/tegumentar)</strong>: hemograma, sorologia, espécie</li>
+<li><strong>TOXG (toxoplasmose gestante)</strong>: sorologia IgM/IgG, idade gestacional</li>
+<li><strong>TOXC (toxoplasmose congênita)</strong>: investigação no RN</li>
+</ul>
+<h3>2.5 HIV/AIDS — AIDA, AIDC, HIVA, HIVC, HIVE, HIVG</h3>
+<p>Esses 6 grupos têm schemas grandes (60-110 col).</p>
+<ul>
+<li><strong>AIDA (AIDS adulto)</strong>: 77 col. Marcadores clínicos (<code>ANT_TUBERC</code>, <code>ANT_HERPES</code>, <code>ANT_CAQUEX</code>, <code>ANT_DIARRE</code>, etc.). Exames (<code>LAB_TRIAGE</code>, <code>LAB_CONFIR</code>, <code>TPRAPIDO1/2/3</code>, <code>DT_RAPIDO</code>)</li>
+<li><strong>AIDC (AIDS criança)</strong>: 104 col. Investigação perinatal (<code>ANT_PERINA</code>, <code>ANT_T_HEMO</code>)</li>
+<li><strong>HIVA (HIV gestante/parturiente)</strong>: 60+ col. Foco em transmissão vertical</li>
+<li><strong>HIVC (HIV criança exposta)</strong>: 60 col</li>
+<li><strong>HIVE (HIV exposição ocupacional)</strong>: 60 col</li>
+<li><strong>HIVG (HIV gestante)</strong>: 60+ col</li>
+</ul>
+<h3>2.6 Sífilis — SIFA, SIFC, SIFG</h3>
+<ul>
+<li><strong>SIFA (sífilis adquirida adulto)</strong>: ~45 col. <code>VDRL</code>, <code>TPESQ_VDRL</code>, <code>TPTRATA</code>, <code>CLINICA</code> (primária, secundária, latente, terciária)</li>
+<li><strong>SIFC (sífilis congênita)</strong>: ~70 col. Foco no RN: <code>LIQUOR_VDRL</code>, <code>LIQUOR_RX</code>, <code>RADIOLOGIA</code>, <code>EVO_BEBE</code></li>
+<li><strong>SIFG (sífilis gestante)</strong>: ~45 col. <code>IDADE_GEST</code>, <code>TIPO_TESTE</code>, <code>TRATAGEST</code></li>
+</ul>
+<h3>2.7 Saúde do Trabalhador — ACBI, ACGR, CANC, DERM, LER, LERD, PAIR, PNEU, MENT, NTRA</h3>
+<ul>
+<li><strong>ACBI (Acidente Biológico)</strong>: 68 col. Exposição: <code>PERCUTANEA</code>, <code>PELE_INTEG</code>, <code>MAT_ORG</code>, <code>TIPO_ACID</code>, <code>AGENTE</code>. EPI: <code>LUVA</code>, <code>AVENTAL</code>, <code>OCULOS</code>, <code>MASCARA</code>. Vacinas: <code>VACINA</code>, <code>ANTI_HIV</code>, <code>HBSAG</code>, <code>ANTI_HBS</code>, <code>ANTI_HCV</code>. Profilaxia: <code>SEM_QUIMIO</code>, <code>AZT3TC</code>, <code>IMU_HEP_B</code></li>
+<li><strong>ACGR (Acidente de Trabalho Grave)</strong>: 54 col. <code>LOCAL_ACID</code>, <code>HORA_ACID</code>, <code>TIPO_ACID</code>, <code>CID_ACID</code>, <code>CID_LESAO</code>, <code>PART_CORP1/2/3</code> (partes do corpo afetadas), <code>REGIME</code> (formal/informal)</li>
+<li><strong>CANC (Câncer relacionado ao trabalho)</strong>: ~66 col. Exposições ocupacionais: <code>ASBESTO</code>, <code>SILICA</code>, <code>AMINA</code>, <code>BENZENO</code>, <code>ALCATRAO</code>, <code>HIDROCARBO</code>, <code>OLEOS</code>, <code>BERILIO</code>, <code>CADMIO</code>, <code>CROMO</code>, <code>NIQUEL</code>, <code>IONIZANTES</code>, <code>NAO_IONIZA</code>, <code>HORMONIO</code>, <code>NEOPLASICO</code>. Hábitos: <code>FUMA</code>, <code>TEMPO_FUMA</code></li>
+<li><strong>DERM (Dermatoses ocupacionais)</strong>, <strong>LER/LERD (LER/DORT)</strong>, <strong>PAIR (Perda auditiva)</strong>, <strong>PNEU (Pneumoconioses)</strong>: schemas similares, com exposições específicas (poeira, ruído, produtos químicos)</li>
+<li><strong>MENT (Transtornos mentais relacionados ao trabalho)</strong>: jornada, agente estressor</li>
+<li><strong>NTRA (Notificação de surto ocupacional)</strong>: surto coletivo</li>
+</ul>
+<h3>2.8 Acidentes com animais peçonhentos e zoonoses — ANIM, ANTR</h3>
+<ul>
+<li><strong>ANIM (Acidente com Animal Peçonhento)</strong>: 75 col. Tipo: <code>TP_ACIDENT</code> (1=cobra, 2=aranha, 3=escorpião, etc.). Animais: <code>ANI_SERPEN</code>, <code>ANI_ARANHA</code>, <code>ANI_LAGART</code>. Soroterapia: <code>CON_SOROTE</code>, <code>NU_AMPOLAS</code> (e variantes <code>NU_AMPOL_1</code> a <code>_9</code> por tipo). Sintomas locais/sistêmicos</li>
+<li><strong>ANTR (Atendimento Antirrábico)</strong>: 78 col. Tipo de exposição: <code>ANT_CONTAT</code>, <code>ANT_ARRANH</code>, <code>ANT_LAMBED</code>, <code>ANT_MORDED</code>. Local: <code>ANT_CABECA</code>, <code>ANT_MAOS</code>, etc. Vacina/soro: <code>DOSES</code>, <code>LAB_VACINA</code>, <code>TIP_SORO</code></li>
+</ul>
+<h3>2.9 Outras notificações — IEXO, BOTU, ESPO, FMAC, HANS, PEST, PFAN, SRC, DCRJ, SDTA, VIOL</h3>
+<ul>
+<li><strong>IEXO (Intoxicação exógena)</strong>: agente tóxico, via, circunstância</li>
+<li><strong>BOTU (Botulismo)</strong>: 149 col. Sintomas neurológicos detalhados (<code>STDIPLOPIA</code>, <code>STDISFONIA</code>, <code>STPTOSE</code>, <code>STMIDRIASE</code>, etc.), alimento suspeito (<code>STCASEIRA</code>, <code>STCOMERCIO</code>, <code>STDOMICILI</code>)</li>
+<li><strong>HANS (Hanseníase)</strong>: classificação operacional (PB/MB), número de lesões, baciloscopia, esquema PQT</li>
+<li><strong>PFAN (Paralisia Flácida Aguda)</strong>: investigação de pólio</li>
+<li><strong>SRC (Síndrome Respiratória Aguda)</strong>: predecessora de SRAG/COVID</li>
+<li><strong>VIOL (Violência Interpessoal/Autoprovocada)</strong>: tipos de violência (física, sexual, psicológica, financeira, negligência), agressor, local</li>
+<li><strong>DCRJ (Creutzfeldt-Jakob)</strong>: neurológica rara</li>
+<li><strong>SDTA (Doenças Transmitidas por Alimentos)</strong>: surto, alimento, agente</li>
+<li><strong>FMAC (Febre Maculosa)</strong>: vetor (carrapato), exposição</li>
+<li><strong>ESPO (Esporotricose)</strong>: contato com gato, lesão cutânea</li>
+<li><strong>PEST (Peste)</strong>: zoonose rara</li>
+</ul>
+<hr>
+<h2>3. Lista completa dos 58 grupos</h2>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>Nome</th>
+<th>Tema</th>
+<th># col aprox</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ACBI</code></td>
+<td>Acidente material biológico</td>
+<td>Trabalhador</td>
+<td>68</td>
+</tr>
+<tr>
+<td><code>ACGR</code></td>
+<td>Acidente de trabalho grave</td>
+<td>Trabalhador</td>
+<td>54</td>
+</tr>
+<tr>
+<td><code>AIDA</code></td>
+<td>AIDS adulto</td>
+<td>HIV/AIDS</td>
+<td>77</td>
+</tr>
+<tr>
+<td><code>AIDC</code></td>
+<td>AIDS criança</td>
+<td>HIV/AIDS</td>
+<td>104</td>
+</tr>
+<tr>
+<td><code>ANIM</code></td>
+<td>Animais peçonhentos</td>
+<td>Zoonose</td>
+<td>75</td>
+</tr>
+<tr>
+<td><code>ANTR</code></td>
+<td>Atendimento antirrábico</td>
+<td>Zoonose</td>
+<td>78</td>
+</tr>
+<tr>
+<td><code>BOTU</code></td>
+<td>Botulismo</td>
+<td>Bacteriana</td>
+<td>149</td>
+</tr>
+<tr>
+<td><code>CANC</code></td>
+<td>Câncer ocupacional</td>
+<td>Trabalhador</td>
+<td>66</td>
+</tr>
+<tr>
+<td><code>CHAG</code></td>
+<td>Chagas aguda</td>
+<td>Parasitose</td>
+<td>108</td>
+</tr>
+<tr>
+<td><code>CHIK</code></td>
+<td>Chikungunya</td>
+<td>Arbovirose</td>
+<td>122</td>
+</tr>
+<tr>
+<td><code>COLE</code></td>
+<td>Cólera</td>
+<td>Bacteriana</td>
+<td>~40</td>
+</tr>
+<tr>
+<td><code>COQU</code></td>
+<td>Coqueluche</td>
+<td>Bacteriana</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>DCRJ</code></td>
+<td>Creutzfeldt-Jakob</td>
+<td>Neurológica</td>
+<td>~40</td>
+</tr>
+<tr>
+<td><code>DENG</code></td>
+<td>Dengue</td>
+<td>Arbovirose</td>
+<td>~122</td>
+</tr>
+<tr>
+<td><code>DERM</code></td>
+<td>Dermatoses ocupacionais</td>
+<td>Trabalhador</td>
+<td>~60</td>
+</tr>
+<tr>
+<td><code>DIFT</code></td>
+<td>Difteria</td>
+<td>Bacteriana</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>ESPO</code></td>
+<td>Esporotricose</td>
+<td>Fúngica/zoonose</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>ESQU</code></td>
+<td>Esquistossomose</td>
+<td>Parasitose</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>EXAN</code></td>
+<td>Doenças exantemáticas</td>
+<td>Viroses</td>
+<td>~70</td>
+</tr>
+<tr>
+<td><code>FMAC</code></td>
+<td>Febre maculosa</td>
+<td>Bacteriana/zoonose</td>
+<td>~60</td>
+</tr>
+<tr>
+<td><code>FTIF</code></td>
+<td>Febre tifoide</td>
+<td>Bacteriana</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>HANS</code></td>
+<td>Hanseníase</td>
+<td>Bacteriana</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>HANT</code></td>
+<td>Hantavirose</td>
+<td>Virose/zoonose</td>
+<td>~80</td>
+</tr>
+<tr>
+<td><code>HEPA</code></td>
+<td>Hepatites virais</td>
+<td>Virose</td>
+<td>~100</td>
+</tr>
+<tr>
+<td><code>HIVA</code></td>
+<td>HIV adulto</td>
+<td>HIV/AIDS</td>
+<td>~60</td>
+</tr>
+<tr>
+<td><code>HIVC</code></td>
+<td>HIV criança exposta</td>
+<td>HIV/AIDS</td>
+<td>~60</td>
+</tr>
+<tr>
+<td><code>HIVE</code></td>
+<td>HIV exposição ocupacional</td>
+<td>HIV/AIDS</td>
+<td>~60</td>
+</tr>
+<tr>
+<td><code>HIVG</code></td>
+<td>HIV gestante</td>
+<td>HIV/AIDS</td>
+<td>~60</td>
+</tr>
+<tr>
+<td><code>IEXO</code></td>
+<td>Intoxicação exógena</td>
+<td>Outros</td>
+<td>~120</td>
+</tr>
+<tr>
+<td><code>LEIV</code></td>
+<td>Leishmaniose visceral</td>
+<td>Parasitose</td>
+<td>~70</td>
+</tr>
+<tr>
+<td><code>LEPT</code></td>
+<td>Leptospirose</td>
+<td>Bacteriana/zoonose</td>
+<td>~80</td>
+</tr>
+<tr>
+<td><code>LER</code></td>
+<td>LER/DORT (legacy)</td>
+<td>Trabalhador</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>LERD</code></td>
+<td>LER/DORT</td>
+<td>Trabalhador</td>
+<td>~60</td>
+</tr>
+<tr>
+<td><code>LTAN</code></td>
+<td>Leishmaniose tegumentar</td>
+<td>Parasitose</td>
+<td>~70</td>
+</tr>
+<tr>
+<td><code>MALA</code></td>
+<td>Malária</td>
+<td>Parasitose</td>
+<td>~80</td>
+</tr>
+<tr>
+<td><code>MENI</code></td>
+<td>Meningite</td>
+<td>Bacteriana/viral</td>
+<td>~80</td>
+</tr>
+<tr>
+<td><code>MENT</code></td>
+<td>Transtornos mentais ocupacionais</td>
+<td>Trabalhador</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>NTRA</code></td>
+<td>Notificação de surto trabalhador</td>
+<td>Trabalhador</td>
+<td>~30</td>
+</tr>
+<tr>
+<td><code>PAIR</code></td>
+<td>Perda auditiva ocupacional</td>
+<td>Trabalhador</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>PEST</code></td>
+<td>Peste</td>
+<td>Bacteriana/zoonose</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>PFAN</code></td>
+<td>Paralisia flácida aguda</td>
+<td>Viral (pólio)</td>
+<td>~60</td>
+</tr>
+<tr>
+<td><code>PNEU</code></td>
+<td>Pneumoconioses</td>
+<td>Trabalhador</td>
+<td>~60</td>
+</tr>
+<tr>
+<td><code>RAIV</code></td>
+<td>Raiva humana</td>
+<td>Virose/zoonose</td>
+<td>~70</td>
+</tr>
+<tr>
+<td><code>ROTA</code></td>
+<td>Rotavírus</td>
+<td>Virose</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>SDTA</code></td>
+<td>DTA (Doenças Transmitidas por Alimentos)</td>
+<td>Surto</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>SIFA</code></td>
+<td>Sífilis adquirida</td>
+<td>Bacteriana</td>
+<td>~45</td>
+</tr>
+<tr>
+<td><code>SIFC</code></td>
+<td>Sífilis congênita</td>
+<td>Bacteriana</td>
+<td>~70</td>
+</tr>
+<tr>
+<td><code>SIFG</code></td>
+<td>Sífilis gestante</td>
+<td>Bacteriana</td>
+<td>~45</td>
+</tr>
+<tr>
+<td><code>SRC</code></td>
+<td>Síndrome Resp. Aguda</td>
+<td>Viral</td>
+<td>~60</td>
+</tr>
+<tr>
+<td><code>TETA</code></td>
+<td>Tétano acidental</td>
+<td>Bacteriana</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>TETN</code></td>
+<td>Tétano neonatal</td>
+<td>Bacteriana</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>TOXC</code></td>
+<td>Toxoplasmose congênita</td>
+<td>Parasitose</td>
+<td>~70</td>
+</tr>
+<tr>
+<td><code>TOXG</code></td>
+<td>Toxoplasmose gestante</td>
+<td>Parasitose</td>
+<td>~70</td>
+</tr>
+<tr>
+<td><code>TRAC</code></td>
+<td>Tracoma</td>
+<td>Bacteriana</td>
+<td>~40</td>
+</tr>
+<tr>
+<td><code>TUBE</code></td>
+<td>Tuberculose</td>
+<td>Bacteriana</td>
+<td>~85</td>
+</tr>
+<tr>
+<td><code>VARC</code></td>
+<td>Varicela</td>
+<td>Virose</td>
+<td>~50</td>
+</tr>
+<tr>
+<td><code>VIOL</code></td>
+<td>Violência interpessoal/autoprovocada</td>
+<td>Social</td>
+<td>~120</td>
+</tr>
+<tr>
+<td><code>ZIKA</code></td>
+<td>Zika</td>
+<td>Arbovirose</td>
+<td>~94</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Glossário</h2>
+<table>
+<thead>
+<tr>
+<th>Sigla</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SINAN</strong></td>
+<td>Sistema de Informação de Agravos de Notificação</td>
+</tr>
+<tr>
+<td><strong>CID-10</strong></td>
+<td>Classificação Internacional de Doenças</td>
+</tr>
+<tr>
+<td><strong>EPI</strong></td>
+<td>Equipamento de Proteção Individual</td>
+</tr>
+<tr>
+<td><strong>PQT</strong></td>
+<td>Poliquimioterapia (hanseníase)</td>
+</tr>
+<tr>
+<td><strong>VDRL</strong></td>
+<td>Veneral Disease Research Laboratory (sorologia sífilis)</td>
+</tr>
+<tr>
+<td><strong>NS1</strong></td>
+<td>Antígeno NS1 (dengue)</td>
+</tr>
+<tr>
+<td><strong>PCR</strong></td>
+<td>Reação em Cadeia da Polimerase</td>
+</tr>
+<tr>
+<td><strong>DUM</strong></td>
+<td>Data da Última Menstruação</td>
+</tr>
+<tr>
+<td><strong>DTA</strong></td>
+<td>Doença Transmitida por Alimento</td>
+</tr>
+<tr>
+<td><strong>LER/DORT</strong></td>
+<td>Lesão por Esforço Repetitivo / Distúrbio Osteomuscular Relacionado ao Trabalho</td>
+</tr>
+<tr>
+<td><strong>CAPS</strong></td>
+<td>Centro de Atenção Psicossocial</td>
+</tr>
+<tr>
+<td><strong>PRNT</strong></td>
+<td>Teste de Neutralização por Redução de Placas (sorologia arboviroses)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Joins típicos</h2>
+<pre><code>SINAN.* ─┬─ ID_UNIDADE ──── CNES (CNES.ST)          → unidade notificadora
+         ├─ ID_MN_RESI ──── codmun (IBGE)           → município de residência
+         ├─ ID_MUNICIP ──── codmun (IBGE)           → município de notificação
+         └─ DT_NOTIFIC ──── (SIM.DO via CAUSABAS)   → linkage probabilístico em casos de óbito
+</code></pre>
+<h2>Caveats que economizam tempo</h2>
+<ol>
+<li><strong>Datas em <code>YYYYMMDD</code></strong> (string) — diferente do SIM/SINASC. Cuidado se for cruzar.</li>
+<li><strong><code>SEM_NOT</code> / <code>SEM_PRI</code></strong> são semanas epidemiológicas (<code>YYYYWW</code>), não ISO 8601. Tem reset no início de cada ano.</li>
+<li><strong><code>NU_IDADE_N</code> é codificada</strong> (mesmo padrão do SIM/SINASC) — <code>4028</code> = 28 anos.</li>
+<li><strong><code>CLASSI_FIN</code> varia por doença</strong>. Sempre confira o dicionário oficial daquela doença antes de filtrar. Em geral, <code>CLASSI_FIN ∈ {1,5}</code> significa "confirmado".</li>
+<li><strong>Subnotificação MASSIVA</strong> em quase tudo. Notificação compulsória ≠ ocorrência real. Subnotificação típica: hanseníase ~30%, hepatite ~80%, dengue varia muito.</li>
+<li><strong>Datas de transferência (<code>DT_TRANS*</code>)</strong> são úteis pra entender latência de notificação. Subtraindo de <code>DT_NOTIFIC</code>, dá medida da agilidade do sistema.</li>
+<li><strong>SINAN é Brasil-wide</strong> — pra filtrar pro seu estado de interesse, use <code>SG_UF_NOT == 43</code> (RS) <strong>e</strong> <code>SG_UF == 43</code> (residência). UFs são números aqui, não siglas.</li>
+<li><strong><code>ID_AGRAVO</code></strong> dentro de um mesmo arquivo de doença pode variar (ex.: HEPA tem HEPA A, B, C, D, E todos no mesmo arquivo, codificados por CID no <code>ID_AGRAVO</code>).</li>
+<li><strong>VIOL</strong> tem 5 "tipos" empilhados na mesma linha (cada coluna <code>LES_*</code> é uma forma): física, psicológica, sexual, tortura, tráfico, financeira, negligência. Útil mas complexo.</li>
+<li><strong>Pra pegar evolução completa de um caso (notificação → encerramento)</strong>, precisa de <code>DT_NOTIFIC</code> + <code>DT_ENCERRA</code>. Casos abertos ao fim do ano ficam com <code>DT_ENCERRA</code> vazio até virem encerrados no ano seguinte (mas continuam no arquivo do ano original).</li>
+</ol>
+</section>
+
+<section id="joins">
+<h1>Guia completo de joins</h1>
+<p>O DataSUS <strong>não tem chave universal de pessoa.</strong> O <code>CNS</code> (Cartão Nacional de Saúde) é o que mais se aproxima, mas vem <strong>ofuscado nos parquets do pysus</strong> por privacidade. Resultado: os joins se dividem em três tiers de confiabilidade muito diferentes.</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Granularidade</th>
+<th>Chave</th>
+<th>Confiabilidade</th>
+<th>Caso de uso típico</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. Estabelecimento</strong></td>
+<td>unidade × competência</td>
+<td><code>CNES + COMPETEN</code></td>
+<td>exato (deterministic)</td>
+<td>Enriquecer fatos com cadastro do hospital</td>
+</tr>
+<tr>
+<td><strong>2. Geografia</strong></td>
+<td>município × período</td>
+<td><code>codmun IBGE + ano/mês</code></td>
+<td>exato (em agregação)</td>
+<td>Indicadores per capita, taxas</td>
+</tr>
+<tr>
+<td><strong>3. Pessoa</strong></td>
+<td>indivíduo</td>
+<td>(composto: data nasc + sexo + mun + ...)</td>
+<td><strong>probabilístico</strong></td>
+<td>Linkage longitudinal (internação → óbito)</td>
+</tr>
+</tbody>
+</table>
+<p>Pro projeto <strong>NF01006</strong>, ~90% das análises só precisam dos tiers 1 e 2. Tier 3 só se for fazer rastro individual.</p>
+<hr>
+<h2>Tier 1 — Joins via <code>CNES</code> (estabelecimento)</h2>
+<p><strong>A chave universal entre fatos e o cadastro.</strong> Funciona porque toda atividade — internação, óbito, procedimento, notificação — acontece <strong>em uma unidade de saúde</strong>.</p>
+<h3>Mapa de chaves</h3>
+<table>
+<thead>
+<tr>
+<th>Tabela</th>
+<th>Coluna que aponta pra CNES.ST.CNES</th>
+<th>Semântica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SIH.RD</td>
+<td><code>CNES</code></td>
+<td>hospital onde internou</td>
+</tr>
+<tr>
+<td>SIH.SP</td>
+<td><code>SP_CNES</code></td>
+<td>hospital onde procedimento foi pago</td>
+</tr>
+<tr>
+<td>SIH.RJ</td>
+<td><code>CNES</code></td>
+<td>hospital com AIH rejeitada</td>
+</tr>
+<tr>
+<td>SIH.ER</td>
+<td><code>CNES</code></td>
+<td>hospital com erro de envio</td>
+</tr>
+<tr>
+<td>SIA.PA</td>
+<td><code>PA_CODUNI</code></td>
+<td>unidade que produziu o procedimento</td>
+</tr>
+<tr>
+<td>SIA.BI</td>
+<td><code>CODUNI</code></td>
+<td>idem (legacy ≤2011)</td>
+</tr>
+<tr>
+<td>SIA.PS</td>
+<td><code>CNES_EXEC</code></td>
+<td>CAPS executor</td>
+</tr>
+<tr>
+<td>SIA.SAD</td>
+<td><code>CNES_EXEC</code></td>
+<td>unidade de Atenção Domiciliar</td>
+</tr>
+<tr>
+<td>SIM.DO</td>
+<td><code>CODESTAB</code></td>
+<td>hospital onde ocorreu o óbito (preenchido se <code>LOCOCOR=1</code>)</td>
+</tr>
+<tr>
+<td>SINASC.DN</td>
+<td><code>CODESTAB</code></td>
+<td>maternidade onde nasceu</td>
+</tr>
+<tr>
+<td>SINAN.*</td>
+<td><code>ID_UNIDADE</code></td>
+<td>unidade notificadora</td>
+</tr>
+<tr>
+<td>CNES.LT/PF/EP/EQ/HB/SR/DC/IN/RC/GM/EE/EF</td>
+<td><code>CNES</code></td>
+<td>join entre grupos do CNES</td>
+</tr>
+</tbody>
+</table>
+<h3>Receita básica (pandas)</h3>
+<pre><code class="language-python">import pandas as pd
+from pathlib import Path
+
+SAMPLES = Path(&quot;/app/data/samples&quot;)
+
+sih_rd = pd.read_parquet(SAMPLES / &quot;sih_rd.parquet&quot;)
+cnes_st = pd.read_parquet(SAMPLES / &quot;cnes_st.parquet&quot;)
+
+# Join simples (ignora competência → usa último cadastro)
+enriched = sih_rd.merge(
+    cnes_st[[&quot;CNES&quot;, &quot;CODUFMUN&quot;, &quot;TP_UNID&quot;, &quot;ESFERA_A&quot;, &quot;NAT_JUR&quot;]],
+    on=&quot;CNES&quot;, how=&quot;left&quot;,
+)
+</code></pre>
+<h3>Receita correta — join temporal (SCD)</h3>
+<p><strong>CNES é snapshot mensal.</strong> Um hospital muda <code>TP_UNID</code>, <code>ESFERA_A</code>, leitos disponíveis ao longo do tempo. Pra análise correta, <strong>case a competência da internação com a competência do CNES vigente</strong>.</p>
+<pre><code class="language-python"># Competência uniforme YYYYMM (string)
+sih_rd[&quot;competen&quot;] = (
+    sih_rd[&quot;ANO_CMPT&quot;].astype(str) +
+    sih_rd[&quot;MES_CMPT&quot;].astype(str).str.zfill(2)
+)
+cnes_st[&quot;competen&quot;] = cnes_st[&quot;COMPETEN&quot;].astype(str)
+
+enriched = sih_rd.merge(
+    cnes_st[[&quot;CNES&quot;, &quot;competen&quot;, &quot;CODUFMUN&quot;, &quot;TP_UNID&quot;, &quot;ESFERA_A&quot;]],
+    on=[&quot;CNES&quot;, &quot;competen&quot;], how=&quot;left&quot;,
+)
+</code></pre>
+<h3>Padrão "capacidade × ocupação" — SIH + CNES.LT</h3>
+<pre><code class="language-python">cnes_lt = pd.read_parquet(SAMPLES / &quot;cnes_lt.parquet&quot;)
+
+# Leitos SUS por hospital × competência
+leitos = (
+    cnes_lt.groupby([&quot;CNES&quot;, &quot;COMPETEN&quot;])
+    .agg(leitos_sus=(&quot;QT_SUS&quot;, &quot;sum&quot;),
+         leitos_total=(&quot;QT_EXIST&quot;, &quot;sum&quot;))
+    .reset_index()
+)
+leitos[&quot;competen&quot;] = leitos[&quot;COMPETEN&quot;].astype(str)
+
+internacoes_por_hosp = (
+    sih_rd.groupby([&quot;CNES&quot;, &quot;competen&quot;])
+    .agg(internacoes=(&quot;N_AIH&quot;, &quot;nunique&quot;),
+         diarias=(&quot;DIAS_PERM&quot;, &quot;sum&quot;))
+    .reset_index()
+)
+
+ocupacao = internacoes_por_hosp.merge(leitos, on=[&quot;CNES&quot;, &quot;competen&quot;])
+ocupacao[&quot;taxa_ocup&quot;] = ocupacao[&quot;diarias&quot;] / (ocupacao[&quot;leitos_sus&quot;] * 30)
+</code></pre>
+<h3>Caveat — CNES.PF tem multiplicidade</h3>
+<p>Cada profissional pode aparecer N vezes em PF (um por vínculo). Pra "número de médicos do hospital", dedupe primeiro:</p>
+<pre><code class="language-python">medicos_por_hosp = (
+    cnes_pf[cnes_pf[&quot;CBO&quot;].str.startswith(&quot;22&quot;)]   # 22xxxx = médicos
+    .drop_duplicates([&quot;CNES&quot;, &quot;COMPETEN&quot;, &quot;CPFUNICO&quot;])
+    .groupby([&quot;CNES&quot;, &quot;COMPETEN&quot;]).size()
+    .rename(&quot;n_medicos&quot;).reset_index()
+)
+</code></pre>
+<hr>
+<h2>Tier 2 — Joins via <code>município IBGE</code> (geografia)</h2>
+<p><strong>O caminho ideal pra agregações.</strong> Cada dataset tem coluna(s) de município (de residência e/ou de ocorrência) — códigos IBGE 6 dígitos compatíveis com a tabela do IBGE.</p>
+<h3>Mapa de colunas</h3>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Residência (paciente)</th>
+<th>Ocorrência (onde foi feito)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SIH.RD</td>
+<td><code>MUNIC_RES</code></td>
+<td><code>MUNIC_MOV</code></td>
+</tr>
+<tr>
+<td>SIH.SP</td>
+<td><code>SP_M_PAC</code></td>
+<td><code>SP_M_HOSP</code></td>
+</tr>
+<tr>
+<td>SIA.PA</td>
+<td><code>PA_MUNPCN</code></td>
+<td><code>PA_UFMUN</code></td>
+</tr>
+<tr>
+<td>SIA.BI / PS / SAD</td>
+<td><code>MUNPAC</code></td>
+<td><code>UFMUN</code></td>
+</tr>
+<tr>
+<td>SIM.DO</td>
+<td><code>CODMUNRES</code></td>
+<td><code>CODMUNOCOR</code></td>
+</tr>
+<tr>
+<td>SINASC.DN</td>
+<td><code>CODMUNRES</code></td>
+<td><code>CODMUNNASC</code></td>
+</tr>
+<tr>
+<td>SINAN.*</td>
+<td><code>ID_MN_RESI</code></td>
+<td><code>ID_MUNICIP</code></td>
+</tr>
+<tr>
+<td>CNES.ST (e outros)</td>
+<td>—</td>
+<td><code>CODUFMUN</code> (é a entidade)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Regra prática:</strong> pra <strong>taxa de incidência</strong> (por habitante), use a coluna de <strong>residência</strong>. Pra <strong>utilização de serviço</strong>, use a de <strong>ocorrência</strong>.</p>
+<h3>Receita — taxa de mortalidade por município/ano</h3>
+<pre><code class="language-python">sim_do = pd.read_parquet(SAMPLES / &quot;sim_do.parquet&quot;)
+sim_do[&quot;ano&quot;] = sim_do[&quot;DTOBITO&quot;].str[-4:].astype(int)
+
+obitos = (
+    sim_do.groupby([&quot;CODMUNRES&quot;, &quot;ano&quot;]).size()
+    .rename(&quot;obitos&quot;).reset_index()
+)
+
+# Carrega IBGE (você precisa baixar separadamente — não está no pysus)
+populacao = pd.read_csv(&quot;data/ibge/populacao_rs.csv&quot;)
+# Colunas esperadas: codmun, ano, populacao
+
+taxa = (
+    obitos.merge(
+        populacao,
+        left_on=[&quot;CODMUNRES&quot;, &quot;ano&quot;],
+        right_on=[&quot;codmun&quot;, &quot;ano&quot;],
+        how=&quot;left&quot;,
+    )
+    .assign(taxa_mort_1000=lambda d: d[&quot;obitos&quot;] / d[&quot;populacao&quot;] * 1000)
+)
+</code></pre>
+<h3>Receita — indicador composto SIH × CNES × SIM × IBGE (pro NF01006)</h3>
+<p>Esse é o <strong>padrão da sua tese</strong>: leitos per capita × taxa de internação × mortalidade.</p>
+<pre><code class="language-python"># 1. Capacidade (CNES.ST + LT) por município/competência
+cap = (
+    cnes_lt
+    .merge(cnes_st[[&quot;CNES&quot;, &quot;CODUFMUN&quot;, &quot;COMPETEN&quot;]], on=[&quot;CNES&quot;, &quot;COMPETEN&quot;])
+    .groupby([&quot;CODUFMUN&quot;, &quot;COMPETEN&quot;])
+    .agg(leitos_sus=(&quot;QT_SUS&quot;, &quot;sum&quot;),
+         leitos_total=(&quot;QT_EXIST&quot;, &quot;sum&quot;))
+    .reset_index()
+)
+cap[&quot;ano&quot;] = cap[&quot;COMPETEN&quot;].astype(str).str[:4].astype(int)
+cap_anual = cap.groupby([&quot;CODUFMUN&quot;, &quot;ano&quot;]).agg(
+    leitos_sus_medio=(&quot;leitos_sus&quot;, &quot;mean&quot;),
+).reset_index()
+
+# 2. Internações SIH por município de residência/ano
+sih_rd[&quot;ano&quot;] = sih_rd[&quot;ANO_CMPT&quot;].astype(int)
+internacoes = (
+    sih_rd.groupby([&quot;MUNIC_RES&quot;, &quot;ano&quot;])
+    .agg(internacoes=(&quot;N_AIH&quot;, &quot;nunique&quot;),
+         obitos_hosp=(&quot;MORTE&quot;, &quot;sum&quot;))
+    .reset_index()
+)
+
+# 3. Óbitos totais SIM por município de residência/ano
+sim_do[&quot;ano&quot;] = sim_do[&quot;DTOBITO&quot;].str[-4:].astype(int)
+obitos = sim_do.groupby([&quot;CODMUNRES&quot;, &quot;ano&quot;]).size().rename(&quot;obitos_total&quot;).reset_index()
+
+# 4. População IBGE
+pop = pd.read_csv(&quot;data/ibge/populacao_rs.csv&quot;)  # codmun, ano, populacao
+
+# 5. Join encadeado
+indicadores = (
+    pop.merge(cap_anual, left_on=[&quot;codmun&quot;, &quot;ano&quot;], right_on=[&quot;CODUFMUN&quot;, &quot;ano&quot;], how=&quot;left&quot;)
+       .merge(internacoes, left_on=[&quot;codmun&quot;, &quot;ano&quot;], right_on=[&quot;MUNIC_RES&quot;, &quot;ano&quot;], how=&quot;left&quot;)
+       .merge(obitos, left_on=[&quot;codmun&quot;, &quot;ano&quot;], right_on=[&quot;CODMUNRES&quot;, &quot;ano&quot;], how=&quot;left&quot;)
+       .assign(
+           leitos_per_1000=lambda d: d[&quot;leitos_sus_medio&quot;] / d[&quot;populacao&quot;] * 1000,
+           taxa_internacao=lambda d: d[&quot;internacoes&quot;] / d[&quot;populacao&quot;] * 1000,
+           taxa_mortalidade=lambda d: d[&quot;obitos_total&quot;] / d[&quot;populacao&quot;] * 1000,
+           letalidade_hosp=lambda d: d[&quot;obitos_hosp&quot;] / d[&quot;internacoes&quot;],
+       )
+)
+</code></pre>
+<p>Esse DataFrame final é o que vira <strong>a sua análise</strong>.</p>
+<hr>
+<h2>Tier 3 — Joins por pessoa (probabilístico)</h2>
+<p><strong>Use só se precisar rastreio individual.</strong> Pra agregações geográficas/temporais, pule este tier.</p>
+<h3>Por que não existe join exato</h3>
+<table>
+<thead>
+<tr>
+<th>Coluna candidata</th>
+<th>Disponível?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CPF</code> do paciente</td>
+<td>❌ nunca em microdados</td>
+</tr>
+<tr>
+<td><code>CNS</code> (Cartão SUS)</td>
+<td>⚠️ presente, mas <strong>ofuscado</strong> nos parquets pysus (caracteres altos da tabela ASCII)</td>
+</tr>
+<tr>
+<td>Nome completo</td>
+<td>❌ nunca</td>
+</tr>
+<tr>
+<td>Documento qualquer</td>
+<td>❌</td>
+</tr>
+</tbody>
+</table>
+<h3>Receita determinística simples (alta precisão, baixa cobertura)</h3>
+<p>Pra responder "essa AIH terminou em óbito?":</p>
+<pre><code class="language-python"># 1. AIHs onde paciente morreu no hospital
+sih_obitos = sih_rd[sih_rd[&quot;MORTE&quot;] == 1].copy()
+
+# 2. Óbitos hospitalares no SIM
+sim_hosp = sim_do[sim_do[&quot;LOCOCOR&quot;] == &quot;1&quot;].copy()
+
+# 3. Normalizar formato de datas (SIH: YYYYMMDD, SIM: DDMMYYYY)
+sim_hosp[&quot;dt_obito_iso&quot;] = (
+    sim_hosp[&quot;DTOBITO&quot;].str[4:] +
+    sim_hosp[&quot;DTOBITO&quot;].str[2:4] +
+    sim_hosp[&quot;DTOBITO&quot;].str[:2]
+)
+
+# 4. Normalizar SEXO (SIH 1/3 vs SIM 1/2)
+sim_hosp[&quot;sexo_norm&quot;] = sim_hosp[&quot;SEXO&quot;].map({&quot;1&quot;: &quot;1&quot;, &quot;2&quot;: &quot;3&quot;})
+
+# 5. Chave composta — CNES + data + sexo + idade
+def idade_sim_para_anos(s):
+    &quot;&quot;&quot;Decodifica IDADE do SIM (4 dígitos: 1º dígito = unidade) pra anos.&quot;&quot;&quot;
+    s = str(s).zfill(4)
+    unidade, valor = int(s[0]), int(s[1:])
+    return valor if unidade in (4, 5) else 0   # tudo &lt;1 ano → 0
+
+sih_obitos[&quot;match&quot;] = (
+    sih_obitos[&quot;CNES&quot;].astype(str) + &quot;_&quot; +
+    sih_obitos[&quot;DT_SAIDA&quot;] + &quot;_&quot; +
+    sih_obitos[&quot;SEXO&quot;].astype(str) + &quot;_&quot; +
+    sih_obitos[&quot;IDADE&quot;].astype(str)
+)
+sim_hosp[&quot;match&quot;] = (
+    sim_hosp[&quot;CODESTAB&quot;].astype(str) + &quot;_&quot; +
+    sim_hosp[&quot;dt_obito_iso&quot;] + &quot;_&quot; +
+    sim_hosp[&quot;sexo_norm&quot;] + &quot;_&quot; +
+    sim_hosp[&quot;IDADE&quot;].apply(idade_sim_para_anos).astype(str)
+)
+
+linkados = sih_obitos.merge(sim_hosp, on=&quot;match&quot;, how=&quot;inner&quot;, suffixes=(&quot;_sih&quot;, &quot;_sim&quot;))
+</code></pre>
+<p>Captura ~60-80% dos pares verdadeiros (perde por divergência de sexo/idade entre fontes).</p>
+<h3>Receita probabilística (recall maior)</h3>
+<p>Pra recall acima de 90%, use <strong>Fellegi-Sunter</strong> com pesos por concordância:</p>
+<ul>
+<li>Python: <a href="https://github.com/moj-analytical-services/splink"><code>splink</code></a> (estado da arte)</li>
+<li>Python: <code>recordlinkage</code></li>
+<li>Brasil: <code>RecLink</code> (em Pascal, mas tem wrappers)</li>
+</ul>
+<p>Receita conceitual:
+1. Blocking por <code>CODESTAB + ano_obito</code> (reduz pares candidatos)
+2. Comparadores por <code>(sexo, idade ± 1, dia ± 1)</code> com pesos
+3. Threshold de score pra decidir match</p>
+<h3>Quando vale o esforço?</h3>
+<ul>
+<li>✅ Mortalidade pós-alta (paciente teve alta SIH, morreu em casa depois → aparece no SIM, não no SIH)</li>
+<li>✅ Re-internações (mesma pessoa, múltiplas AIHs)</li>
+<li>✅ Coorte longitudinal: nasceu (SINASC) → adoeceu (SINAN) → internou (SIH) → morreu (SIM)</li>
+<li>❌ Pro NF01006, <strong>não vale</strong> — análise é populacional (município/período)</li>
+</ul>
+<hr>
+<h2>Joins dentro de cada dataset</h2>
+<h3>SIH (4 grupos)</h3>
+<pre><code class="language-python"># RD ↔ SP: 1:N pela AIH
+sih_full = sih_rd.merge(
+    sih_sp.groupby(&quot;SP_NAIH&quot;).agg(
+        n_procedimentos=(&quot;SP_ATOPROF&quot;, &quot;count&quot;),
+        valor_sp=(&quot;SP_VALATO&quot;, &quot;sum&quot;),
+    ).reset_index(),
+    left_on=&quot;N_AIH&quot;, right_on=&quot;SP_NAIH&quot;, how=&quot;left&quot;,
+)
+
+# RD vs RJ: união, não join (RJ é o que foi rejeitado — não há overlap)
+</code></pre>
+<h3>CNES (13 grupos)</h3>
+<p>Sempre join por <code>(CNES, COMPETEN)</code>:</p>
+<pre><code class="language-python">hosp_completo = (
+    cnes_st
+    .merge(cnes_lt.groupby([&quot;CNES&quot;,&quot;COMPETEN&quot;]).agg(leitos=(&quot;QT_SUS&quot;,&quot;sum&quot;)).reset_index(),
+           on=[&quot;CNES&quot;,&quot;COMPETEN&quot;], how=&quot;left&quot;)
+    .merge(cnes_eq.groupby([&quot;CNES&quot;,&quot;COMPETEN&quot;]).agg(equips=(&quot;QT_USO&quot;,&quot;sum&quot;)).reset_index(),
+           on=[&quot;CNES&quot;,&quot;COMPETEN&quot;], how=&quot;left&quot;)
+    .merge(cnes_hb[cnes_hb[&quot;CMPT_FIM&quot;]==999999].groupby([&quot;CNES&quot;,&quot;COMPETEN&quot;]).agg(habs=(&quot;SGRUPHAB&quot;,&quot;count&quot;)).reset_index(),
+           on=[&quot;CNES&quot;,&quot;COMPETEN&quot;], how=&quot;left&quot;)
+)
+</code></pre>
+<h3>SINAN (58 doenças)</h3>
+<p>Para análise multi-doença, <strong>UNION</strong> (concat) em vez de join. As 58 compartilham núcleo comum.</p>
+<pre><code class="language-python">import pyarrow.dataset as ds
+
+# Só as colunas comuns
+COMUNS = [&quot;TP_NOT&quot;, &quot;ID_AGRAVO&quot;, &quot;DT_NOTIFIC&quot;, &quot;NU_ANO&quot;, &quot;SG_UF_NOT&quot;,
+          &quot;ID_MUNICIP&quot;, &quot;ID_UNIDADE&quot;, &quot;ANO_NASC&quot;, &quot;NU_IDADE_N&quot;, &quot;CS_SEXO&quot;,
+          &quot;CS_RACA&quot;, &quot;ID_MN_RESI&quot;, &quot;CLASSI_FIN&quot;, &quot;CRITERIO&quot;, &quot;EVOLUCAO&quot;]
+
+frames = []
+for f in Path(&quot;data/samples&quot;).glob(&quot;sinan_*.parquet&quot;):
+    df = pd.read_parquet(f, columns=COMUNS)
+    df[&quot;doenca&quot;] = f.stem.replace(&quot;sinan_&quot;, &quot;&quot;).upper()
+    frames.append(df)
+
+sinan_unificado = pd.concat(frames, ignore_index=True)
+</code></pre>
+<hr>
+<h2>Cheatsheet — pegadinhas que custam horas</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Problema</th>
+<th>Solução</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>SEXO=2</code> (fem) no SIM/SINASC/SINAN vs <code>SEXO=3</code> (fem) no SIH</td>
+<td>Map: <code>{"1":"1","2":"3"}</code> (SIM→SIH)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Datas <code>DDMMYYYY</code> (SIM, SINASC) vs <code>YYYYMMDD</code> (SIH, SINAN)</td>
+<td>Normalize antes de comparar</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>CNES</code> muda características ao longo do tempo</td>
+<td>Join por <code>(CNES, COMPETEN)</code>, não só <code>CNES</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>CNES.PF</code> tem N linhas por profissional (1 por vínculo)</td>
+<td>Dedupe por <code>(CNES, CPFUNICO)</code> antes de contar</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>MUNIC_*</code> é 6 dígitos IBGE; alguns CSVs externos usam 7 (com DV)</td>
+<td><code>codmun_7 = codmun_6 * 10 + dv</code>. Ou trunque pra 6</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>IDADE</code> codificada no SIM/SINAN (4 dígitos, 1º = unidade)</td>
+<td>Decode antes de comparar com <code>IDADE</code> em anos do SIH</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>SIA.PA</code> é gigante (~4M linhas/mês)</td>
+<td>Agregue antes do join. Use duckdb se precisar bater linha-a-linha</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>SINAN</code> é Brasil-wide</td>
+<td>Filtre por <code>SG_UF_NOT == 43</code> (RS) antes de tudo</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>CNES.LT</code> representa cada tipo de leito separado</td>
+<td>Agregue <code>QT_SUS</code> por <code>CNES</code> antes do join</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>SIM.LOCOCOR</code> pode ser vazio em causas externas (via pública)</td>
+<td><code>LOCOCOR=1 AND CODESTAB IS NOT NULL</code> pra hospital</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>Joins relevantes pro NF01006 — priorizados</h2>
+<p>Dado o escopo (<strong>distribuição de estabelecimentos de saúde × mortalidade no RS</strong>), os joins na sua ordem provável de uso:</p>
+<table>
+<thead>
+<tr>
+<th>Prioridade</th>
+<th>Join</th>
+<th>Granularidade</th>
+<th>Pra responder</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>CNES.ST + CNES.LT</td>
+<td>hospital × competência</td>
+<td>Capacidade total de leitos por município</td>
+</tr>
+<tr>
+<td>2</td>
+<td>SIH.RD + IBGE</td>
+<td>município × ano</td>
+<td>Taxa de internação por habitante</td>
+</tr>
+<tr>
+<td>3</td>
+<td>SIM.DO + IBGE</td>
+<td>município × ano</td>
+<td>Taxa de mortalidade por habitante</td>
+</tr>
+<tr>
+<td>4</td>
+<td>CNES.ST + SIH.RD + IBGE</td>
+<td>município × ano</td>
+<td>Indicador composto: oferta × demanda × resultado</td>
+</tr>
+<tr>
+<td>5</td>
+<td>CNES.HB filtrada</td>
+<td>hospital</td>
+<td>Quem tem alta complexidade (UNACON, UTI tipo II)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>SIH.RD + CNES.ST</td>
+<td>AIH × hospital cadastro</td>
+<td>Internação em hospital de qual tipo / esfera</td>
+</tr>
+<tr>
+<td>7</td>
+<td>SIM.DO + CNES.ST</td>
+<td>óbito × hospital</td>
+<td>Óbitos por hospital (concentração de morbi-mortalidade)</td>
+</tr>
+</tbody>
+</table>
+<p>Os Tier-3 (linkage SIH↔SIM) só se for fazer recorte de <strong>letalidade pós-alta</strong> — fora do escopo declarado.</p>
+</section>
+</main>
+</div>
+</body>
+</html>

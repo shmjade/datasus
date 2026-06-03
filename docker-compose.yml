@@ -68,7 +68,7 @@ services:
     restart: unless-stopped
     depends_on:
       zookeeper:
-        condition: service_healthy
+        condition: service_started
     ports:
       - "9092:9092"
       - "9101:9101"  # JMX para monitoramento
@@ -145,6 +145,85 @@ services:
       retries: 5
 
   # ---------------------------------------------------------------------------
+  # Ingestor — supercronic + pysus
+  # Agenda mensal (infra/cron/crontab): baixa AIH novas do FTP DataSUS,
+  # converte .dbc → parquet em data/lake/bronze/, avança o watermark.
+  #
+  # Backfill manual:
+  #   docker compose run --rm ingestor backfill
+  # Debug:
+  #   docker compose logs -f ingestor
+  # ---------------------------------------------------------------------------
+  ingestor:
+    build:
+      context: .
+      dockerfile: infra/cron/Dockerfile
+    container_name: datasus_ingestor
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      INGEST_DATA_ROOT: /app/data
+    volumes:
+      - ./data:/app/data
+      - ./pipelines:/app/pipelines
+      - pysus_cache:/home/ingestor/pysus
+    networks:
+      - datasus-net
+
+  # ---------------------------------------------------------------------------
+  # Streamlit — Dashboards interativos (DuckDB + Plotly)
+  # Acesso: http://localhost:8501
+  # ---------------------------------------------------------------------------
+  streamlit:
+    build:
+      context: .
+      dockerfile: infra/streamlit/Dockerfile
+    container_name: datasus_streamlit
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    environment:
+      DATA_ROOT: /app/data
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-datasus_db}
+      POSTGRES_USER: ${POSTGRES_USER:-datasus}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-datasus_secret}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_TOPIC_TRIAGEM: triagem-eventos
+      KAFKA_TOPIC_ALERTAS: alertas-risco
+    volumes:
+      - ./data:/app/data
+      - ./dashboards:/app/dashboards
+      - ./pipelines:/app/pipelines
+    networks:
+      - datasus-net
+
+  # ---------------------------------------------------------------------------
+  # Analysis — Jupyter Lab + PySpark (modo local)
+  # Jupyter: http://localhost:8888  (sem senha — apenas para uso local)
+  # ---------------------------------------------------------------------------
+  analysis:
+    build:
+      context: .
+      dockerfile: infra/analysis/Dockerfile
+    container_name: datasus_analysis
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./data:/app/data
+      - ./notebooks:/app/notebooks
+      - ./pipelines:/app/pipelines
+      - ./scripts:/app/scripts
+      - ./docs:/app/docs
+    networks:
+      - datasus-net
+
+  # ---------------------------------------------------------------------------
   # Spark Worker — Executor de tarefas batch
   # ---------------------------------------------------------------------------
   spark-worker:
@@ -178,6 +257,7 @@ volumes:
   zookeeper_data:
   zookeeper_log:
   kafka_data:
+  pysus_cache:
 
 # =============================================================================
 # Rede isolada para comunicação entre serviços

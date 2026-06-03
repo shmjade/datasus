@@ -1,0 +1,519 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+\usepackage{graphicx,url}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+
+\sloppy
+
+\title{Análise da Distribuição de Estabelecimentos de Saúde na Região Sul
+  e Impactos na Mortalidade:\\Uma Arquitetura de Dados Híbrida Batch/Stream}
+
+\author{Jade S. Hatanaka Marques\inst{1}, Luís Dias Ferreira Soares\inst{1}} 
+
+\address{Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)\\
+  Porto Alegre -- RS -- Brasil
+  \email{jade.hatanaka@inf.ufrgs.br, ldiass@live.com}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{resumo}
+A integração de dados de saúde pública no Brasil enfrenta o desafio de
+transformar registros administrativos fragmentados e heterogêneos em
+inteligência acionável para gestores e profissionais de saúde. Este trabalho
+propõe uma plataforma de análise que correlaciona a distribuição de
+estabelecimentos de saúde na Região Sul do Brasil — Paraná, Santa Catarina e
+Rio Grande do Sul — com desfechos de mortalidade hospitalar, por meio de uma
+arquitetura híbrida de processamento em lote (batch) e em tempo real (stream).
+O objetivo geral é integrar três fontes públicas — o Sistema de Informações
+Hospitalares (SIH/DataSUS), o Cadastro Nacional de Estabelecimentos de Saúde
+(CNES) e indicadores socioeconômicos do IBGE — em um banco de dados relacional
+estruturado segundo o padrão Medallion (camadas \textit{raw}, \textit{trusted}
+e \textit{refined}), habilitando consultas analíticas complexas de
+rastreabilidade do paciente e identificação de regiões com alta mortalidade e
+baixa oferta assistencial, denominadas ``Silêncio Epidemiológico''. O ambiente
+é conteinerizado via Docker, com processamento batch em Apache Spark/PySpark,
+simulação de triagem via Apache Kafka e armazenamento em PostgreSQL 16. O
+trabalho será avaliado por demonstração ao vivo do pipeline completo e exibição
+de mapas coropléticos interativos. A principal contribuição é uma metodologia
+replicável de integração de dados públicos de saúde que suporta tanto análise
+histórica quanto decisão assistencial em tempo real.
+\end{resumo}
+
+
+%=============================================================================
+\section{Introdução}
+%=============================================================================
+
+A saúde pública brasileira opera sobre um vasto ecossistema de sistemas de
+informação geridos pelo Ministério da Saúde, cujos microdados são disponibilizados
+abertamente pelo DataSUS \cite{datasus2024}. Apesar do volume e da riqueza dessas
+bases, a utilização efetiva desses dados para suporte à decisão clínica e
+epidemiológica permanece limitada pela fragmentação entre sistemas, pela
+heterogeneidade de formatos e pela ausência de ferramentas integradas de análise
+\cite{lima2019}. O resultado é um ciclo em que gestores tomam decisões de
+alocação de recursos sem visibilidade sobre o fluxo real de pacientes e seus
+desfechos.
+
+Um exemplo concreto do problema ocorre na regulação assistencial: um paciente
+com quadro clínico grave em um município de pequeno porte pode aguardar horas
+por uma transferência regulada enquanto leitos de Unidade de Terapia Intensiva
+(UTI) permanecem disponíveis em hospitais próximos, simplesmente porque não há
+sistema capaz de cruzar, em tempo real, a demanda de triagem com a oferta de
+leitos do Sistema Único de Saúde (SUS). Estima-se que essa ``Janela de Risco''
+— o intervalo entre a solicitação de regulação e a efetivação da transferência
+— contribui para desfechos adversos evitáveis \cite{mendes2011}.
+
+Este trabalho é adequado ao contexto da Engenharia e Ciência de Dados
+aplicada à saúde pública, com foco na Região Sul do Brasil, que possui boa
+cobertura e confiabilidade nos registros do SIH e do CNES, além de dados
+socioeconômicos do IBGE bem estruturados por setor censitário \cite{ibge2023}.
+O objetivo geral é construir uma plataforma capaz de correlacionar latência
+na regulação assistencial com desfechos de mortalidade, provendo uma camada
+de decisão em tempo real para otimização do fluxo de pacientes críticos.
+
+As tecnologias utilizadas incluem: Python 3.11 com PySpark para pipelines de
+transformação em lote \cite{spark2016}; Apache Kafka para ingestão de eventos
+de triagem simulados \cite{kafka2021}; PostgreSQL 16 como banco de dados
+relacional principal; e Docker Compose para conteinerização e portabilidade
+da stack completa. A arquitetura de armazenamento segue o padrão Medallion,
+amplamente adotado em plataformas modernas de dados \cite{databricks2021}.
+
+A contribuição esperada é dupla: científica, com uma metodologia de integração
+de bases heterogêneas de saúde pública reutilizável em outros contextos
+regionais; e social, com um protótipo funcional que demonstra como dados já
+existentes podem subsidiar decisões de gestão assistencial sem custo adicional
+de coleta.
+
+O restante do artigo está organizado da seguinte forma: a Seção~2 descreve
+detalhadamente as bases de dados utilizadas; a Seção~3 apresenta o ambiente
+de desenvolvimento; a Seção~4 detalha a metodologia adotada; a Seção~5
+especifica as funcionalidades do sistema; a Seção~6 apresenta o cronograma de
+desenvolvimento; e a Seção~7 traz as considerações finais.
+
+
+%=============================================================================
+\section{Descrição Detalhada da Base de Dados}
+%=============================================================================
+
+O ecossistema de dados do projeto é composto por três fontes públicas
+integradas pela chave de município no padrão IBGE de seis dígitos.
+
+\subsection{SIH/DataSUS — Sistema de Informações Hospitalares}
+
+O SIH registra todas as internações financiadas pelo SUS por meio das
+Autorizações de Internação Hospitalar (AIH). Os arquivos são publicados
+mensalmente no FTP do DataSUS no formato proprietário \texttt{.dbc}
+(compressão sobre DBF), identificados pelo padrão
+\texttt{RD\{UF\}\{AAAAMM\}.dbc}. Para a Região Sul, o volume estimado é de
+aproximadamente 500\,mil registros por estado por ano, totalizando cerca de
+1,5\,milhão de registros anuais considerando PR, SC e RS no período 2022--2024.
+
+Os campos centrais para a análise são apresentados na Tabela~\ref{tab:sih}.
+
+\begin{table}[ht]
+\centering
+\caption{Campos principais do SIH/DataSUS utilizados na análise}
+\label{tab:sih}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Campo} & \textbf{Tipo} & \textbf{Descrição} \\
+\midrule
+\texttt{N\_AIH}     & VARCHAR(13) & Número da AIH — dado sensível, armazenado apenas como hash SHA-256 \\
+\texttt{MUNIC\_MOV} & CHAR(6)     & Município de atendimento (código IBGE 6 dígitos) \\
+\texttt{MUNIC\_RES} & CHAR(6)     & Município de residência — diferença indica transferência \\
+\texttt{DT\_INTER}  & DATE        & Data de internação \\
+\texttt{DT\_SAIDA}  & DATE        & Data de saída \\
+\texttt{MORTE}      & SMALLINT    & Indicador de óbito: 0 = não, 1 = sim \\
+\texttt{DIAG\_PRINC}& VARCHAR(4)  & CID-10 do diagnóstico principal \\
+\texttt{CGC\_HOSP}  & VARCHAR(14) & CNPJ do hospital (FK implícita para o CNES) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent\textbf{Regras de qualidade:} registros com \texttt{DT\_SAIDA < DT\_INTER}
+são descartados; \texttt{SEXO} com valores 0 ou 9 são convertidos para nulo;
+datas de nascimento inválidas (\texttt{00000000}) são tratadas como nulo;
+registros com \texttt{MORTE = 1} e \texttt{DT\_SAIDA} nulo são descartados.
+
+\subsection{CNES — Cadastro Nacional de Estabelecimentos de Saúde}
+
+O CNES registra todos os estabelecimentos de saúde do país com informações
+de infraestrutura, equipamentos e leitos. São utilizados dois grupos de
+arquivos mensais: \texttt{ST\{UF\}AAAAMM.dbc} (dados gerais do estabelecimento)
+e \texttt{LT\{UF\}AAAAMM.dbc} (leitos por tipo). Para a Região Sul, a
+competência de dezembro de 2024 contém aproximadamente 12\,mil estabelecimentos
+ativos. O campo \texttt{QT\_SUS} (quantidade de leitos disponível ao SUS) é
+o indicador central para o cálculo de disponibilidade assistencial.
+
+\subsection{IBGE — Indicadores Socioeconômicos}
+
+Os dados do Censo Demográfico 2022 são utilizados em nível de setor censitário,
+fornecendo população total, domicílios e estimativa de renda média. Para a
+Região Sul, o Censo 2022 conta com aproximadamente 47\,mil setores censitários.
+Um ponto crítico de integração é a divergência de código de município: o IBGE
+publica códigos de 7 dígitos (com dígito verificador), enquanto o SIH e o CNES
+utilizam 6 dígitos. A integração exige a truncagem:
+\texttt{SUBSTRING(ibge.CD\_GEOCODM, 1, 6) = sih.MUNIC\_MOV}.
+
+\subsection{Modelagem do Banco de Dados}
+
+O banco de dados PostgreSQL 16 adota o padrão Medallion com três schemas:
+\textbf{raw} (espelho das fontes originais, mínima transformação),
+\textbf{trusted} (dados limpos, tipados e com anonimização) e
+\textbf{refined} (agregações analíticas para suporte à decisão). A
+rastreabilidade do paciente é garantida pelo armazenamento do hash
+SHA-256 do campo \texttt{N\_AIH}, em conformidade com a LGPD
+(Lei nº 13.709/2018, Art. 11), que classifica dados de saúde como sensíveis.
+O volume total estimado após carga inicial é de aproximadamente 4,5\,milhões
+de registros entre as tabelas \texttt{trusted.internacoes} e
+\texttt{raw.sih\_internacoes}.
+
+
+%=============================================================================
+\section{Ambiente de Desenvolvimento}
+%=============================================================================
+
+Todo o ambiente é executado localmente via Docker Compose, garantindo
+portabilidade e reprodutibilidade independentemente do sistema operacional
+do desenvolvedor. A Tabela~\ref{tab:stack} resume os componentes da stack.
+
+\begin{table}[ht]
+\centering
+\caption{Stack tecnológica do projeto}
+\label{tab:stack}
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Componente} & \textbf{Versão} & \textbf{Função} \\
+\midrule
+Docker Compose      & 3.x             & Orquestração de todos os serviços em containers isolados \\
+PostgreSQL          & 16              & SGBD relacional principal — schemas raw/trusted/refined \\
+Apache Spark        & 3.5 (Bitnami)   & Processamento batch distribuído — Master + Worker \\
+Apache Kafka        & 7.6.1 (Confluent)& Broker de mensagens para pipeline de eventos de triagem \\
+Apache Zookeeper    & 7.6.1           & Coordenação do cluster Kafka \\
+Kafka UI            & latest          & Interface web para inspeção de tópicos e mensagens \\
+Python              & 3.11            & Linguagem principal dos pipelines ETL e stream \\
+PySpark             & 3.5.x           & API Python para processamento distribuído no Spark \\
+pysus               & latest          & Leitura de arquivos .dbc do DataSUS em Python \\
+kafka-python        & 2.0.x           & Producer/Consumer Kafka em Python \\
+psycopg2            & 2.9.x           & Driver PostgreSQL para Python \\
+geopandas / Folium  & 0.14 / latest   & Análise espacial e mapas coropléticos \\
+Plotly              & latest          & Gráficos interativos para o dashboard \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent\textbf{Justificativa das escolhas:}
+
+\textit{PostgreSQL} foi escolhido em detrimento de bancos NoSQL porque o escopo
+da disciplina requer um SGBD relacional completo com suporte a DDL, constraints,
+schemas, transações e colunas computadas (\texttt{STORED}). Em ambiente de
+produção, as camadas \textit{raw} e \textit{trusted} seriam substituídas por
+armazenamento em objeto (S3/GCS) e Delta Lake.
+
+\textit{Apache Spark} em modo standalone via Docker oferece o mesmo modelo de
+programação distribuído (RDDs, DataFrames, planos de execução físico) que seria
+utilizado em um cluster gerenciado (EMR, Dataproc, Databricks), sendo adequado
+para fins de aprendizado e portfólio.
+
+\textit{Apache Kafka} é o padrão de mercado para pipelines de eventos e foi
+escolhido sobre alternativas mais simples (RabbitMQ, Redis Streams) pela
+relevância curricular e pela capacidade de demonstrar particionamento,
+grupos de consumidores e retenção configurável de mensagens.
+
+\textit{Docker Compose} elimina dependências de configuração manual e permite
+que toda a stack seja iniciada com um único comando (\texttt{docker compose up -d}),
+o que é fundamental para reprodutibilidade e para a demonstração final.
+
+
+%=============================================================================
+\section{Metodologia}
+%=============================================================================
+
+O desenvolvimento segue uma abordagem incremental em seis fases sequenciais,
+onde cada fase produz um artefato testável antes de avançar para a próxima.
+A Figura~\ref{fig:fluxo} apresenta o fluxograma das etapas.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+  node distance=0.6cm and 0.3cm,
+  box/.style={rectangle, rounded corners=4pt, draw, fill=blue!10,
+              text width=3.2cm, align=center, minimum height=0.8cm, font=\small},
+  arrow/.style={-{Stealth}, thick}
+]
+  \node[box] (col)  {Coleta de Dados\\(FTP DataSUS/IBGE)};
+  \node[box, below=of col] (conv) {Conversão\\.dbc $\to$ Parquet};
+  \node[box, below=of conv] (etl)  {ETL Batch\\(PySpark)};
+  \node[box, below=of etl]  (pg)   {Carga PostgreSQL\\raw/trusted/refined};
+  \node[box, right=1.8cm of pg]   (kafka) {Simulação Stream\\(Kafka Producer)};
+  \node[box, above=of kafka] (cons) {Motor de Decisão\\(Kafka Consumer)};
+  \node[box, above=of cons]  (esp)  {Análise Espacial\\(Notebooks)};
+  \node[box, above=of esp]   (dash) {Dashboard\\Interativo};
+
+  \draw[arrow] (col)   -- (conv);
+  \draw[arrow] (conv)  -- (etl);
+  \draw[arrow] (etl)   -- (pg);
+  \draw[arrow] (pg)    -- (kafka);
+  \draw[arrow] (kafka) -- (cons);
+  \draw[arrow] (cons)  -- (esp);
+  \draw[arrow] (esp)   -- (dash);
+  \draw[arrow] (pg)    -- ++(2.5,0) |- (esp);
+\end{tikzpicture}
+\caption{Fluxograma das etapas de desenvolvimento do projeto}
+\label{fig:fluxo}
+\end{figure}
+
+\textbf{Fase 1 — Coleta de dados:} os arquivos \texttt{.dbc} são baixados
+programaticamente do FTP público do DataSUS usando a biblioteca \textit{pysus}.
+Para o SIH, são obtidos os arquivos mensais de PR, SC e RS para o período
+2022--2024 (36 arquivos); para o CNES, os arquivos de estabelecimentos (ST) e
+leitos (LT) da competência dezembro/2024; para o IBGE, os CSVs de setores
+censitários do Censo 2022 para a Região Sul.
+
+\textbf{Fase 2 — Conversão para Parquet:} os arquivos \texttt{.dbc} são
+convertidos para o formato Apache Parquet usando \textit{pyarrow}, com
+particionamento por UF e competência (ex.: \texttt{data/raw/sih/uf=RS/ano=2024/mes=01/}).
+O Parquet é o formato do datalake local, permitindo leitura seletiva por coluna
+e compressão eficiente.
+
+\textbf{Fase 3 — ETL Batch (PySpark):} jobs PySpark lêem os Parquets,
+aplicam regras de qualidade de dados (filtros de inconsistência, tratamento
+de nulos, normalização de tipos), calculam o hash SHA-256 do número de AIH
+(anonimização) e calculam colunas derivadas (faixa etária, dias de permanência).
+Os dados são carregados no PostgreSQL via JDBC nas camadas \textit{raw} e
+\textit{trusted}. A camada \textit{refined} é populada por queries SQL de
+agregação que calculam a taxa de mortalidade por município e a disponibilidade
+de leitos por 1.000 habitantes.
+
+\textbf{Fase 4 — Simulação de Stream (Kafka):} um \textit{producer} Python
+gera eventos JSON representando chegadas de pacientes em pronto-socorro, com
+distribuição horária baseada nas estatísticas históricas do SIH. Cada evento
+contém: identificador anônimo do paciente, código CNES de origem, CID suspeito
+e sinais vitais simulados (FC, PAS, FR, SpO2, Escala de Glasgow). O
+\textit{consumer} aplica o Protocolo Manchester de classificação de risco e,
+para pacientes classificados como ``Vermelho'' (risco imediato), consulta a
+camada \textit{refined} em busca das unidades mais próximas com leitos SUS
+disponíveis, gravando o alerta na tabela \texttt{refined.alertas\_triagem}.
+
+\textbf{Fase 5 — Análise Espacial:} notebooks Python utilizam GeoPandas e
+Folium para gerar mapas coropléticos de mortalidade por município e mapas de
+calor de concentração de estabelecimentos. Uma view materializada
+(\texttt{refined.silencio\_epidemiologico}) identifica os municípios acima do
+75º percentil de mortalidade e abaixo do 25º percentil de leitos por habitante.
+
+\textbf{Fase 6 — Dashboard e Demonstração:} uma página única interativa em
+HTML/Plotly integra os gráficos e mapas gerados. Um \textit{Makefile} com o
+alvo \texttt{make demo} sobe toda a stack Docker, carrega uma amostra de dados
+e inicia o producer Kafka, permitindo demonstração ao vivo do pipeline em tempo real.
+
+A avaliação do trabalho se dará pela execução da demonstração completa,
+verificação da corretude das consultas analíticas sobre os dados carregados e
+análise dos mapas gerados.
+
+
+%=============================================================================
+\section{Funcionalidades}
+%=============================================================================
+
+As funcionalidades do sistema são divididas em básicas e avançadas, podendo
+assumir a forma de consultas SQL, análises estatísticas ou visualizações
+interativas.
+
+\subsection{Funcionalidades Básicas}
+
+\textbf{F1 — Distribuição de estabelecimentos por tipo e município:}
+consulta sobre \texttt{trusted.estabelecimentos} que retorna, para cada
+município da Região Sul, a contagem de unidades por tipo (\textit{TP\_UNID}):
+hospitais gerais (04), UPA (07), UBS (02) e centros de especialidade (36).
+Permite identificar municípios descobertos de determinado nível de atenção.
+
+\textbf{F2 — Taxa de mortalidade hospitalar por município e competência:}
+agrega os registros de \texttt{trusted.internacoes} calculando
+$\text{taxa} = (\text{óbitos} / \text{internações}) \times 100$ por município
+e mês/ano, populando a tabela \texttt{refined.mortalidade\_por\_municipio},
+cujo campo \texttt{taxa\_mortalidade} é uma coluna computada \texttt{STORED}
+do PostgreSQL.
+
+\textbf{F3 — Disponibilidade de leitos SUS por 1.000 habitantes:}
+a tabela \texttt{refined.disponibilidade\_leitos} consolida o total de leitos
+SUS de \texttt{trusted.estabelecimentos} com a população estimada do IBGE,
+calculando o indicador $\text{leitos}/1000\text{hab}$ por município. Esse
+indicador é utilizado pelo motor de decisão em tempo real e pela análise do
+Silêncio Epidemiológico.
+
+\textbf{F4 — Rastreabilidade de internações por estabelecimento:}
+consulta parametrizada por CNES que retorna, via hash SHA-256 do n\_AIH, o
+histórico anonimizado de internações de um estabelecimento: volume por
+competência, taxa de mortalidade interna e proporção de pacientes transferidos
+de outros municípios (\texttt{MUNIC\_RES $\neq$ MUNIC\_MOV}).
+
+\subsection{Funcionalidades Avançadas}
+
+\textbf{F5 — Mapa do ``Silêncio Epidemiológico'':}
+visualização coroplética interativa (Folium + GeoPandas) que destaca os
+municípios identificados pela view materializada
+\texttt{refined.silencio\_epidemiologico} — aqueles com taxa de mortalidade
+acima do 75º percentil regional e disponibilidade de leitos SUS abaixo do
+25º percentil. O mapa é enriquecido com camada de vulnerabilidade
+socioeconômica (IDHM e renda média do IBGE), evidenciando a correlação entre
+exclusão social e baixa oferta assistencial.
+
+\textbf{F6 — Motor de decisão em tempo real (Kafka):}
+ao receber um evento de triagem classificado como ``Vermelho'' (protocolo
+Manchester: SpO$_2 < 90\%$ \textbf{ou} Glasgow $< 9$ \textbf{ou} PAS $< 80$\,mmHg),
+o consumer consulta as três unidades com maior disponibilidade de leitos SUS
+no município de origem e nos municípios vizinhos, publica o alerta no tópico
+\texttt{alertas-risco} e registra a recomendação em
+\texttt{refined.alertas\_triagem} com \textit{timestamp} para análise
+posterior da Janela de Risco.
+
+
+%=============================================================================
+\section{Cronograma}
+%=============================================================================
+
+O desenvolvimento está organizado em seis fases ao longo do semestre letivo,
+conforme a Tabela~\ref{tab:crono}. Cada fase tem um entregável testável
+que valida a conclusão antes do início da próxima.
+
+\begin{table}[ht]
+\centering
+\caption{Cronograma de desenvolvimento do projeto}
+\label{tab:crono}
+\begin{tabularx}{\textwidth}{lXll}
+\toprule
+\textbf{Fase} & \textbf{Atividade} & \textbf{Período} & \textbf{Responsável} \\
+\midrule
+1a & \texttt{docker-compose.yml}, DDL PostgreSQL (schemas raw/trusted/refined), índices & Abr/1--2 & Jade H. \\
+1b & Tópicos Kafka (\texttt{topics.sh}), configuração Zookeeper, CI (\texttt{pyproject.toml}) & Abr/1--2 & Luís D. \\
+\midrule
+2a & Download SIH: \texttt{download\_sih.py} (PR/SC/RS 2022--2024), conversão .dbc $\to$ Parquet & Abr/3--4 & Jade H. \\
+2b & Download CNES: \texttt{download\_cnes.py} (ST + LT), download IBGE: \texttt{download\_ibge.py} & Abr/3--4 & Luís D. \\
+\midrule
+3a & ETL SIH: \texttt{etl\_sih.py} (limpeza, hash SHA-256, carga raw/trusted); agregações \texttt{aggregate.py} & Mai/1--3 & Jade H. \\
+3b & ETL CNES: \texttt{etl\_cnes.py} (join ST+LT, leitos SUS); ETL IBGE: \texttt{etl\_ibge.py}; testes unitários & Mai/1--3 & Luís D. \\
+\midrule
+4a & Kafka Producer: \texttt{producer.py} (geração de eventos, distribuição horária baseada no SIH) & Mai/4--Jun/1 & Luís D. \\
+4b & Kafka Consumer + Protocolo Manchester; DDL \texttt{refined.alertas\_triagem} & Mai/4--Jun/1 & Jade H. \\
+\midrule
+5a & View materializada \texttt{refined.silencio\_epidemiologico}; análise de transferências inter-municipais & Jun/2--3 & Luís D. \\
+5b & Mapas coropléticos (Folium/GeoPandas): mortalidade, leitos, Silêncio Epidemiológico & Jun/2--3 & Jade H. \\
+\midrule
+6a & Dashboard interativo (Plotly); \texttt{Makefile} com alvo \texttt{make demo}; entrega final & Jun/4--Jul/1 & Jade H. \\
+6b & Diagrama ER (\texttt{eralchemy2}); atualização \texttt{pyproject.toml}; documentação final & Jun/4--Jul/1 & Luís D. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+As atividades de infraestrutura (Fase 1) já se encontram concluídas, com a
+stack Docker operacional e o DDL do banco implementado com os schemas
+\textit{raw}, \textit{trusted} e \textit{refined}, seus índices analíticos e
+comentários de documentação. As Fases 2 e 3 formam o núcleo crítico do
+projeto, pois condicionam todas as análises subsequentes. A divisão de tarefas
+busca distribuir uniformemente a carga entre os dois integrantes, com Jade
+concentrada no pipeline batch (SIH, ETL, análise espacial) e Luís no pipeline
+stream (Kafka, CNES/IBGE, documentação técnica).
+
+
+%=============================================================================
+\section{Considerações Finais}
+%=============================================================================
+
+Este trabalho representa uma oportunidade de aplicar, de forma integrada,
+os conceitos centrais da disciplina de Projeto de Banco de Dados em um problema
+de alto impacto social: a ineficiência na alocação de recursos assistenciais
+no SUS. Espera-se consolidar habilidades em modelagem relacional avançada
+(schemas, constraints, colunas computadas), processamento distribuído com
+Apache Spark, integração de dados heterogêneos e arquitetura de pipelines
+híbridos batch/stream.
+
+Do ponto de vista \textbf{científico}, a contribuição é uma metodologia
+documentada e replicável para integração das bases públicas SIH, CNES e IBGE
+em uma plataforma analítica unificada. A adoção do padrão Medallion e da
+anonimização por hash SHA-256 estabelece um modelo que pode ser estendido para
+outras regiões do país ou adaptado para outros sistemas de informação em saúde
+pública.
+
+Do ponto de vista \textbf{social}, a plataforma demonstra que os dados já
+existentes e publicamente disponíveis são suficientes para identificar
+desigualdades estruturais na oferta de saúde — o chamado Silêncio
+Epidemiológico — e para subsidiar decisões de alocação de recursos com base
+em evidências. O motor de decisão em tempo real ilustra como a tecnologia de
+streaming pode transformar protocolos de triagem em sistemas inteligentes de
+regulação assistencial, com potencial de redução de mortalidade evitável em
+cenários de recursos limitados.
+
+A visibilidade proporcionada pelo Silêncio Epidemiológico — municípios com
+alta mortalidade e baixa oferta de leitos SUS — pode orientar futuras políticas
+públicas de investimento em saúde na Região Sul, tornando o impacto do projeto
+relevante além do escopo acadêmico da disciplina.
+
+
+%=============================================================================
+% REFERÊNCIAS BIBLIOGRÁFICAS
+%=============================================================================
+
+\begin{thebibliography}{9}
+
+\bibitem{datasus2024}
+BRASIL. Ministério da Saúde.
+\textbf{DataSUS -- Transferência de Arquivos: Sistema de Informações Hospitalares
+(SIH) e Cadastro Nacional de Estabelecimentos de Saúde (CNES)}.
+Disponível em: \url{https://datasus.saude.gov.br/transferencia-de-arquivos/}.
+Acesso em: abr. 2025.
+
+\bibitem{ibge2023}
+INSTITUTO BRASILEIRO DE GEOGRAFIA E ESTATÍSTICA (IBGE).
+\textbf{Censo Demográfico 2022: Resultados do Universo}.
+Rio de Janeiro: IBGE, 2023.
+Disponível em: \url{https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html}.
+Acesso em: abr. 2025.
+
+\bibitem{lima2019}
+LIMA, C. R. A. et al.
+Revisão das dimensões de qualidade dos dados e métodos aplicados na avaliação
+dos sistemas de informação em saúde.
+\textbf{Cadernos de Saúde Pública}, Rio de Janeiro, v. 35, n. 7, 2009.
+DOI: 10.1590/0102-311X00170617.
+
+\bibitem{mendes2011}
+MENDES, E. V.
+\textbf{As redes de atenção à saúde}.
+Brasília: Organização Pan-Americana da Saúde, 2011. 549 p.
+
+\bibitem{spark2016}
+ZAHARIA, M. et al.
+Apache Spark: A unified engine for big data processing.
+\textbf{Communications of the ACM}, v. 59, n. 11, p. 56--65, 2016.
+DOI: 10.1145/2934664.
+
+\bibitem{kafka2021}
+APACHE SOFTWARE FOUNDATION.
+\textbf{Apache Kafka: A Distributed Streaming Platform -- Documentation}.
+Disponível em: \url{https://kafka.apache.org/documentation/}.
+Acesso em: abr. 2025.
+
+\bibitem{databricks2021}
+DATABRICKS.
+\textbf{Medallion Architecture}.
+Disponível em: \url{https://www.databricks.com/glossary/medallion-architecture}.
+Acesso em: abr. 2025.
+
+\bibitem{postgresql2024}
+THE POSTGRESQL GLOBAL DEVELOPMENT GROUP.
+\textbf{PostgreSQL 16 Documentation}.
+Disponível em: \url{https://www.postgresql.org/docs/16/}.
+Acesso em: abr. 2025.
+
+\end{thebibliography}
+
+\end{document}

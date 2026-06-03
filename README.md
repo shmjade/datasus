@@ -148,7 +148,30 @@ docker compose exec kafka bash /opt/datasus/topics.sh
 | Spark Master UI | http://localhost:8081 |
 | PostgreSQL | `localhost:5432` (via psql ou DBeaver) |
 
-### 6. Instalar dependências Python (desenvolvimento local)
+### 6. Rodar o backfill inicial de ingestão (SIH/RS)
+
+O container `ingestor` já está agendado para rodar mensalmente (cron via supercronic), mas a primeira carga histórica deve ser disparada manualmente:
+
+```bash
+docker compose run --rm ingestor backfill
+# Baixa todas as competências disponíveis (AAAA-MM) de INGEST_COMPETENCIA_INICIAL
+# até hoje - INGEST_LAG_MESES para cada UF em INGEST_UFS.
+
+# Acompanhar a execução agendada (após o backfill, o cron mensal cuida do resto):
+docker compose logs -f ingestor
+```
+
+Parâmetros via `.env`:
+
+| Variável | Default | Função |
+|---|---|---|
+| `INGEST_UFS` | `RS` | UFs alvo, separadas por vírgula |
+| `INGEST_COMPETENCIA_INICIAL` | `2022-01` | Primeira competência (AAAA-MM) |
+| `INGEST_LAG_MESES` | `2` | Lag DataSUS (M-2 padrão) |
+
+Saída do backfill: `data/lake/bronze/sih_rd/uf=<UF>/ano=<AAAA>/mes=<MM>/part-0.parquet`.
+
+### 7. Instalar dependências Python (desenvolvimento local)
 
 ```bash
 pip install -e ".[dev]"
@@ -162,22 +185,32 @@ pytest             # testes
 
 ```
 datasus/
-├── .devcontainer/          # Config GitHub Codespaces
-├── .github/workflows/      # CI/CD — lint automático
+├── .devcontainer/                 # Config GitHub Codespaces
+├── .github/workflows/             # CI/CD — lint automático
 ├── data/
-│   ├── raw/                # Parquets brutos (gitignored)
-│   └── processed/          # Saída dos pipelines (gitignored)
+│   └── lake/
+│       ├── bronze/                # Parquet espelho do FTP DataSUS (gitignored)
+│       │   └── <source>/uf=<UF>/ano=<AAAA>/mes=<MM>/
+│       └── _control/              # Watermarks e dead-letter (gitignored)
 ├── docs/
-│   ├── architecture.md     # Decisões de design
-│   └── data_dictionary.md  # Dicionário das fontes SIH, CNES, IBGE
+│   ├── architecture.md            # Decisões de design
+│   ├── data_dictionary.md         # Dicionário das fontes SIH, CNES, IBGE
+│   └── pbd_poa_sus.tex            # Artigo do projeto (formato SBC)
 ├── infra/
-│   ├── postgres/init.sql   # DDL — schemas e tabelas iniciais
-│   └── kafka/topics.sh     # Script de criação de tópicos
+│   ├── postgres/init.sql          # DDL — schemas e tabelas iniciais
+│   ├── kafka/topics.sh            # Script de criação de tópicos
+│   └── cron/                      # Container `ingestor` (supercronic + pysus)
+│       ├── Dockerfile
+│       ├── crontab
+│       └── entrypoint.sh
 ├── pipelines/
-│   ├── batch/              # PySpark ETL
-│   └── stream/             # Kafka producers/consumers
-├── notebooks/exploration/  # EDA exploratória
-├── tests/                  # Testes unitários e de integração
+│   ├── batch/
+│   │   ├── ingestion/             # Bronze: FTP → parquet (pysus)
+│   │   ├── transform/             # Silver: parquet → trusted.* (PySpark)
+│   │   └── aggregate/             # Gold:   trusted.* → refined.*
+│   └── stream/                    # Kafka producers/consumers
+├── notebooks/exploration/         # EDA exploratória
+├── tests/                         # Testes unitários e de integração
 ├── .env.example
 ├── docker-compose.yml
 ├── pyproject.toml
@@ -189,7 +222,7 @@ datasus/
 ## Roadmap
 
 - [x] **Fase 0 — Bootstrap**: Estrutura do projeto, Docker stack, DDL inicial
-- [ ] **Fase 1 — Ingestão Batch**: Download e parsing dos microdados SIH, CNES e IBGE
+- [~] **Fase 1 — Ingestão Batch**: SIH/RS via pysus + supercronic (mensal); CNES e IBGE pendentes
 - [ ] **Fase 2 — Pipeline ETL**: Limpeza, tipagem, anonimização e carga no PostgreSQL
 - [ ] **Fase 3 — Janela de Risco**: Cálculo de latência na regulação assistencial
 - [ ] **Fase 4 — Stream**: Simulação de triagem via Kafka + motor de decisão

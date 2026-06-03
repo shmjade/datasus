@@ -1,0 +1,12 @@
+[
+    {
+        "path": "data/ibge/poa_bairros.geojson",
+        "policy": "CreditCardPolicy",
+        "justification": "coordenadas geográficas oficiais SMAMUS/PMPA dos 94 bairros de Porto Alegre (Lei Complementar 12.112/2016), não cartões de crédito"
+    },
+    {
+        "path": "data/ibge/rs_municipios.geojson",
+        "policy": "CreditCardPolicy",
+        "justification": "coordenadas geográficas IBGE dos 496 municípios do RS, não cartões de crédito"
+    }
+]

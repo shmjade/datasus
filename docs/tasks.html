@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tasks — DataSUS Região Sul</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d1117;
+      --bg2:       #161b22;
+      --bg3:       #21262d;
+      --border:    #30363d;
+      --border2:   #21262d;
+      --text:      #e6edf3;
+      --muted:     #7d8590;
+      --link:      #58a6ff;
+
+      --done:      #3fb950;
+      --done-bg:   #0d1f0f;
+      --done-b:    #238636;
+
+      --next:      #58a6ff;
+      --next-bg:   #0d1f42;
+      --next-b:    #1f6feb;
+
+      --pend:      #7d8590;
+      --pend-bg:   #161b22;
+      --pend-b:    #30363d;
+
+      --warn:      #d29922;
+      --warn-bg:   #272115;
+      --warn-b:    #9e6a03;
+
+      --p1: #58a6ff;
+      --p2: #3fb950;
+      --p3: #a371f7;
+      --p4: #f78166;
+      --p5: #56d364;
+      --p6: #79c0ff;
+
+      --radius: 6px;
+      --mono: 'Courier New', 'Cascadia Code', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .header-icon { font-size: 1.4rem; }
+    .header-title { font-size: 1rem; font-weight: 600; }
+    .header-sub   { font-size: .8rem; color: var(--muted); margin-top: 1px; }
+    .header-pills { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill {
+      font-size: 11px; font-weight: 600; padding: 2px 10px;
+      border-radius: 12px; border: 1px solid;
+    }
+    .pill-green  { color: var(--done); background: var(--done-bg); border-color: var(--done-b); }
+    .pill-blue   { color: var(--next); background: var(--next-bg); border-color: var(--next-b); }
+    .pill-gray   { color: var(--pend); background: var(--pend-bg); border-color: var(--pend-b); }
+
+    /* ── LAYOUT ── */
+    .page { max-width: 900px; margin: 0 auto; padding: 32px 24px 64px; }
+
+    /* ── PHASE HEADER ── */
+    .phase-header {
+      display: flex; align-items: center; gap: 12px;
+      margin: 40px 0 12px;
+    }
+    .phase-header:first-of-type { margin-top: 0; }
+    .phase-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+    .phase-header h2 { font-size: 1rem; font-weight: 600; }
+    .phase-header .badge {
+      font-size: 11px; padding: 1px 8px; border-radius: 4px;
+      border: 1px solid; font-weight: 500; margin-left: auto;
+    }
+    .phase-desc { font-size: .82rem; color: var(--muted); margin-bottom: 12px; padding-left: 40px; }
+
+    /* ── TASK GROUP ── */
+    .task-group {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    .task-group-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border2);
+      cursor: pointer;
+      user-select: none;
+    }
+    .task-group-header:hover { background: var(--bg3); }
+    .tg-icon { font-size: .85rem; }
+    .tg-title { font-size: .88rem; font-weight: 600; flex: 1; }
+    .tg-file {
+      font-family: var(--mono); font-size: .75rem;
+      color: var(--muted); background: var(--bg3);
+      padding: 2px 8px; border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    .tg-status { font-size: .72rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; border: 1px solid; margin-left: 4px; }
+    .tg-toggle { color: var(--muted); font-size: .7rem; margin-left: 4px; transition: transform .2s; }
+    .task-group.open .tg-toggle { transform: rotate(180deg); }
+
+    /* ── TASKS ── */
+    .task-list { list-style: none; }
+    .task {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 10px;
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border2);
+      align-items: start;
+    }
+    .task:last-child { border-bottom: none; }
+    .task-check {
+      width: 16px; height: 16px; border-radius: 3px;
+      border: 1.5px solid; margin-top: 2px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px;
+    }
+    .task-body { display: flex; flex-direction: column; gap: 3px; }
+    .task-title { font-size: .85rem; }
+    .task-detail { font-size: .78rem; color: var(--muted); }
+    .task-detail code {
+      font-family: var(--mono); font-size: .78rem;
+      background: var(--bg3); padding: 0 4px; border-radius: 3px;
+      color: #e6edf3;
+    }
+    .task-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+    .tag {
+      font-size: .7rem; font-weight: 500; padding: 1px 7px;
+      border-radius: 3px; border: 1px solid;
+    }
+
+    /* status variants */
+    .s-done .task-check { border-color: var(--done-b); background: var(--done-bg); color: var(--done); }
+    .s-done .task-title { color: var(--muted); text-decoration: line-through; }
+
+    .s-next .task-check { border-color: var(--next-b); background: var(--next-bg); }
+    .s-next .task-title { color: var(--text); }
+
+    .s-pend .task-check { border-color: var(--pend-b); background: transparent; }
+    .s-pend .task-title { color: var(--muted); }
+
+    /* phase colors */
+    .c1 { color: var(--p1); }
+    .c2 { color: var(--p2); }
+    .c3 { color: var(--p3); }
+    .c4 { color: var(--p4); }
+    .c5 { color: var(--p5); }
+    .c6 { color: var(--p6); }
+
+    .dot1 { background: var(--p1); color: #000; }
+    .dot2 { background: var(--p2); color: #000; }
+    .dot3 { background: var(--p3); color: #000; }
+    .dot4 { background: var(--p4); color: #000; }
+    .dot5 { background: var(--p5); color: #000; }
+    .dot6 { background: var(--p6); color: #000; }
+
+    .bg1 { border-color: #1f6feb; }
+    .bg2 { border-color: #238636; }
+    .bg3 { border-color: #6e40c9; }
+    .bg4 { border-color: #b62324; }
+    .bg5 { border-color: #196c2e; }
+    .bg6 { border-color: #1f6feb; }
+
+    .tag-mono { color: #e6edf3; border-color: #30363d; background: #21262d; }
+    .tag-teal  { color: #39d353; border-color: #196c2e; background: #0d1f0f; }
+    .tag-blue  { color: #58a6ff; border-color: #1f6feb; background: #0d1f42; }
+    .tag-purple{ color: #a371f7; border-color: #6e40c9; background: #1a0f2e; }
+    .tag-red   { color: #f78166; border-color: #b62324; background: #2d0f0f; }
+
+    /* ── NOTE BOXES ── */
+    .note {
+      font-size: .8rem; padding: 10px 14px; border-radius: var(--radius);
+      border: 1px solid; margin: 8px 0; display: flex; gap: 8px; align-items: flex-start;
+    }
+    .note-warn { background: var(--warn-bg); border-color: var(--warn-b); color: var(--warn); }
+    .note-info { background: var(--next-bg); border-color: var(--next-b); color: var(--next); }
+    .note-body { color: var(--text); }
+    .note code { font-family: var(--mono); font-size: .78rem; background: rgba(255,255,255,.05); padding: 0 4px; border-radius: 3px; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap { margin-bottom: 32px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: .78rem; color: var(--muted); margin-bottom: 6px; }
+    .progress-bar { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--done), #58a6ff); border-radius: 3px; transition: width .4s; }
+
+    /* ── DIVIDER ── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-icon">📋</div>
+  <div>
+    <div class="header-title">DataSUS — Plano de Implementação</div>
+    <div class="header-sub">NF01006 · Projeto de Banco de Dados · Região Sul (PR / SC / RS)</div>
+  </div>
+  <div class="header-pills">
+    <span class="pill pill-green">5 concluídas</span>
+    <span class="pill pill-blue">5 próximas</span>
+    <span class="pill pill-gray">24 pendentes</span>
+  </div>
+</header>
+
+<main class="page">
+
+  <!-- PROGRESSO GERAL -->
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>Progresso geral</span>
+      <span>5 / 34 tasks (15%)</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:15%"></div></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       FASE 1 — INFRAESTRUTURA (CONCLUÍDA)
+  ══════════════════════════════════════════ -->
+  <div class="phase-header">
+    <div class="phase-dot dot1">1</div>
+    <h2 class="c1">Infraestrutura</h2>
+    <span class="badge bg1" style="color:var(--next);background:var(--next-bg);">✓ Concluída</span>
+  </div>
+  <p class="phase-desc">Stack Docker operacional. Banco de dados criado com schemas e DDL completos.</p>
+
+  <div class="task-group open">
+    <div class="task-group-header">
+      <span class="tg-icon">🐳</span>
+      <span class="tg-title">Docker Compose</span>
+      <span class="tg-file">docker-compose.yml</span>
+      <span class="tg-status pill-green" style="color:var(--done);background:var(--done-bg);border-color:var(--done-b);">5/5</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-done">
+        <div class="task-check">✓</div>
+        <div class="task-body">
+          <span class="task-title">Serviços: PostgreSQL 16, Zookeeper, Kafka 7.6.1, Kafka UI, Spark Master + Worker</span>
+          <span class="task-detail">Health checks em todos os serviços. Rede <code>datasus-net</code> isolada.</span>
+        </div>
+      </li>
+      <li class="task s-done">
+        <div class="task-check">✓</div>
+        <div class="task-body">
+          <span class="task-title">DDL PostgreSQL — schemas <code>raw</code>, <code>trusted</code>, <code>refined</code></span>
+          <span class="task-detail">Tabelas: <code>raw.sih_internacoes</code>, <code>raw.cnes_estabelecimentos</code>, <code>raw.cnes_leitos</code>, <code>raw.ibge_indicadores</code>, <code>trusted.internacoes</code>, <code>trusted.estabelecimentos</code>, <code>refined.mortalidade_por_municipio</code>, <code>refined.disponibilidade_leitos</code>. Índices e computed columns STORED.</span>
+        </div>
+      </li>
+      <li class="task s-done">
+        <div class="task-check">✓</div>
+        <div class="task-body">
+          <span class="task-title">Tópicos Kafka: <code>triagem-eventos</code>, <code>alertas-risco</code>, <code>regulacao-solicitacoes</code></span>
+          <span class="task-detail"><code>infra/kafka/topics.sh</code> — 3 partições, retenção configurada.</span>
+        </div>
+      </li>
+      <li class="task s-done">
+        <div class="task-check">✓</div>
+        <div class="task-body">
+          <span class="task-title">pyproject.toml com dependências declaradas</span>
+          <span class="task-detail"><code>pyspark</code>, <code>kafka-python</code>, <code>psycopg2-binary</code>, <code>geopandas</code>, <code>pyarrow</code>, <code>ruff</code>, <code>pytest</code>…</span>
+        </div>
+      </li>
+      <li class="task s-done">
+        <div class="task-check">✓</div>
+        <div class="task-body">
+          <span class="task-title">CI: GitHub Actions lint + documentação de arquitetura</span>
+          <span class="task-detail"><code>.github/workflows/lint.yml</code>, <code>docs/architecture.md</code>, <code>docs/data_dictionary.md</code></span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       FASE 2 — INGESTÃO
+  ══════════════════════════════════════════ -->
+  <div class="phase-header">
+    <div class="phase-dot dot2">2</div>
+    <h2 class="c2">Ingestão de Dados</h2>
+    <span class="badge bg2" style="color:var(--next);background:var(--next-bg);border-color:var(--next-b);">→ Próxima</span>
+  </div>
+  <p class="phase-desc">Scripts Python que baixam arquivos <code>.dbc</code> do FTP do DataSUS via <code>pysus</code> e salvam em Parquet particionado.</p>
+
+  <div class="note note-warn">
+    <span>⚠️</span>
+    <span class="note-body">Instalar <code>pysus</code> separadamente: não está no pyproject.toml ainda (<code>pip install pysus</code>). A lib lida com o formato proprietário .dbc do DATASUS.</span>
+  </div>
+
+  <div class="task-group open">
+    <div class="task-group-header">
+      <span class="tg-icon">📥</span>
+      <span class="tg-title">Download SIH</span>
+      <span class="tg-file">pipelines/batch/ingest/download_sih.py</span>
+      <span class="tg-status" style="color:var(--next);background:var(--next-bg);border-color:var(--next-b);padding:2px 8px;border-radius:4px;border:1px solid;font-size:.72rem;font-weight:600;">próximo</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-next">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Baixar RD{UF}{AAAAMM}.dbc para PR, SC, RS — anos 2022, 2023, 2024 (36 arquivos)</span>
+          <span class="task-detail">Usar <code>pysus.SIH().get_files(uf='RS', year=2024, month=range(1,13))</code>. FTP: <code>ftp.datasus.gov.br/dissemin/publicos/SIHSUS/200801_/dados/</code></span>
+          <div class="task-tags">
+            <span class="tag tag-teal">pysus</span>
+            <span class="tag tag-mono">SIH</span>
+          </div>
+        </div>
+      </li>
+      <li class="task s-next">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Converter .dbc → DataFrame e salvar como Parquet particionado</span>
+          <span class="task-detail">Partição: <code>data/raw/sih/uf=RS/ano=2024/mes=01/part-0.parquet</code>. Usar <code>pyarrow.parquet.write_to_dataset()</code> com <code>partition_cols=['uf','ano','mes']</code>.</span>
+          <div class="task-tags">
+            <span class="tag tag-blue">pyarrow</span>
+            <span class="tag tag-mono">parquet</span>
+          </div>
+        </div>
+      </li>
+      <li class="task s-next">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Validar schema mínimo e logar contagem de registros por arquivo</span>
+          <span class="task-detail">Campos obrigatórios: <code>N_AIH, DT_INTER, DT_SAIDA, MUNIC_MOV, MORTE, CGC_HOSP</code>. Falha explícita se coluna ausente.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="task-group">
+    <div class="task-group-header">
+      <span class="tg-icon">🏥</span>
+      <span class="tg-title">Download CNES</span>
+      <span class="tg-file">pipelines/batch/ingest/download_cnes.py</span>
+      <span class="tg-status" style="color:var(--next);background:var(--next-bg);border-color:var(--next-b);padding:2px 8px;border-radius:4px;border:1px solid;font-size:.72rem;font-weight:600;">próximo</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-next">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Baixar ST{UF}AAAAMM.dbc (estabelecimentos) para PR, SC, RS — competência 202412</span>
+          <span class="task-detail"><code>pysus.CNES().get_files(group='ST', uf='RS', year=2024, month=12)</code></span>
+          <div class="task-tags"><span class="tag tag-teal">pysus</span><span class="tag tag-mono">CNES/ST</span></div>
+        </div>
+      </li>
+      <li class="task s-next">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Baixar LT{UF}AAAAMM.dbc (leitos) — mesma competência</span>
+          <span class="task-detail"><code>pysus.CNES().get_files(group='LT', uf='RS', year=2024, month=12)</code>. Salvar em <code>data/raw/cnes/leitos/</code>.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="task-group">
+    <div class="task-group-header">
+      <span class="tg-icon">📊</span>
+      <span class="tg-title">Download IBGE</span>
+      <span class="tg-file">pipelines/batch/ingest/download_ibge.py</span>
+      <span class="tg-status" style="color:var(--next);background:var(--next-bg);border-color:var(--next-b);padding:2px 8px;border-radius:4px;border:1px solid;font-size:.72rem;font-weight:600;">próximo</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-next">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Baixar CSV de domicílios por setor censitário — Censo 2022 (PR, SC, RS)</span>
+          <span class="task-detail">IBGE disponibiliza em <code>ftp.ibge.gov.br/Censos/Censo_Demografico_2022/</code>. Concatenar os três estados. Salvar em <code>data/raw/ibge/censo_2022/</code>.</span>
+        </div>
+      </li>
+      <li class="task s-next">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Baixar shapefile de municípios — Região Sul (para mapas coropléticos)</span>
+          <span class="task-detail">IBGE Malhas: <code>geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/</code>. Salvar GeoJSON em <code>data/raw/ibge/municipios_sul.geojson</code>.</span>
+          <div class="task-tags"><span class="tag tag-blue">geopandas</span></div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       FASE 3 — ETL BATCH
+  ══════════════════════════════════════════ -->
+  <div class="phase-header">
+    <div class="phase-dot dot3">3</div>
+    <h2 class="c3">ETL Batch — PySpark</h2>
+    <span class="badge bg3" style="color:#a371f7;background:#1a0f2e;border-color:#6e40c9;">Pendente</span>
+  </div>
+  <p class="phase-desc">Jobs PySpark submetidos ao cluster Spark do Docker. Lêem os Parquets da Fase 2, aplicam regras de qualidade e carregam o PostgreSQL nas três camadas.</p>
+
+  <div class="task-group">
+    <div class="task-group-header">
+      <span class="tg-icon">🔧</span>
+      <span class="tg-title">ETL SIH</span>
+      <span class="tg-file">pipelines/batch/transform/etl_sih.py</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Ler Parquet com <code>spark.read.parquet("data/raw/sih/")</code> e imprimir schema</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Aplicar filtros de qualidade SIH</span>
+          <span class="task-detail">
+            <code>DT_SAIDA &lt; DT_INTER</code> → descartar |
+            <code>SEXO IN (0, 9)</code> → null |
+            <code>NASC = '00000000'</code> → null |
+            <code>MORTE = 1 AND DT_SAIDA IS NULL</code> → descartar
+          </span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Calcular hash SHA-256 do campo <code>N_AIH</code></span>
+          <span class="task-detail">Usar <code>sha2(col('N_AIH'), 256)</code> do PySpark. Resultado em <code>n_aih_hash</code>. Não persistir o N_AIH original.</span>
+          <div class="task-tags"><span class="tag tag-red">LGPD</span><span class="tag tag-purple">privacidade</span></div>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Calcular coluna <code>faixa_etaria</code> a partir de <code>NASC</code> e <code>DT_INTER</code></span>
+          <span class="task-detail">Buckets: <code>'0-9', '10-19', ..., '80+'</code>. Usar <code>datediff</code> + <code>when/otherwise</code>.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Gravar no PostgreSQL: <code>raw.sih_internacoes</code> (JDBC) e <code>trusted.internacoes</code></span>
+          <span class="task-detail">Usar <code>df.write.jdbc(url, table, mode='append', properties=jdbc_props)</code>. JDBC URL: <code>jdbc:postgresql://localhost:5432/datasus_db</code>.</span>
+          <div class="task-tags"><span class="tag tag-blue">JDBC</span><span class="tag tag-teal">psycopg2</span></div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="task-group">
+    <div class="task-group-header">
+      <span class="tg-icon">🏛️</span>
+      <span class="tg-title">ETL CNES</span>
+      <span class="tg-file">pipelines/batch/transform/etl_cnes.py</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Ler ST (estabelecimentos) e LT (leitos) como DataFrames separados</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Agregar leitos SUS por CNES: <code>groupBy('CNES').agg(sum('QT_SUS').alias('total_leitos_sus'))</code></span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Join ST + LT_agg on <code>CNES</code> → construir DataFrame de <code>trusted.estabelecimentos</code></span>
+          <span class="task-detail">Tratar lat/lon <code>(0, 0)</code> como null. Converter <code>VINC_SUS = 'S'</code> para boolean.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Gravar <code>raw.cnes_estabelecimentos</code>, <code>raw.cnes_leitos</code> e <code>trusted.estabelecimentos</code></span>
+          <span class="task-detail">Usar <code>mode='append'</code>. Em re-execuções, truncar as tabelas raw antes de inserir para evitar duplicatas.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="task-group">
+    <div class="task-group-header">
+      <span class="tg-icon">📊</span>
+      <span class="tg-title">ETL IBGE</span>
+      <span class="tg-file">pipelines/batch/transform/etl_ibge.py</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Ler CSV do Censo 2022 e truncar código IBGE de 7 para 6 dígitos</span>
+          <span class="task-detail"><code>substring(col('CD_GEOCODM'), 1, 6).alias('cod_municipio')</code> — necessário para join com SIH/CNES.</span>
+          <div class="task-tags"><span class="tag tag-red">⚠️ dígito verificador</span></div>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Calcular <code>pop_vulneravel</code> como setor com renda per capita &lt; ½ salário mínimo</span>
+          <span class="task-detail">Salário mínimo 2024: R$ 1.412. Limiar per capita: R$ 706. Filtrar e somar <code>V001</code> (total domicílios) dos setores abaixo do limiar.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Gravar em <code>raw.ibge_indicadores</code></span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="task-group">
+    <div class="task-group-header">
+      <span class="tg-icon">📈</span>
+      <span class="tg-title">Agregações — camada refined</span>
+      <span class="tg-file">pipelines/batch/transform/aggregate.py</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Popular <code>refined.mortalidade_por_municipio</code></span>
+          <span class="task-detail">Query: <code>SELECT munic_mov, competencia, COUNT(*) AS total_internacoes, SUM(obito::int) AS total_obitos FROM trusted.internacoes GROUP BY 1,2</code>. Usar <code>INSERT ... ON CONFLICT DO UPDATE</code> para idempotência.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Popular <code>refined.disponibilidade_leitos</code></span>
+          <span class="task-detail">Join <code>trusted.estabelecimentos</code> + <code>raw.ibge_indicadores</code> por município. Calcular <code>total_leitos_sus</code> e <code>pop_estimada</code> por município. <code>leitos_por_1000hab</code> é computed column.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Criar view materializada <code>refined.silencio_epidemiologico</code></span>
+          <span class="task-detail">Municípios onde <code>taxa_mortalidade &gt; percentile_cont(0.75)</code> E <code>leitos_por_1000hab &lt; percentile_cont(0.25)</code>. Adicionar DDL no <code>init.sql</code>.</span>
+          <div class="task-tags"><span class="tag tag-purple">análise espacial</span></div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="task-group">
+    <div class="task-group-header">
+      <span class="tg-icon">🧪</span>
+      <span class="tg-title">Testes unitários</span>
+      <span class="tg-file">tests/</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title"><code>tests/test_etl_sih.py</code> — testar filtros de qualidade</span>
+          <span class="task-detail">Criar SparkSession local. Montar DataFrame com rows inválidas conhecidas (data saída &lt; entrada, sexo=0, nasc='00000000'). Assertar que são removidas após o filtro.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title"><code>tests/test_etl_sih.py</code> — testar hash do N_AIH</span>
+          <span class="task-detail">Assertar que <code>sha256('12345678901234'.encode()).hexdigest()</code> bate com o resultado do job. Assertar que coluna <code>n_aih</code> não existe no output.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title"><code>tests/test_etl_cnes.py</code> — testar join ST + LT e agregação de leitos</span>
+          <span class="task-detail">Assertar que cnes com 3 tipos de leito SUS (qt_sus = 5, 10, 15) resulta em <code>total_leitos_sus = 30</code>.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       FASE 4 — STREAM (KAFKA)
+  ══════════════════════════════════════════ -->
+  <div class="phase-header">
+    <div class="phase-dot dot4">4</div>
+    <h2 class="c4">Pipeline Stream — Kafka</h2>
+    <span class="badge bg4" style="color:#f78166;background:#2d0f0f;border-color:#b62324;">Pendente</span>
+  </div>
+  <p class="phase-desc">Simulação de triagem hospitalar: producer gera eventos JSON baseados nas distribuições do SIH; consumer aplica Protocolo Manchester e consulta disponibilidade de leitos em tempo real.</p>
+
+  <div class="note note-info">
+    <span>ℹ️</span>
+    <span class="note-body">Adicionar tabela <code>refined.alertas_triagem</code> no <code>infra/postgres/init.sql</code> antes de implementar o consumer.</span>
+  </div>
+
+  <div class="task-group">
+    <div class="task-group-header">
+      <span class="tg-icon">🗄️</span>
+      <span class="tg-title">DDL — tabela de alertas</span>
+      <span class="tg-file">infra/postgres/init.sql</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Adicionar <code>refined.alertas_triagem</code> ao init.sql</span>
+          <span class="task-detail">Campos: <code>id UUID PK</code>, <code>evento_kafka_offset BIGINT</code>, <code>cnes_origem VARCHAR(7)</code>, <code>cnes_destino_sugerido VARCHAR(7)</code>, <code>protocolo CHAR(1)</code> (V/L/A/V/A = vermelho/laranja/amarelo/verde/azul), <code>cid_suspeito VARCHAR(4)</code>, <code>leitos_sus_disponiveis SMALLINT</code>, <code>processado_em TIMESTAMPTZ</code>.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="task-group">
+    <div class="task-group-header">
+      <span class="tg-icon">📤</span>
+      <span class="tg-title">Producer — simulação de triagem</span>
+      <span class="tg-file">pipelines/stream/producer.py</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Carregar distribuição horária de internações do SIH (query em <code>refined</code>)</span>
+          <span class="task-detail">Query: <code>SELECT EXTRACT(HOUR FROM dt_inter), COUNT(*) FROM trusted.internacoes GROUP BY 1</code>. Usar como peso para <code>random.choices()</code>.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Gerar evento JSON e publicar no tópico <code>triagem-eventos</code></span>
+          <span class="task-detail">Schema do evento: <code>{"paciente_id": "uuid", "cnes_origem": "2226864", "timestamp": "ISO8601", "cid_suspeito": "I21", "fc": 110, "pas": 90, "fr": 22, "spo2": 94, "glasgow": 14}</code>. Publicar com <code>KafkaProducer(value_serializer=json.dumps.encode)</code>.</span>
+          <div class="task-tags"><span class="tag tag-mono">kafka-python</span></div>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Parâmetro <code>--rate</code> para controlar eventos/segundo (default: 1/s)</span>
+          <span class="task-detail">Usar <code>argparse</code>. Modo turbo (<code>--rate 10</code>) para demo rápida.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="task-group">
+    <div class="task-group-header">
+      <span class="tg-icon">📥</span>
+      <span class="tg-title">Consumer — motor de decisão</span>
+      <span class="tg-file">pipelines/stream/consumer.py</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Consumir tópico <code>triagem-eventos</code> com <code>KafkaConsumer(group_id='decisao-motor')</code></span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Classificar risco pelo Protocolo Manchester</span>
+          <span class="task-detail">Vermelho: <code>spo2 &lt; 90 OR glasgow &lt; 9 OR pas &lt; 80</code>. Laranja: <code>fc &gt; 130 OR fr &gt; 30</code>. Amarelo: demais alterações. Verde/Azul: sinais normais.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Se Vermelho: consultar <code>refined.disponibilidade_leitos</code> do município do <code>cnes_origem</code></span>
+          <span class="task-detail">Query: <code>SELECT e.cnes, e.nome, r.total_leitos_sus FROM trusted.estabelecimentos e JOIN refined.disponibilidade_leitos r ON e.municipio = r.municipio WHERE r.total_leitos_sus &gt; 0 ORDER BY r.total_leitos_sus DESC LIMIT 3</code>.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Gravar alerta em <code>refined.alertas_triagem</code> e publicar resposta em <code>alertas-risco</code></span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       FASE 5 — ANÁLISE ESPACIAL
+  ══════════════════════════════════════════ -->
+  <div class="phase-header">
+    <div class="phase-dot dot5">5</div>
+    <h2 class="c5">Análise Espacial</h2>
+    <span class="badge bg5" style="color:#3fb950;background:#0d1f0f;border-color:#196c2e;">Pendente</span>
+  </div>
+  <p class="phase-desc">Mapas e correlações que compõem a análise do "Silêncio Epidemiológico". Gráficos exportados como HTML (Plotly) e PNG.</p>
+
+  <div class="task-group">
+    <div class="task-group-header">
+      <span class="tg-icon">🗺️</span>
+      <span class="tg-title">Mapas e gráficos</span>
+      <span class="tg-file">notebooks/analise_espacial.ipynb</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Mapa coroplético: taxa de mortalidade hospitalar por município (PR/SC/RS)</span>
+          <span class="task-detail">Join <code>refined.mortalidade_por_municipio</code> + shapefile IBGE. Usar <code>folium.Choropleth</code> ou <code>plotly.express.choropleth_mapbox</code>.</span>
+          <div class="task-tags"><span class="tag tag-blue">folium</span><span class="tag tag-blue">geopandas</span></div>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Scatter plot: leitos SUS por 1.000 hab × taxa de mortalidade (por município)</span>
+          <span class="task-detail">Colorir por UF. Adicionar linha de tendência (regressão linear). Usar <code>plotly.express.scatter</code> com <code>trendline='ols'</code>.</span>
+          <div class="task-tags"><span class="tag tag-blue">plotly</span></div>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Mapa de calor: concentração de estabelecimentos por tipo (<code>TP_UNID</code>)</span>
+          <span class="task-detail">Filtrar: hospitais gerais (04), UPA (07), UBS (02). Usar <code>folium.plugins.HeatMap</code> com lat/lon de <code>trusted.estabelecimentos</code>.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Mapa de municípios no "Silêncio Epidemiológico" (view materializada)</span>
+          <span class="task-detail">Destacar em vermelho os municípios da <code>refined.silencio_epidemiologico</code>. Adicionar tooltip com nome, taxa mortalidade e leitos/1000.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Análise de transferências: <code>MUNIC_RES ≠ MUNIC_MOV</code> × mortalidade</span>
+          <span class="task-detail">Hipótese: pacientes que precisam se deslocar para outro município têm maior taxa de mortalidade. Testar com teste qui-quadrado ou comparação de médias.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Exportar todos os gráficos como HTML estático (<code>fig.write_html()</code>) e PNG (<code>fig.write_image()</code>)</span>
+          <span class="task-detail">Salvar em <code>docs/figures/</code> para embed no dashboard final.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       FASE 6 — DASHBOARD + DEMO
+  ══════════════════════════════════════════ -->
+  <div class="phase-header">
+    <div class="phase-dot dot6">6</div>
+    <h2 class="c6">Dashboard e Demo Final</h2>
+    <span class="badge bg6" style="color:var(--next);background:var(--next-bg);border-color:var(--next-b);">Pendente</span>
+  </div>
+  <p class="phase-desc">Dashboard interativo que integra todas as análises. Script de demo que sobe a stack completa e demonstra o pipeline Kafka ao vivo.</p>
+
+  <div class="task-group">
+    <div class="task-group-header">
+      <span class="tg-icon">🖥️</span>
+      <span class="tg-title">Dashboard + Makefile</span>
+      <span class="tg-file">dashboard/ + Makefile</span>
+      <span class="tg-toggle">▼</span>
+    </div>
+    <ul class="task-list">
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Criar <code>Makefile</code> com targets: <code>ingest</code>, <code>etl</code>, <code>stream</code>, <code>demo</code></span>
+          <span class="task-detail"><code>make demo</code>: sobe Docker, roda ETL com 3 meses de dado, inicia producer + consumer, abre dashboard.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Dashboard final — HTML único com Plotly embed ou Streamlit</span>
+          <span class="task-detail">Seções: métricas gerais (total internações, total óbitos, taxa geral), mapa mortalidade, mapa silêncio epidemiológico, painel Kafka (alertas em tempo real via polling).</span>
+          <div class="task-tags"><span class="tag tag-blue">Streamlit</span><span class="tag tag-blue">plotly</span></div>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Gerar diagrama ER do banco PostgreSQL</span>
+          <span class="task-detail">Usar <code>eralchemy2</code> ou <code>pgAdmin → ERD</code>. Exportar como PNG para <code>docs/er_diagram.png</code>.</span>
+        </div>
+      </li>
+      <li class="task s-pend">
+        <div class="task-check"></div>
+        <div class="task-body">
+          <span class="task-title">Adicionar <code>pysus</code>, <code>folium</code>, <code>plotly</code>, <code>streamlit</code>, <code>eralchemy2</code> ao <code>pyproject.toml</code></span>
+          <span class="task-detail">Dependências ainda ausentes no pyproject.toml atual.</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+</main>
+
+<script>
+  // Toggle task groups
+  document.querySelectorAll('.task-group-header').forEach(h => {
+    h.addEventListener('click', () => {
+      const group = h.closest('.task-group');
+      const list  = group.querySelector('.task-list');
+      const open  = group.classList.toggle('open');
+      if (list) list.style.display = open ? '' : 'none';
+    });
+  });
+  // Init: hide closed groups
+  document.querySelectorAll('.task-group:not(.open) .task-list').forEach(l => l.style.display = 'none');
+</script>
+
+</body>
+</html>

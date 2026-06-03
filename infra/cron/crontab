@@ -1,0 +1,9 @@
+# DataSUS — Agenda de ingestão batch (formato supercronic = cron padrão)
+#
+# Campos: minuto hora dia-do-mês mês dia-da-semana  comando
+#
+# Lag: o DataSUS publica AIH do mês M no início do mês M+2 (aprox.).
+# Por isso o cron roda no dia 5 de cada mês às 03:00, garantindo que a
+# competência M-2 já esteja disponível.
+
+0 3 5 * * python -m pipelines.batch.ingestion.orchestrator
