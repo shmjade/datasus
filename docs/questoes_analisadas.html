@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Questões Analisadas — DataSUS-RS · UFRGS NF01006</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css" id="theme">
+
+<style>
+:root {
+  --primary: #1e40af;
+  --secondary: #0891b2;
+  --accent: #dc2626;
+  --soft: #f1f5f9;
+  --border: #cbd5e1;
+  --text-strong: #0f172a;
+
+  --eixo1: #16a34a;   /* verde - oferta */
+  --eixo2: #0891b2;   /* ciano - demanda */
+  --eixo3: #7c3aed;   /* roxo - qualidade */
+  --eixo4: #dc2626;   /* vermelho - desigualdade */
+  --eixo5: #ea580c;   /* laranja - decisão */
+}
+.reveal {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  font-size: 24px;
+  color: #1f2937;
+}
+.reveal h1, .reveal h2, .reveal h3 {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
+  text-transform: none;
+  text-shadow: none;
+}
+.reveal h1 { font-size: 2.2em; }
+.reveal h2 { font-size: 1.5em; color: var(--primary); }
+.reveal h3 { font-size: 1.2em; color: var(--secondary); }
+
+.reveal .slides section {
+  text-align: left;
+  padding: 0 30px;
+}
+.reveal section.cover { text-align: center; }
+.reveal section.divisor { text-align: center; }
+
+.reveal table {
+  margin: 0.4em auto;
+  font-size: 0.78em;
+  border-collapse: collapse;
+  width: 100%;
+}
+.reveal table th, .reveal table td {
+  padding: 0.45em 0.7em;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.4;
+}
+.reveal table th {
+  background: var(--soft);
+  font-size: 0.88em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+}
+
+.reveal ul, .reveal ol { padding-left: 1.5em; }
+.reveal li { margin: 0.3em 0; line-height: 1.4; }
+.reveal strong { color: #000; }
+.reveal em { color: var(--secondary); }
+
+.reveal code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.82em;
+  background: var(--soft);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+}
+
+/* === Capa === */
+section.cover h1 { font-size: 2.4em; margin-bottom: 0.2em; }
+section.cover .institucional {
+  font-size: 0.75em;
+  color: #64748b;
+  margin-top: 2em;
+}
+section.cover .descricao {
+  background: var(--soft);
+  border-left: 6px solid var(--primary);
+  padding: 1em 1.5em;
+  margin: 1.5em auto;
+  text-align: left;
+  max-width: 720px;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.95em;
+  color: var(--text-strong);
+}
+
+/* === Divisores === */
+section.divisor {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+}
+section.divisor h1 { color: white; font-size: 2.6em; }
+section.divisor .num {
+  font-size: 5em;
+  font-weight: 900;
+  opacity: 0.3;
+  margin-bottom: -0.2em;
+}
+section.divisor .sub {
+  font-size: 0.85em;
+  opacity: 0.9;
+  margin-top: 1em;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* === Eixo cards === */
+.eixo-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  margin-bottom: 0.6em;
+}
+.eixo-num {
+  font-size: 1.6em;
+  font-weight: 900;
+  width: 1.7em;
+  height: 1.7em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: white;
+}
+.eixo-1 .eixo-num { background: var(--eixo1); }
+.eixo-2 .eixo-num { background: var(--eixo2); }
+.eixo-3 .eixo-num { background: var(--eixo3); }
+.eixo-4 .eixo-num { background: var(--eixo4); }
+.eixo-5 .eixo-num { background: var(--eixo5); }
+
+.eixo-1 h2 { color: var(--eixo1); }
+.eixo-2 h2 { color: var(--eixo2); }
+.eixo-3 h2 { color: var(--eixo3); }
+.eixo-4 h2 { color: var(--eixo4); }
+.eixo-5 h2 { color: var(--eixo5); }
+
+.pergunta-card {
+  background: var(--soft);
+  border-left: 4px solid var(--primary);
+  padding: 0.7em 1em;
+  margin: 0.5em 0;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.82em;
+  line-height: 1.45;
+}
+.pergunta-card .pergunta {
+  font-style: italic;
+  color: var(--text-strong);
+  display: block;
+  margin-bottom: 0.4em;
+  font-weight: 500;
+}
+.pergunta-card .view {
+  display: inline-block;
+  background: white;
+  color: var(--primary);
+  padding: 0.15em 0.6em;
+  border-radius: 4px;
+  font-size: 0.88em;
+  font-weight: 600;
+  margin-right: 0.4em;
+  border: 1px solid var(--border);
+}
+.pergunta-card .gran {
+  display: inline-block;
+  font-size: 0.78em;
+  color: #64748b;
+  font-style: normal;
+}
+
+.eixo-1 .pergunta-card { border-left-color: var(--eixo1); }
+.eixo-2 .pergunta-card { border-left-color: var(--eixo2); }
+.eixo-3 .pergunta-card { border-left-color: var(--eixo3); }
+.eixo-4 .pergunta-card { border-left-color: var(--eixo4); }
+.eixo-5 .pergunta-card { border-left-color: var(--eixo5); }
+.eixo-1 .pergunta-card .view { color: var(--eixo1); }
+.eixo-2 .pergunta-card .view { color: var(--eixo2); }
+.eixo-3 .pergunta-card .view { color: var(--eixo3); }
+.eixo-4 .pergunta-card .view { color: var(--eixo4); }
+.eixo-5 .pergunta-card .view { color: var(--eixo5); }
+
+/* === Visão geral === */
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.8em;
+  margin: 1em 0;
+}
+.overview-card {
+  border-radius: 8px;
+  padding: 0.8em;
+  color: white;
+  text-align: center;
+  font-size: 0.72em;
+}
+.overview-card .num {
+  font-size: 1.6em;
+  font-weight: 900;
+  display: block;
+  margin-bottom: 0.2em;
+}
+.overview-card .name {
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.3em;
+  letter-spacing: 0.03em;
+}
+.overview-card .desc { opacity: 0.93; line-height: 1.3; }
+.overview-card.c1 { background: var(--eixo1); }
+.overview-card.c2 { background: var(--eixo2); }
+.overview-card.c3 { background: var(--eixo3); }
+.overview-card.c4 { background: var(--eixo4); }
+.overview-card.c5 { background: var(--eixo5); }
+
+/* Matriz visual */
+.matriz {
+  margin: 1em 0;
+  font-size: 0.78em;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+.matriz th, .matriz td {
+  padding: 0.5em 0.7em;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.matriz th { background: var(--soft); }
+.matriz td.label {
+  background: var(--soft);
+  text-align: left;
+  font-weight: 600;
+  width: 22%;
+}
+.matriz td.hit {
+  background: #dbeafe;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* Resumo final */
+.resumo-table {
+  width: 100%;
+  font-size: 0.82em;
+}
+.resumo-table td.eixo-name {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.resumo-table .e1 { color: var(--eixo1); }
+.resumo-table .e2 { color: var(--eixo2); }
+.resumo-table .e3 { color: var(--eixo3); }
+.resumo-table .e4 { color: var(--eixo4); }
+.resumo-table .e5 { color: var(--eixo5); }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ============== CAPA ============== -->
+<section class="cover">
+  <h1>Questões Analisadas</h1>
+  <h3 style="color: var(--secondary); margin-bottom: 0.4em;">
+    Perguntas norteadoras e views implementadas
+  </h3>
+
+  <div class="descricao">
+    Cada uma das <strong>13 views</strong> implementadas responde a uma
+    <strong>pergunta de pesquisa específica</strong>, agrupadas em
+    <strong>5 eixos temáticos</strong> que cobrem do panorama estadual
+    ao paciente individual.
+  </div>
+
+  <div class="institucional">
+    DataSUS-RS · UFRGS · NF01006 — Projeto de Banco de Dados
+  </div>
+</section>
+
+<!-- ============== VISÃO GERAL ============== -->
+<section>
+  <h2>📍 Os 5 eixos temáticos</h2>
+  <p style="font-size: 0.85em; color: #475569; margin-top: -0.5em;">
+    Organizam 13 perguntas norteadoras do macro (estado) ao micro (paciente).
+  </p>
+
+  <div class="overview-grid">
+    <div class="overview-card c1">
+      <span class="num">1</span>
+      <span class="name">OFERTA</span>
+      <span class="desc">Onde está (ou falta) a capacidade SUS</span>
+    </div>
+    <div class="overview-card c2">
+      <span class="num">2</span>
+      <span class="name">DEMANDA</span>
+      <span class="desc">Quem adoece, morre e custa o quê</span>
+    </div>
+    <div class="overview-card c3">
+      <span class="num">3</span>
+      <span class="name">QUALIDADE</span>
+      <span class="desc">Quais hospitais performam fora do esperado</span>
+    </div>
+    <div class="overview-card c4">
+      <span class="num">4</span>
+      <span class="name">DESIGUALDADE</span>
+      <span class="desc">Onde mortalidade + baixa oferta + pobreza convergem</span>
+    </div>
+    <div class="overview-card c5">
+      <span class="num">5</span>
+      <span class="name">DECISÃO</span>
+      <span class="desc">Apoio à decisão em tempo real e individual</span>
+    </div>
+  </div>
+
+  <div style="margin-top: 1.5em; padding: 0.8em 1em; background: #eff6ff;
+              border-left: 4px solid var(--primary); border-radius: 0 6px 6px 0;
+              font-size: 0.85em;">
+    <strong>🔎 Pergunta norteadora</strong> em destaque no topo de cada view
+    — usuário entende o problema antes de explorar os dados.
+  </div>
+</section>
+
+<!-- ============== EIXO 1 — OFERTA ============== -->
+<section class="eixo-1">
+  <div class="eixo-header">
+    <span class="eixo-num">1</span>
+    <h2>OFERTA — estrutura e capacidade</h2>
+  </div>
+
+  <div class="pergunta-card">
+    <span class="pergunta">"Quais municípios do RS estão descobertos de hospital geral, UBS, UPA ou centro de especialidades?"</span>
+    <span class="view">🏢 F1 Distribuição de Estabelecimentos</span>
+    <span class="gran">Granularidade: município</span>
+  </div>
+
+  <div class="pergunta-card">
+    <span class="pergunta">"Onde está concentrada a capacidade hospitalar SUS do RS — e como ela se decompõe entre UTI, clínico, cirúrgico e obstétrico?"</span>
+    <span class="view">🛏️ Leitos por Município</span>
+    <span class="gran">Granularidade: município (composição funcional)</span>
+  </div>
+
+  <div class="pergunta-card">
+    <span class="pergunta">"Quais cidades do RS mais precisam de leitos SUS por habitante — abaixo do parâmetro OMS (3 leitos / 1.000 hab)?"</span>
+    <span class="view">🏨 F3 Leitos por 1.000 hab</span>
+    <span class="gran">Granularidade: município per capita</span>
+  </div>
+</section>
+
+<!-- ============== EIXO 2 — DEMANDA ============== -->
+<section class="eixo-2">
+  <div class="eixo-header">
+    <span class="eixo-num">2</span>
+    <h2>DEMANDA — perfil clínico e mortalidade</h2>
+  </div>
+
+  <div class="pergunta-card">
+    <span class="pergunta">"Quais doenças mais internam, mais matam e mais custam ao SUS no RS — e como cada CID se comporta ao longo do tempo?"</span>
+    <span class="view">📊 Continuum CID</span>
+    <span class="gran">Granularidade: CID × tempo</span>
+  </div>
+
+  <div class="pergunta-card">
+    <span class="pergunta">"Como varia a taxa de mortalidade hospitalar entre os municípios do RS — está subindo, caindo ou estável no tempo?"</span>
+    <span class="view">📉 F2 Mortalidade por Município</span>
+    <span class="gran">Granularidade: município × tempo</span>
+  </div>
+
+  <div class="pergunta-card">
+    <span class="pergunta">"Onde no RS as pessoas mais morrem em internações, e onde estão as desigualdades — ajustadas por população?"</span>
+    <span class="view">🗺️ Mapa de Mortalidade RS</span>
+    <span class="gran">Granularidade: município, 11 métricas absolutas + per capita</span>
+  </div>
+</section>
+
+<!-- ============== EIXO 3 — QUALIDADE ============== -->
+<section class="eixo-3">
+  <div class="eixo-header">
+    <span class="eixo-num">3</span>
+    <h2>QUALIDADE — performance hospitalar</h2>
+  </div>
+
+  <div class="pergunta-card">
+    <span class="pergunta">"Quais hospitais apresentam mortalidade fora do esperado para o seu volume — candidatos a investigação clínica ou referência de qualidade?"</span>
+    <span class="view">🩺 Painel do Hospital — funnel plot Spiegelhalter</span>
+    <span class="gran">Granularidade: hospital (CNES), IC 95% binomial</span>
+  </div>
+
+  <div class="pergunta-card">
+    <span class="pergunta">"Qual o perfil anonimizado de internações de um hospital específico — volume, mortalidade interna e proporção de pacientes vindos de outros municípios?"</span>
+    <span class="view">🔍 F4 Rastreabilidade por Estabelecimento</span>
+    <span class="gran">Granularidade: hospital × tempo, hash SHA-256</span>
+  </div>
+
+  <p style="font-size: 0.8em; color: var(--eixo3); margin-top: 1em;
+            border-top: 1px dashed var(--border); padding-top: 0.7em;">
+    💡 <strong>Insight:</strong> funnel plot identifica outliers estatísticos
+    pra auditoria; SHA-256 preserva consistência sem expor identificador.
+  </p>
+</section>
+
+<!-- ============== EIXO 4 — DESIGUALDADE ============== -->
+<section class="eixo-4">
+  <div class="eixo-header">
+    <span class="eixo-num">4</span>
+    <h2>DESIGUALDADE — determinantes sociais</h2>
+  </div>
+
+  <div class="pergunta-card">
+    <span class="pergunta">"Onde no RS se combinam alta mortalidade hospitalar e baixa oferta de leitos — e qual a correlação dessas regiões com pobreza e baixo IDHM?"</span>
+    <span class="view">🔇 F5 Silêncio Epidemiológico</span>
+    <span class="gran">Mapa Folium · cruzamento com Atlas Brasil 2010 (IDHM, renda)</span>
+  </div>
+
+  <div class="pergunta-card">
+    <span class="pergunta">"A desigualdade em saúde persiste dentro de uma capital — em quais bairros de Porto Alegre se concentram internações, custos e óbitos?"</span>
+    <span class="view">🏙️ POA Bairros</span>
+    <span class="gran">94 bairros oficiais (Lei 12.112/2016) · CEP→bairro (99% cobertura)</span>
+  </div>
+
+  <p style="font-size: 0.8em; color: var(--eixo4); margin-top: 1em;
+            border-top: 1px dashed var(--border); padding-top: 0.7em;">
+    💡 <strong>Insight:</strong> eixo mais publicável academicamente —
+    conecta saúde com determinantes sociais (raça, escolaridade, renda).
+  </p>
+</section>
+
+<!-- ============== EIXO 5 — DECISÃO ============== -->
+<section class="eixo-5">
+  <div class="eixo-header">
+    <span class="eixo-num">5</span>
+    <h2>DECISÃO — granularidade paciente</h2>
+  </div>
+
+  <div class="pergunta-card">
+    <span class="pergunta">"Como rotear pacientes em estado crítico (Manchester Vermelho: SpO₂ &lt; 90 OR Glasgow &lt; 9 OR PAS &lt; 80) para unidades com leitos SUS disponíveis nas vizinhanças, em tempo real?"</span>
+    <span class="view">🚨 F6 Motor de Decisão</span>
+    <span class="gran">Apache Kafka + Postgres · streaming · 20 eventos vermelhos validados E2E</span>
+  </div>
+
+  <div class="pergunta-card">
+    <span class="pergunta">"Qual a probabilidade de óbito hospitalar de um paciente recém-admitido, a partir de dados clínicos e demográficos disponíveis na admissão?"</span>
+    <span class="view">🎯 Risco do Paciente (ML) <span style="background: #fef3c7; color: #b45309; padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.75em;">🚧 em desenvolvimento</span></span>
+    <span class="gran">scikit-learn + LightGBM · dataset v1 com 264k AIHs splitadas (70/15/15)</span>
+  </div>
+
+  <p style="font-size: 0.8em; color: var(--eixo5); margin-top: 1em;
+            border-top: 1px dashed var(--border); padding-top: 0.7em;">
+    💡 <strong>Insight:</strong> ambas têm granularidade paciente, mas
+    arquiteturas distintas — streaming pro F6, batch+síncrono pro ML.
+  </p>
+</section>
+
+<!-- ============== MATRIZ VISUAL ============== -->
+<section>
+  <h2>🗺️ Matriz Eixo × Granularidade</h2>
+  <p style="font-size: 0.85em; color: #475569; margin-top: -0.5em;">
+    Quais granularidades cada eixo cobre — do macro estatístico ao micro operacional.
+  </p>
+
+  <table class="matriz">
+    <thead>
+      <tr>
+        <th></th>
+        <th style="color: var(--eixo1);">1 OFERTA</th>
+        <th style="color: var(--eixo2);">2 DEMANDA</th>
+        <th style="color: var(--eixo3);">3 QUALIDADE</th>
+        <th style="color: var(--eixo4);">4 DESIGUALDADE</th>
+        <th style="color: var(--eixo5);">5 DECISÃO</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="label">Estado (UF)</td>
+        <td class="hit">F1 · F3</td>
+        <td class="hit">Mapa</td>
+        <td>—</td>
+        <td class="hit">F5</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td class="label">Município</td>
+        <td class="hit">Leitos · F1</td>
+        <td class="hit">F2 · Mapa</td>
+        <td>—</td>
+        <td class="hit">F5</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td class="label">Bairro</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td class="hit">POA Bairros</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td class="label">Hospital (CNES)</td>
+        <td class="hit">Leitos</td>
+        <td>—</td>
+        <td class="hit">Painel · F4</td>
+        <td>—</td>
+        <td class="hit">F6 (roteamento)</td>
+      </tr>
+      <tr>
+        <td class="label">Paciente</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+        <td class="hit">F6 · ML 🚧</td>
+      </tr>
+      <tr>
+        <td class="label">CID × Tempo</td>
+        <td>—</td>
+        <td class="hit">Continuum</td>
+        <td>—</td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="font-size: 0.78em; color: #64748b; margin-top: 0.5em;">
+    Os 5 eixos cobrem 6 granularidades distintas — UF, município, bairro,
+    hospital, paciente e CID × tempo.
+  </p>
+</section>
+
+<!-- ============== RESUMO CONDENSADO ============== -->
+<section>
+  <h2>🎯 Resumo condensado</h2>
+  <p style="font-size: 0.85em; color: #475569; margin-top: -0.5em;">
+    Versão pra projetar como slide único.
+  </p>
+
+  <table class="resumo-table">
+    <thead>
+      <tr>
+        <th style="width: 8%;">#</th>
+        <th style="width: 22%;">Eixo</th>
+        <th style="width: 38%;">Pergunta-chave</th>
+        <th style="width: 32%;">Views que respondem</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong style="color: var(--eixo1);">1</strong></td>
+        <td class="eixo-name e1">OFERTA</td>
+        <td>Onde está (ou falta) a capacidade SUS?</td>
+        <td>F1 · Leitos Município · F3</td>
+      </tr>
+      <tr>
+        <td><strong style="color: var(--eixo2);">2</strong></td>
+        <td class="eixo-name e2">DEMANDA</td>
+        <td>Quem adoece, morre e custa o quê?</td>
+        <td>Continuum CID · F2 · Mapa Mortalidade RS</td>
+      </tr>
+      <tr>
+        <td><strong style="color: var(--eixo3);">3</strong></td>
+        <td class="eixo-name e3">QUALIDADE</td>
+        <td>Quais hospitais performam fora do esperado?</td>
+        <td>Painel Hospital · F4 Rastreabilidade</td>
+      </tr>
+      <tr>
+        <td><strong style="color: var(--eixo4);">4</strong></td>
+        <td class="eixo-name e4">DESIGUALDADE</td>
+        <td>Onde mortalidade + baixa oferta + pobreza convergem?</td>
+        <td>F5 Silêncio Epidemiológico · POA Bairros</td>
+      </tr>
+      <tr>
+        <td><strong style="color: var(--eixo5);">5</strong></td>
+        <td class="eixo-name e5">DECISÃO</td>
+        <td>Como apoiar decisão clínica em tempo real e individual?</td>
+        <td>F6 Motor Manchester · ML Risco 🚧</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top: 1.2em; padding: 0.8em 1em; background: var(--soft);
+              border-radius: 6px; font-size: 0.78em; color: #475569;">
+    <strong>13 views · 5 eixos · 6 granularidades</strong> —
+    cada view com pergunta norteadora explícita no topo.
+  </div>
+</section>
+
+<!-- ============== FECHAMENTO ============== -->
+<section class="cover">
+  <h1 style="color: var(--primary);">Obrigada</h1>
+  <h3 style="color: var(--secondary);">Dúvidas sobre alguma das 13 perguntas?</h3>
+
+  <div style="margin-top: 2em; font-size: 0.85em;">
+    <p>
+      <strong>Dashboards ao vivo:</strong> http://localhost:8501<br>
+      <strong>Apresentação completa:</strong> docs/apresentacao_tcc.html<br>
+      <strong>Documentação:</strong> docs/dicionario_dados.html
+    </p>
+  </div>
+
+  <div class="institucional" style="margin-top: 3em;">
+    DataSUS-RS · UFRGS · NF01006 · 2026
+  </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script>
+Reveal.initialize({
+  hash: true,
+  controls: true,
+  progress: true,
+  center: false,
+  transition: "slide",
+  slideNumber: "c/t",
+  width: 1280,
+  height: 800,
+  margin: 0.06,
+  minScale: 0.4,
+  maxScale: 1.6,
+});
+</script>
+</body>
+</html>
