@@ -284,7 +284,7 @@ section.divisor .sub {
   </h3>
 
   <div class="descricao">
-    Cada uma das <strong>13 views</strong> implementadas responde a uma
+    Cada uma das <strong>12 views</strong> implementadas responde a uma
     <strong>pergunta de pesquisa específica</strong>, agrupadas em
     <strong>5 eixos temáticos</strong> que cobrem do panorama estadual
     ao paciente individual.
@@ -450,12 +450,6 @@ section.divisor .sub {
   </div>
 
   <div class="pergunta-card">
-    <span class="pergunta">"Como rotear pacientes em estado crítico (Manchester Vermelho: SpO₂ &lt; 90 OR Glasgow &lt; 9 OR PAS &lt; 80) para unidades com leitos SUS disponíveis nas vizinhanças, em tempo real?"</span>
-    <span class="view">🚨 F6 Motor de Decisão</span>
-    <span class="gran">Apache Kafka + Postgres · streaming · 20 eventos vermelhos validados E2E</span>
-  </div>
-
-  <div class="pergunta-card">
     <span class="pergunta">"Qual a probabilidade de óbito hospitalar de um paciente recém-admitido, a partir de dados clínicos e demográficos disponíveis na admissão?"</span>
     <span class="view">🎯 Risco do Paciente (ML) <span style="background: #fef3c7; color: #b45309; padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.75em;">🚧 em desenvolvimento</span></span>
     <span class="gran">scikit-learn + LightGBM · dataset v1 com 264k AIHs splitadas (70/15/15)</span>
@@ -463,8 +457,8 @@ section.divisor .sub {
 
   <p style="font-size: 0.8em; color: var(--eixo5); margin-top: 1em;
             border-top: 1px dashed var(--border); padding-top: 0.7em;">
-    💡 <strong>Insight:</strong> ambas têm granularidade paciente, mas
-    arquiteturas distintas — streaming pro F6, batch+síncrono pro ML.
+    💡 <strong>Insight:</strong> granularidade paciente — modelo de risco
+    treinado em batch e servido sob demanda na admissão.
   </p>
 </section>
 
@@ -517,7 +511,7 @@ section.divisor .sub {
         <td>—</td>
         <td class="hit">Painel · F4</td>
         <td>—</td>
-        <td class="hit">F6 (roteamento)</td>
+        <td>—</td>
       </tr>
       <tr>
         <td class="label">Paciente</td>
@@ -525,7 +519,7 @@ section.divisor .sub {
         <td>—</td>
         <td>—</td>
         <td>—</td>
-        <td class="hit">F6 · ML 🚧</td>
+        <td class="hit">ML 🚧</td>
       </tr>
       <tr>
         <td class="label">CID × Tempo</td>
@@ -588,15 +582,15 @@ section.divisor .sub {
       <tr>
         <td><strong style="color: var(--eixo5);">5</strong></td>
         <td class="eixo-name e5">DECISÃO</td>
-        <td>Como apoiar decisão clínica em tempo real e individual?</td>
-        <td>F6 Motor Manchester · ML Risco 🚧</td>
+        <td>Como apoiar decisão clínica individual na admissão?</td>
+        <td>ML Risco 🚧</td>
       </tr>
     </tbody>
   </table>
 
   <div style="margin-top: 1.2em; padding: 0.8em 1em; background: var(--soft);
               border-radius: 6px; font-size: 0.78em; color: #475569;">
-    <strong>13 views · 5 eixos · 6 granularidades</strong> —
+    <strong>12 views · 5 eixos · 6 granularidades</strong> —
     cada view com pergunta norteadora explícita no topo.
   </div>
 </section>
