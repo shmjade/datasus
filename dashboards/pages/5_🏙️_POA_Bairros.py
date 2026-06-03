@@ -27,6 +27,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from utils import pergunta_box  # noqa: E402
 from utils.queries import get_conn  # noqa: E402
 
 DATA_ROOT = Path(os.getenv("DATA_ROOT", "/app/data"))
@@ -39,6 +40,10 @@ POA_COD6 = "431490"   # IBGE 6-dígitos de Porto Alegre
 
 st.set_page_config(page_title="POA Bairros — DataSUS RS", layout="wide")
 st.title("🏙️ Mapa de Porto Alegre por Bairro")
+pergunta_box(
+    "A desigualdade em saúde persiste dentro da capital — "
+    "em quais bairros de POA se concentram internações, custos e óbitos?"
+)
 st.caption(
     "Choropleth dos 94 bairros oficiais de POA. "
     "Granularidade: bairro (via cep do SIH.RD). "

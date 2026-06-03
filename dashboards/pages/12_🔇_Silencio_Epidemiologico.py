@@ -24,6 +24,7 @@ from streamlit_folium import st_folium
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from utils import pergunta_box  # noqa: E402
 from utils.queries import get_conn  # noqa: E402
 
 DATA_ROOT = Path(os.getenv("DATA_ROOT", "/app/data"))
@@ -33,6 +34,10 @@ IDHM_PATH = DATA_ROOT / "ibge" / "43_idhm_municipio.csv"
 
 st.set_page_config(page_title="F5 Silêncio Epidemiológico — DataSUS RS", layout="wide")
 st.title("🔇 F5 — Silêncio Epidemiológico")
+pergunta_box(
+    "Onde no RS se combinam alta mortalidade hospitalar e baixa oferta de leitos — "
+    "e qual a correlação dessas regiões com pobreza e baixo IDHM?"
+)
 st.caption(
     "Municípios com mortalidade alta (>p75) E baixa oferta de leitos (<p25). "
     "Enriquecido com IDHM/renda Atlas Brasil 2010 pra revelar correlação social."

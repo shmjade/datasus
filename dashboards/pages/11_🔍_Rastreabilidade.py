@@ -20,6 +20,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from utils import pergunta_box  # noqa: E402
 from utils.queries import get_conn  # noqa: E402
 
 DATA_ROOT = Path(os.getenv("DATA_ROOT", "/app/data"))
@@ -27,6 +28,10 @@ SILVER = DATA_ROOT / "lake" / "silver"
 
 st.set_page_config(page_title="F4 Rastreabilidade — DataSUS RS", layout="wide")
 st.title("🔍 F4 — Rastreabilidade por Estabelecimento")
+pergunta_box(
+    "Qual o perfil de internações de um hospital específico — volume, mortalidade interna "
+    "e proporção de pacientes vindos de outros municípios?"
+)
 st.caption(
     "Histórico anonimizado de internações de um CNES. "
     "N_AIH é hasheado com SHA-256 — preserva consistência sem expor identificador."

@@ -25,6 +25,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from utils import pergunta_box  # noqa: E402
 from utils.queries import get_conn  # noqa: E402
 
 DATA_ROOT = Path(os.getenv("DATA_ROOT", "/app/data"))
@@ -33,6 +34,10 @@ GEOJSON_PATH = DATA_ROOT / "ibge" / "rs_municipios.geojson"
 
 st.set_page_config(page_title="F1 Distribuição Estab — DataSUS RS", layout="wide")
 st.title("🏢 F1 — Distribuição de Estabelecimentos por Tipo")
+pergunta_box(
+    "Quais municípios do RS estão descobertos de hospital geral, UBS, UPA ou centro de "
+    "especialidades — e onde estão os vazios assistenciais?"
+)
 st.caption(
     "Cobertura territorial dos principais tipos de unidade SUS. "
     "Municípios sem hospital geral, UBS ou UPA são vazios assistenciais."

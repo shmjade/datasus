@@ -18,6 +18,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from utils import pergunta_box  # noqa: E402
 from utils.queries import (  # noqa: E402
     get_conn,
     hospitais_disponiveis,
@@ -27,6 +28,10 @@ from utils.queries import (  # noqa: E402
 
 st.set_page_config(page_title="Painel Hospital — DataSUS RS", layout="wide")
 st.title("🩺 Painel do Hospital")
+pergunta_box(
+    "Quais hospitais apresentam mortalidade fora do esperado para o seu volume — "
+    "candidatos a investigação clínica ou referência de qualidade?"
+)
 st.caption("Casuística e indicadores operacionais por estabelecimento.")
 
 

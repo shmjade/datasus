@@ -16,6 +16,7 @@ import streamlit as st
 # Resolve import quando rodando dentro do container (cwd=/app)
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from utils import pergunta_box  # noqa: E402
 from utils.queries import (  # noqa: E402
     cids_disponiveis,
     continuum_por_cid,
@@ -25,6 +26,10 @@ from utils.queries import (  # noqa: E402
 
 st.set_page_config(page_title="Continuum CID — DataSUS RS", layout="wide")
 st.title("📊 Continuum de Cuidado por CID")
+pergunta_box(
+    "Quais doenças mais internam, mais matam e mais custam ao SUS no RS — "
+    "e como cada CID se comporta ao longo do tempo?"
+)
 st.caption("Internações × Óbitos × CSAP agregados por CID-10 (3 caracteres).")
 
 

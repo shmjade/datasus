@@ -19,6 +19,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from utils import pergunta_box  # noqa: E402
 from utils.queries import get_conn  # noqa: E402
 
 DATA_ROOT = Path(os.getenv("DATA_ROOT", "/app/data"))
@@ -27,6 +28,10 @@ GEOJSON_PATH = DATA_ROOT / "ibge" / "rs_municipios.geojson"
 
 st.set_page_config(page_title="F3 Leitos per 1000 — DataSUS RS", layout="wide")
 st.title("🏨 F3 — Leitos SUS por 1.000 Habitantes")
+pergunta_box(
+    "Quais cidades do RS mais precisam de leitos SUS por habitante — "
+    "abaixo do parâmetro OMS (3 leitos / 1.000 hab)?"
+)
 st.caption(
     "Indicador-padrão de oferta hospitalar. OMS recomenda 3-5 leitos/1.000 hab. "
     "Brasil tem média ~2; RS varia muito por município."

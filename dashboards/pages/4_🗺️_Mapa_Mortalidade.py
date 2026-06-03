@@ -23,6 +23,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from utils import pergunta_box  # noqa: E402
 from utils.queries import get_conn  # noqa: E402
 
 DATA_ROOT = Path(os.getenv("DATA_ROOT", "/app/data"))
@@ -33,6 +34,10 @@ GOLD = DATA_ROOT / "lake" / "gold"
 
 st.set_page_config(page_title="Mapa Mortalidade RS — DataSUS", layout="wide")
 st.title("🗺️ Mapa de Mortalidade — RS")
+pergunta_box(
+    "Onde no RS as pessoas mais morrem em internações, e onde estão as desigualdades — "
+    "ajustadas por população?"
+)
 st.caption(
     "Choropleth no nível municipal usando GeoJSON IBGE + agregação DuckDB. "
     "Granularidade: município de residência (6 dígitos IBGE). "

@@ -14,10 +14,15 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from utils import pergunta_box  # noqa: E402
 from utils.queries import get_conn, leitos_por_municipio  # noqa: E402
 
 st.set_page_config(page_title="Leitos SUS — DataSUS RS", layout="wide")
 st.title("🛏️ Capacidade SUS por Município")
+pergunta_box(
+    "Onde está concentrada a capacidade hospitalar SUS do RS — "
+    "e como ela se decompõe entre UTI, clínico, cirúrgico e obstétrico?"
+)
 st.caption("Leitos SUS médios no período, decomposto por categoria funcional.")
 
 

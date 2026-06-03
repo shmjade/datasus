@@ -24,6 +24,8 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from utils import pergunta_box  # noqa: E402
+
 
 PG_DSN = (
     f"host={os.getenv('POSTGRES_HOST', 'postgres')} "
@@ -35,6 +37,10 @@ PG_DSN = (
 
 st.set_page_config(page_title="F6 Motor Decisão — DataSUS RS", layout="wide")
 st.title("🚨 F6 — Motor de Decisão em Tempo Real")
+pergunta_box(
+    "Como rotear pacientes em estado crítico (Manchester Vermelho) para unidades com "
+    "leitos SUS disponíveis nas vizinhanças, em tempo real?"
+)
 st.caption(
     "Alertas Manchester Vermelho processados via Kafka. "
     "Critério: SpO2 < 90% OR Glasgow < 9 OR PAS < 80 mmHg."

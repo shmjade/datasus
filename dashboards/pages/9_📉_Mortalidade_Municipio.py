@@ -17,6 +17,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from utils import pergunta_box  # noqa: E402
 from utils.queries import get_conn  # noqa: E402
 
 DATA_ROOT = Path(os.getenv("DATA_ROOT", "/app/data"))
@@ -25,6 +26,10 @@ GEOJSON_PATH = DATA_ROOT / "ibge" / "rs_municipios.geojson"
 
 st.set_page_config(page_title="F2 Mortalidade Município — DataSUS RS", layout="wide")
 st.title("📉 F2 — Mortalidade Hospitalar por Município")
+pergunta_box(
+    "Como varia a taxa de mortalidade hospitalar entre os municípios do RS — "
+    "está subindo, caindo ou estável no tempo?"
+)
 st.caption(
     "Taxa = (óbitos / internações) × 100, por município de residência × competência. "
     "Fonte: gold/mortalidade_municipio_competencia (materialização do SIH.RD)."
