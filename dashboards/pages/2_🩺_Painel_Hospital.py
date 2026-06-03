@@ -212,10 +212,20 @@ if not rank.empty:
                 x=0.5,
                 xanchor="center",
             ),
-            xaxis_title="Internações (escala log)",
-            yaxis_title="Taxa de mortalidade hospitalar",
-            xaxis_type="log",
-            yaxis_tickformat=".1%",
+            xaxis=dict(
+                title="Internações no período",
+                tickformat=",",       # separador de milhar (1,000 / 10,000)
+                showgrid=True,
+                gridcolor="rgb(240,240,240)",
+                rangemode="tozero",   # começa em zero pra contexto visual
+            ),
+            yaxis=dict(
+                title="Taxa de mortalidade hospitalar",
+                tickformat=".1%",
+                showgrid=True,
+                gridcolor="rgb(240,240,240)",
+                rangemode="tozero",
+            ),
             height=560,
             showlegend=True,
             legend=dict(
