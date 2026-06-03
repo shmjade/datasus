@@ -103,24 +103,38 @@ with c1:
     )
 
 with c2:
-    st.markdown("**Volume × Letalidade** (cada ponto é um CID)")
-    sub = df[df["internacoes"] >= 5].copy()
+    st.markdown("**Top CIDs por letalidade** (mín. 20 internações)")
+    sub = df[df["internacoes"] >= 20].copy()
     if not sub.empty:
-        fig = px.scatter(
-            sub,
-            x="internacoes",
-            y="letalidade",
-            size="obitos_sim",
-            hover_name="cid3",
-            log_x=True,
+        top = (
+            sub.assign(letalidade_pct=lambda d: d["letalidade"] * 100)
+            .sort_values("letalidade_pct", ascending=False)
+            .head(20)
+            .sort_values("letalidade_pct", ascending=True)   # invertido pra Plotly
+        )
+        fig = px.bar(
+            top,
+            y="cid3",
+            x="letalidade_pct",
+            orientation="h",
+            color="internacoes",
+            color_continuous_scale="Blues",
+            text=top["letalidade_pct"].round(1).astype(str) + "%",
             labels={
-                "internacoes": "Internações (log)",
-                "letalidade": "Letalidade hospitalar",
-                "obitos_sim": "Óbitos SIM",
+                "cid3": "CID-10",
+                "letalidade_pct": "Letalidade hospitalar (%)",
+                "internacoes": "Internações",
             },
         )
-        fig.update_layout(height=500)
+        fig.update_traces(textposition="outside")
+        fig.update_layout(height=500, margin={"l": 0, "r": 20, "t": 10, "b": 10})
         st.plotly_chart(fig, use_container_width=True)
+        st.caption(
+            "Filtro de 20+ internações evita CIDs raros com letalidade enganosa "
+            "(ex.: 1 morte em 1 internação = 100%). Cor = volume; barra = letalidade."
+        )
+    else:
+        st.info("Sem CIDs com volume suficiente (≥20) no período.")
 
 # -- Série temporal -----------------------------------------------------------
 st.divider()
