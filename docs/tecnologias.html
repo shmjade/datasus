@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tecnologias — DataSUS-RS · UFRGS NF01006</title>
+<style>
+:root {
+  --primary: #1e40af;
+  --primary-soft: #eff6ff;
+  --secondary: #0891b2;
+  --accent: #dc2626;
+  --bronze: #b45309;
+  --bronze-bg: #fef3c7;
+  --silver: #6b7280;
+  --silver-bg: #f3f4f6;
+  --gold: #ca8a04;
+  --gold-bg: #fef9c3;
+  --green: #16a34a;
+  --green-bg: #f0fdf4;
+  --purple: #7c3aed;
+  --purple-bg: #f5f3ff;
+  --orange: #ea580c;
+  --orange-bg: #fff7ed;
+  --text: #0f172a;
+  --text-soft: #475569;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 2.5rem 1.5rem;
+  color: var(--text);
+  background: #fafafa;
+  line-height: 1.55;
+  font-size: 15px;
+}
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+header.hero {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+  padding: 2.5rem 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 24px rgba(30, 64, 175, 0.15);
+}
+header.hero h1 {
+  margin: 0 0 0.6em;
+  font-size: 2em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+header.hero p {
+  margin: 0;
+  font-size: 1.05em;
+  opacity: 0.95;
+  max-width: 720px;
+}
+header.hero .meta {
+  margin-top: 1.5em;
+  font-size: 0.85em;
+  opacity: 0.85;
+}
+section {
+  background: white;
+  border-radius: 12px;
+  padding: 1.8rem 2rem;
+  margin-bottom: 1.6rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  border: 1px solid var(--border);
+}
+section h2 {
+  margin: 0 0 1em;
+  font-size: 1.3em;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  padding-bottom: 0.5em;
+  border-bottom: 2px solid var(--border);
+}
+section h2 .badge {
+  font-size: 0.65em;
+  padding: 0.2em 0.6em;
+  border-radius: 4px;
+  color: white;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+section.bronze h2 .badge { background: var(--bronze); }
+section.silver h2 .badge { background: var(--silver); }
+section.gold   h2 .badge { background: var(--gold); }
+section.dashboards h2 .badge { background: var(--primary); }
+section.streaming h2 .badge { background: var(--accent); }
+section.cross h2 .badge { background: var(--purple); }
+section.docs h2 .badge { background: var(--orange); }
+section.ingestao h2 .badge { background: var(--green); }
+section.resumo h2 .badge {
+  background: var(--text);
+  font-size: 0.75em;
+  padding: 0.25em 0.8em;
+}
+section.bronze { border-left: 5px solid var(--bronze); }
+section.silver { border-left: 5px solid var(--silver); }
+section.gold   { border-left: 5px solid var(--gold); }
+section.dashboards { border-left: 5px solid var(--primary); }
+section.streaming { border-left: 5px solid var(--accent); }
+section.cross { border-left: 5px solid var(--purple); }
+section.docs { border-left: 5px solid var(--orange); }
+section.ingestao { border-left: 5px solid var(--green); }
+section.resumo {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 2px solid var(--primary);
+}
+section.resumo h2 { border-bottom-color: var(--primary); }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  font-size: 0.92em;
+}
+th {
+  text-align: left;
+  padding: 0.65em 0.8em;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--primary);
+}
+td {
+  padding: 0.7em 0.8em;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.5;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fafbfc; }
+td.tech {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  min-width: 160px;
+}
+td.tech code {
+  background: transparent;
+  padding: 0;
+  font-weight: 600;
+  color: var(--primary);
+}
+td.where {
+  color: var(--text-soft);
+  font-size: 0.93em;
+}
+td.why {
+  font-size: 0.93em;
+  color: var(--text);
+}
+code {
+  background: var(--silver-bg);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.88em;
+  color: var(--text);
+}
+.intro {
+  margin: 0 0 1.2em;
+  color: var(--text-soft);
+  font-size: 0.95em;
+}
+.intro strong { color: var(--text); }
+section.resumo table {
+  font-size: 0.95em;
+}
+section.resumo td.tech {
+  font-size: 1em;
+  width: 28%;
+}
+footer {
+  text-align: center;
+  color: var(--text-soft);
+  font-size: 0.85em;
+  margin-top: 2rem;
+  padding: 1.5rem;
+}
+@media print {
+  body { background: white; padding: 0.5cm; }
+  section {
+    page-break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid var(--border);
+  }
+  header.hero { box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="hero">
+  <h1>Tecnologias · DataSUS-RS</h1>
+  <p>Mapeamento das tecnologias usadas em cada parte do pipeline — da ingestão batch ao consumo em tempo real — com justificativa de cada escolha.</p>
+  <div class="meta">UFRGS · NF01006 — Projeto de Banco de Dados · 2026</div>
+</header>
+
+<!-- ====== INGESTÃO ====== -->
+<section class="ingestao">
+  <h2>🌿 Ingestão <span class="badge">Backfill + Cronjob mensal</span></h2>
+  <p class="intro">Coleta dos dados das fontes (DataSUS, IBGE, Atlas Brasil, ObservaPOA, SMAMUS) pra dentro do data lake.</p>
+  <table>
+    <thead>
+      <tr><th style="width:18%">Tecnologia</th><th style="width:35%">Onde uso</th><th>Por que escolhi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tech"><code>Python 3.11</code></td>
+        <td class="where">Linguagem dos scripts de ingestão</td>
+        <td class="why">Único runtime que atravessa todo o pipeline; bibliotecas científicas de primeira</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>pysus</code> (Fiocruz)</td>
+        <td class="where">Download SIH e CNES do FTP DataSUS</td>
+        <td class="why">Biblioteca oficial mantida pela Fiocruz; abstrai conversão <code>.dbc → .parquet</code> e cache local</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>urllib</code> + <code>requests</code> (stdlib)</td>
+        <td class="where">API IBGE SIDRA (Censo 2022), Atlas Brasil 2010, ObservaPOA, SMAMUS ArcGIS REST</td>
+        <td class="why">APIs públicas RESTful retornam JSON — não preciso de cliente especializado</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>supercronic</code></td>
+        <td class="where">Cronjob mensal de ingestão dentro do container</td>
+        <td class="why">Versão de cron amigável a containers (sem precisar de root/systemd)</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ====== BRONZE ====== -->
+<section class="bronze">
+  <h2>🟫 Camada Bronze <span class="badge">Dados brutos do DATASUS</span></h2>
+  <p class="intro">Preserva os dados exatamente como vieram do pysus, sem alterações — auditabilidade total.</p>
+  <table>
+    <thead>
+      <tr><th style="width:18%">Tecnologia</th><th style="width:35%">Onde uso</th><th>Por que escolhi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tech"><code>Parquet</code></td>
+        <td class="where">Formato canônico dos arquivos brutos</td>
+        <td class="why">Colunar + compressão zstd (~5×) + schema embarcado + pushdown de filtros</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>PyArrow</code></td>
+        <td class="where">Escrita e leitura dos arquivos parquet</td>
+        <td class="why">Padrão de mercado Apache Arrow; integração nativa com DuckDB e Pandas</td>
+      </tr>
+      <tr>
+        <td class="tech">Hive partitioning <code>uf=/ano=/mes=</code></td>
+        <td class="where">Particionamento físico dos arquivos</td>
+        <td class="why">DuckDB faz pushdown de filtros temporais automático — não preciso indexar</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ====== SILVER ====== -->
+<section class="silver">
+  <h2>🥈 Camada Silver <span class="badge">Limpo + tipado + padronizado</span></h2>
+  <p class="intro">Aplica a lógica de limpeza UMA vez (derivações <code>cid3</code>, <code>csap_flag</code>, <code>idade_anos</code>) — todas as tabelas gold consumem daqui.</p>
+  <table>
+    <thead>
+      <tr><th style="width:18%">Tecnologia</th><th style="width:35%">Onde uso</th><th>Por que escolhi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tech"><code>DuckDB</code></td>
+        <td class="where">Transformações bronze → silver via <code>COPY ... TO ...</code></td>
+        <td class="why">5-10× mais rápido que Spark single-machine; SQL completo; zero overhead JVM</td>
+      </tr>
+      <tr>
+        <td class="tech">SQL (DuckDB dialect)</td>
+        <td class="where">Lógica de limpeza, casts, derivações (<code>cid3</code>, <code>csap_flag</code>, <code>idade_anos</code>)</td>
+        <td class="why">Declarativo, fácil de revisar; padrão universal de transformação de dados</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>scikit-learn</code></td>
+        <td class="where"><code>train_test_split</code> estratificado do dataset ML (silver-grain)</td>
+        <td class="why">Padrão da indústria pra split com <code>random_state</code>; estratificação por target preserva prevalência</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ====== GOLD ====== -->
+<section class="gold">
+  <h2>🥇 Camada Gold <span class="badge">Tabelas dashboards + modelo</span></h2>
+  <p class="intro">Agregações pré-computadas (sub-segundo no dashboard) + dataset ML versionado + modelo treinado.</p>
+  <table>
+    <thead>
+      <tr><th style="width:18%">Tecnologia</th><th style="width:35%">Onde uso</th><th>Por que escolhi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tech">Parquet particionado por ano</td>
+        <td class="where">5 tabelas gold (<code>continuum_cid</code>, <code>hospital_panel</code>, <code>leitos_municipio</code>, <code>mortalidade</code>, <code>ml_dataset</code>)</td>
+        <td class="why">Mesma razão do bronze; agregações pré-computadas → leitura sub-segundo</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>DuckDB</code></td>
+        <td class="where">Agregações silver → gold (<code>GROUP BY</code>) e queries dos dashboards</td>
+        <td class="why">Aproveita o mesmo motor da camada silver; cache de filesystem</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>joblib</code> / <code>pickle</code> <em>(futuro)</em></td>
+        <td class="where">Serialização do modelo treinado (<code>modelo.pkl</code>)</td>
+        <td class="why">Convenção scikit-learn / LightGBM; preserva pesos + preprocessamento</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ====== DASHBOARDS ====== -->
+<section class="dashboards">
+  <h2>📊 Consumo — Dashboards <span class="badge">UF · Município · Hospital</span></h2>
+  <p class="intro">13 páginas Streamlit consultando direto os parquets gold via DuckDB embarcado — sem servidor de banco.</p>
+  <table>
+    <thead>
+      <tr><th style="width:18%">Tecnologia</th><th style="width:35%">Onde uso</th><th>Por que escolhi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tech"><code>Streamlit</code></td>
+        <td class="where">Multipage app com 13 dashboards (uma por nível de granularidade)</td>
+        <td class="why">Python-native (mesmo stack do pipeline); hot-reload; multipage nativo; sem precisar React/JS separado</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>DuckDB</code> embed</td>
+        <td class="where">Cada página Streamlit roda DuckDB embarcado pra consultar gold</td>
+        <td class="why">Não precisa de servidor de banco; query direta sobre parquet</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>Plotly</code></td>
+        <td class="where">Gráficos interativos (line, bar, funnel plot, sankey)</td>
+        <td class="why">Interatividade rica + hover + zoom; integração nativa Streamlit</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>Folium</code> + <code>streamlit-folium</code></td>
+        <td class="where">Mapa coroplético do Silêncio Epidemiológico</td>
+        <td class="why">Leaflet em Python; melhor pra coropléticos detalhados (94 bairros POA)</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>GeoJSON</code></td>
+        <td class="where">2 shapefiles (RS 497 municípios + POA 94 bairros)</td>
+        <td class="why">Padrão web; renderiza nativamente em Plotly e Folium</td>
+      </tr>
+      <tr>
+        <td class="tech">CSS custom inline</td>
+        <td class="where">Estilo do <code>pergunta_box</code>, callouts, status colors</td>
+        <td class="why">Personalização sem framework adicional</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>@st.cache_data</code> / <code>@st.cache_resource</code></td>
+        <td class="where">Cache de queries DuckDB e conexões</td>
+        <td class="why">Sub-segundo nas re-renderizações da UI</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ====== STREAMING ====== -->
+<section class="streaming">
+  <h2>🚨 Consumo — Paciente <span class="badge">Streaming + Modelo + Form</span></h2>
+  <p class="intro">F6 motor de decisão: evento de triagem → Kafka → consumer com modelo carregado → score + persistência Postgres.</p>
+  <table>
+    <thead>
+      <tr><th style="width:18%">Tecnologia</th><th style="width:35%">Onde uso</th><th>Por que escolhi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tech"><code>Apache Kafka</code></td>
+        <td class="where">Tópicos <code>admissoes-hospitalares</code> (entrada) e <code>scores-risco</code> (saída)</td>
+        <td class="why">Decoupling producer-consumer; replay capability; padrão MLOps em produção</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>kafka-python</code></td>
+        <td class="where">Cliente Producer/Consumer em Python</td>
+        <td class="why">Maduro; integra com asyncio se preciso</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>Zookeeper</code></td>
+        <td class="where">Coordenação do cluster Kafka</td>
+        <td class="why">Dependência obrigatória do Kafka 7.6</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>PostgreSQL 16</code></td>
+        <td class="where">Armazém de alertas / predições (audit log)</td>
+        <td class="why">ACID pra eventos críticos; índice B-tree por timestamp; JSONB pra payload semi-estruturado</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>psycopg2-binary</code></td>
+        <td class="where">Driver Postgres em Python</td>
+        <td class="why">Cliente oficial; binary build elimina compilação</td>
+      </tr>
+      <tr>
+        <td class="tech">Streamlit form</td>
+        <td class="where">Tela de inserção de dados do paciente + visualização do score</td>
+        <td class="why">Mesma stack do dashboard analítico → coesão visual</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>scikit-learn</code> / <code>LightGBM</code> <em>(futuro)</em></td>
+        <td class="where">Carregamento do <code>modelo.pkl</code> em memória para inferência</td>
+        <td class="why">Padrão da literatura; <code>predict_proba</code> direto</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ====== CROSS-CUTTING ====== -->
+<section class="cross">
+  <h2>🛠️ Cross-cutting <span class="badge">Orquestração + DevOps</span></h2>
+  <p class="intro">Infraestrutura compartilhada entre todas as camadas — garante reprodutibilidade e versionamento.</p>
+  <table>
+    <thead>
+      <tr><th style="width:18%">Tecnologia</th><th style="width:35%">Onde uso</th><th>Por que escolhi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tech"><code>Docker</code> + <code>Docker Compose</code></td>
+        <td class="where">Orquestra 8 serviços (Postgres, Zookeeper, Kafka, Kafka UI, Streamlit, Jupyter, ingestor, Spark)</td>
+        <td class="why">Reprodutibilidade absoluta; setup zero-config; isolamento de runtime</td>
+      </tr>
+      <tr>
+        <td class="tech">Bash scripts</td>
+        <td class="where">Wrappers de execução (<code>docker compose run --rm ...</code>)</td>
+        <td class="why">Padrão Unix; legível por qualquer dev</td>
+      </tr>
+      <tr>
+        <td class="tech">Git + GitHub</td>
+        <td class="where">Versionamento de código + dados de referência leves</td>
+        <td class="why">Indispensável; permite revisão histórica</td>
+      </tr>
+      <tr>
+        <td class="tech">Conventional Commits</td>
+        <td class="where">Convenção de mensagens (<code>feat:</code>, <code>fix:</code>, <code>docs:</code>)</td>
+        <td class="why">Histórico legível; permite changelog automatizado</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ====== DOCS ====== -->
+<section class="docs">
+  <h2>📚 Documentação e apresentação <span class="badge">Reprodutibilidade científica</span></h2>
+  <p class="intro">Dicionários, guias de joins, apresentação acadêmica — tudo versionado no Git.</p>
+  <table>
+    <thead>
+      <tr><th style="width:18%">Tecnologia</th><th style="width:35%">Onde uso</th><th>Por que escolhi</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tech">Markdown</td>
+        <td class="where">Dicionários de dados, guia de joins, plano de implementação</td>
+        <td class="why">Versionável; renderiza no GitHub; conversível pra HTML</td>
+      </tr>
+      <tr>
+        <td class="tech">HTML + CSS + JS</td>
+        <td class="where"><code>dicionario_dados.html</code> consolidado com TOC sidebar</td>
+        <td class="why">Self-contained pra abrir no browser sem servidor</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>Reveal.js</code> (CDN)</td>
+        <td class="where">Slides de apresentação (<code>apresentacao_tcc.html</code>)</td>
+        <td class="why">Versionável em Git; abre em qualquer browser; suporta Mermaid embutido</td>
+      </tr>
+      <tr>
+        <td class="tech"><code>Mermaid</code></td>
+        <td class="where">Diagrama ER + flowchart dentro dos slides</td>
+        <td class="why">Diagrama-como-código (versionável); renderiza nos slides</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ====== RESUMO ====== -->
+<section class="resumo">
+  <h2>🎯 Resumo executivo <span class="badge">Slide único</span></h2>
+  <p class="intro"><strong>Versão condensada</strong> — pra projetar num único slide ou colar como cola-cola na apresentação oral.</p>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:28%">Camada / função</th>
+        <th>Stack</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="tech">🌿 Ingestão</td>
+        <td><code>pysus</code> · stdlib HTTP · <code>supercronic</code> cronjob</td>
+      </tr>
+      <tr>
+        <td class="tech">🟫 🥈 🥇 Bronze, Silver, Gold</td>
+        <td><code>Parquet</code> · <code>DuckDB</code> · <code>scikit-learn</code> (split)</td>
+      </tr>
+      <tr>
+        <td class="tech">🗄️ Storage operacional</td>
+        <td><code>PostgreSQL 16</code> (alertas F6)</td>
+      </tr>
+      <tr>
+        <td class="tech">📡 Streaming</td>
+        <td><code>Apache Kafka</code> + <code>Zookeeper</code> + <code>kafka-python</code></td>
+      </tr>
+      <tr>
+        <td class="tech">📊 Dashboards</td>
+        <td><code>Streamlit</code> + <code>Plotly</code> + <code>Folium</code></td>
+      </tr>
+      <tr>
+        <td class="tech">🤖 Modelo ML</td>
+        <td><code>scikit-learn</code> / <code>LightGBM</code> + <code>joblib</code></td>
+      </tr>
+      <tr>
+        <td class="tech">🛠️ Orquestração</td>
+        <td><code>Docker Compose</code> (8 serviços) · <code>Bash</code> · <code>Git</code></td>
+      </tr>
+      <tr>
+        <td class="tech">📚 Apresentação</td>
+        <td><code>Reveal.js</code> + <code>Mermaid</code> · <code>Markdown</code> · HTML/CSS</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  DataSUS-RS · UFRGS · NF01006 — Projeto de Banco de Dados · 2026<br>
+  <em>Pra exportar PDF: Cmd/Ctrl+P → Salvar como PDF</em>
+</footer>
+
+</div>
+</body>
+</html>
