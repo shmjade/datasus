@@ -5,10 +5,12 @@ com decomposição por categoria de leito.
 """
 from __future__ import annotations
 
+import os
 import sys
 from datetime import date
 from pathlib import Path
 
+import pandas as pd
 import plotly.express as px
 import streamlit as st
 
@@ -29,6 +31,16 @@ st.caption("Leitos SUS médios no período, decomposto por categoria funcional."
 @st.cache_resource
 def _conn():
     return get_conn()
+
+
+@st.cache_resource
+def _nome_map() -> dict[str, str]:
+    """Mapa cod6 → nome do município (Censo 2022)."""
+    p = Path(os.getenv("DATA_ROOT", "/app/data")) / "ibge" / "rs_populacao_municipio.csv"
+    if not p.exists():
+        return {}
+    df = pd.read_csv(p, dtype={"cod6": str})
+    return dict(zip(df["cod6"], df["nome"]))
 
 
 @st.cache_data(ttl=60, show_spinner="Carregando leitos por município...")
@@ -56,6 +68,10 @@ if df.empty:
     st.warning("Sem dados de leitos. Rode o pipeline gold antes.")
     st.stop()
 
+# Enriquece com nome do município
+nome_map = _nome_map()
+df["municipio"] = df["codufmun"].map(nome_map).fillna(df["codufmun"])
+
 # -- KPIs --------------------------------------------------------------------
 m1, m2, m3, m4 = st.columns(4)
 m1.metric("Municípios com leitos SUS", f"{len(df):,}")
@@ -63,35 +79,76 @@ m2.metric("Leitos SUS (top N)", f"{df['leitos_sus'].sum():,.0f}")
 m3.metric("UTI SUS (top N)", f"{df['uti_sus'].sum():,.0f}")
 m4.metric("Hospitais (top N)", f"{df['n_hospitais'].sum():,.0f}")
 
-# -- Bar chart por município --------------------------------------------------
-st.subheader(f"Top {top_n} municípios por leitos SUS")
-fig = px.bar(
-    df.head(top_n).sort_values("leitos_sus"),
-    x="leitos_sus", y="codufmun",
-    orientation="h",
-    hover_data=["uti_sus", "clinico_sus", "cirurgico_sus", "obstetrico_sus", "n_hospitais"],
-    labels={"leitos_sus": "Leitos SUS médios", "codufmun": "Município IBGE"},
-)
-fig.update_layout(height=max(400, top_n * 25))
-st.plotly_chart(fig, use_container_width=True)
-
-# -- Mix por categoria --------------------------------------------------------
+# -- Mix de leitos (top 20) ---------------------------------------------------
 st.subheader("Mix de leitos — top 20 municípios")
-mix = (
-    df.head(20)
-    .set_index("codufmun")[["uti_sus", "clinico_sus", "cirurgico_sus",
-                            "obstetrico_sus", "pediatrico_sus"]]
-    .reset_index()
-    .melt(id_vars="codufmun", var_name="categoria", value_name="leitos")
+st.caption(
+    "Composição dos leitos SUS por categoria funcional. Compare 2 visões: "
+    "**absoluta** (em quantos leitos cada categoria contribui) e "
+    "**proporcional** (qual fatia de cada hospital é UTI, clínico, etc.)."
 )
-fig = px.bar(
-    mix, x="codufmun", y="leitos", color="categoria",
-    title="Composição de leitos por município (top 20)",
+
+CATEGORIAS = ["uti_sus", "clinico_sus", "cirurgico_sus",
+              "obstetrico_sus", "pediatrico_sus"]
+LABELS_CAT = {
+    "uti_sus": "UTI",
+    "clinico_sus": "Clínico",
+    "cirurgico_sus": "Cirúrgico",
+    "obstetrico_sus": "Obstétrico",
+    "pediatrico_sus": "Pediátrico",
+}
+
+top20 = df.head(20).copy()
+# Ordena pelo total de leitos pra dar uma ordem natural visualmente
+top20 = top20.sort_values("leitos_sus", ascending=False)
+
+mix = top20[["municipio"] + CATEGORIAS].melt(
+    id_vars="municipio", var_name="categoria", value_name="leitos"
 )
-fig.update_xaxes(type="category")
-fig.update_layout(height=500)
-st.plotly_chart(fig, use_container_width=True)
+mix["categoria"] = mix["categoria"].map(LABELS_CAT)
+
+# Mantém ordem dos municípios (descendente de leitos)
+mix["municipio"] = pd.Categorical(
+    mix["municipio"], categories=top20["municipio"].tolist(), ordered=True,
+)
+
+tab_abs, tab_pct = st.tabs(["Valores absolutos", "Composição percentual (100%)"])
+
+with tab_abs:
+    fig = px.bar(
+        mix, x="municipio", y="leitos", color="categoria",
+        labels={"municipio": "Município", "leitos": "Leitos SUS médios",
+                "categoria": "Categoria"},
+        category_orders={"categoria": list(LABELS_CAT.values())},
+    )
+    fig.update_xaxes(type="category", tickangle=-45)
+    fig.update_layout(height=520, legend_title_text="Categoria")
+    st.plotly_chart(fig, use_container_width=True)
+
+with tab_pct:
+    fig = px.bar(
+        mix, x="municipio", y="leitos", color="categoria",
+        labels={"municipio": "Município", "leitos": "% do total de leitos",
+                "categoria": "Categoria"},
+        category_orders={"categoria": list(LABELS_CAT.values())},
+    )
+    fig.update_traces(hovertemplate="%{x}<br>%{fullData.name}: %{y:.1f}%<extra></extra>")
+    fig.update_xaxes(type="category", tickangle=-45)
+    fig.update_layout(
+        height=520,
+        barnorm="percent",       # normaliza cada barra empilhada a 100%
+        yaxis=dict(tickformat=".0f", ticksuffix="%"),
+        legend_title_text="Categoria",
+    )
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption(
+        "Mesmas barras, mas normalizadas em % do total de leitos do município. "
+        "Mostra o perfil assistencial (ex.: alta % de UTI sugere hospital de referência)."
+    )
 
 # -- Tabela completa ---------------------------------------------------------
 st.subheader("Tabela completa")
-st.dataframe(df, use_container_width=True, height=400)
+cols_show = ["municipio", "codufmun", "leitos_sus", "leitos_total",
+             "uti_sus", "clinico_sus", "cirurgico_sus",
+             "obstetrico_sus", "pediatrico_sus", "n_hospitais"]
+cols_show = [c for c in cols_show if c in df.columns]
+st.dataframe(df[cols_show], use_container_width=True, height=400)
