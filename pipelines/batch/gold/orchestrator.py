@@ -20,6 +20,7 @@ from . import (
     continuum_cid,
     hospital_panel,
     leitos_municipio,
+    ml_mortalidade_dataset,
     mortalidade_municipio_competencia,
 )
 
@@ -34,6 +35,7 @@ BUILDERS = {
     "hospital_panel":    hospital_panel.build,
     "leitos_municipio":  leitos_municipio.build,
     "mortalidade_municipio_competencia": mortalidade_municipio_competencia.build,
+    "ml_mortalidade_dataset": ml_mortalidade_dataset.build,
 }
 
 
